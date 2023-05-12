@@ -2,9 +2,8 @@
 
 ## Overview ⭐️
 
-- Application Name: MapMyDay
-
-- Reason for Selection
+- ### Application Name: MapMyDay  
+- #### Reason for Selection
 - 본인의 스케줄에 늦지않게 도착하고, 자동으로 출발할시간과 경로를 알려주는 시스템이 있으면 편할것 같다고생각.
 - 지도데이터를 실시간데이터로 활용하여 관리하고 서비스를 제공하는 과정을 직접 구현해보고싶어선정.
 
@@ -15,8 +14,8 @@
 
 ## Example 🍪
 - 비슷한 사례 : 카카오맵 길찾기, 네이버지도 길찾기, 승하차 알림 서비스 
-<img width="30%" src="https://user-images.githubusercontent.com/94777814/234574023-1b96b41b-146c-4510-a3d9-cf2618ac0e62.PNG"/>
-<img width="30%" src="https://user-images.githubusercontent.com/94777814/234574202-e0e01a97-e2e5-436d-a1da-3797d01b19cd.PNG"/>
+<img width="30%" src="https://user-images.githubusercontent.com/94777814/237893910-a6b79bcc-e4ac-4f60-85d2-f940602e9e8a.png"/>
+
 
 ## Expected Components to be used for our development 🔧
 
@@ -29,18 +28,17 @@
 메세지 알림 기능
 - Android 지원 라이브러리의 NotificationCompat API활용
 
-채팅 기능
-- Firebase와 연동
+캘린더 기능
+
+todo List 구현
+
 
 ## Function implementation 🔧
 - 업데이트 예정
 
 ## Development History 🌳
 
-2023-04-26
-
-- 프로젝트 전체적인 구성 및 계획
-- [Project Proposal](https://github.com/unso99/FirstAndroidProject/blob/main/MobileProgramming_ProjectProposal_5%ED%8C%80.pdf)
+- [개발 진행 상황](https://www.notion.so/pursue-your-dream/f23a460b383b4f96992aaddfab46b9a2?v=7b766e9a7dab459c9b8809b854192483)
 
 
 
