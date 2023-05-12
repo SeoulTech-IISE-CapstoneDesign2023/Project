@@ -27,10 +27,13 @@
 
 메세지 알림 기능
 - Android 지원 라이브러리의 NotificationCompat API활용
+- FCM clould messaging 
 
 캘린더 기능
+-
 
 todo List 구현
+-
 
 
 ## Function implementation 🔧
