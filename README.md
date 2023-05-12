@@ -8,11 +8,14 @@
 - 본인의 스케줄에 늦지않게 도착하고, 자동으로 출발할시간과 경로를 알려주는 시스템이 있으면 편할것 같다고생각.
 - 지도데이터를 실시간데이터로 활용하여 관리하고 서비스를 제공하는 과정을 직접 구현해보고싶어선정.
 
-## Main application use-cases 🍪
+## Concept 🍪
 
-- Community Mapping: 지도를 만드는 과정에서 지역사회 구성원과 이해관계자들의 관심을 유도하고 이들의 커뮤니티에 대한 계획 및 의사결정에 참여하도록 하는 총제적인 과정을 의미
+- TodoList에 약속 장소 및 시간, 이용할 교통수단을 입력하면, 실시간 사용자 위치를 바탕으로 출발 시간을 미리 알려주는서비스를 제공
+- 약속시간내에 선정 교통수단으로 도착하지 못하는 경우 새로운 방안추천
+
+## Example 🍪
+- 비슷한 사례 : 카카오맵 길찾기, 네이버지도 길찾기, 승하차 알림 서비스 
 <img width="30%" src="https://user-images.githubusercontent.com/94777814/234574023-1b96b41b-146c-4510-a3d9-cf2618ac0e62.PNG"/>
-커뮤니티 맵핑
 <img width="30%" src="https://user-images.githubusercontent.com/94777814/234574202-e0e01a97-e2e5-436d-a1da-3797d01b19cd.PNG"/>
 
 ## Expected Components to be used for our development 🔧
