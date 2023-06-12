@@ -16,7 +16,8 @@
 - 비슷한 사례 : 카카오맵 길찾기, 네이버지도 길찾기, 승하차 알림 서비스 
 <img width="30%" src="https://user-images.githubusercontent.com/94777814/237893910-a6b79bcc-e4ac-4f60-85d2-f940602e9e8a.png"/>
 
-
+## UI/UX
+- https://app.diagrams.net/#G1IKindSD4jmn3xH_ZWjpq5IFvdsOIebW1#%7B%22pageId%22%3A%22FIW6klhhsAjL1zB1YtQL%22%7D
 ## Expected Components to be used for our development 🔧
 
 지도 서비스 구현 
