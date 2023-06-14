@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".MainFragment">
 
-    <Button
+    <TextView
         android:id="@+id/notice_button"
         android:layout_width="match_parent"
-        android:layout_height="81dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:gravity="center"
         android:text="○○○님, 다음 일정까지 남았어요!\n 출발지→ 도착지 일때, 소요시간은 얼마나 걸려요!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

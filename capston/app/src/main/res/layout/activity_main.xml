@@ -32,39 +32,42 @@
 
     </FrameLayout>
 
-    <Button
+    <ImageView
         android:id="@+id/timeTable_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="TimeTable"
+        android:src="@drawable/baseline_table_chart_24"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_weight="0.3"
         app:layout_constraintStart_toEndOf="@+id/calendar_button" />
 
-    <Button
+    <ImageView
         android:id="@+id/calendar_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Calendar"
+        android:src="@drawable/baseline_calendar_month_24"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/timeTable_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_weight="0.3"
         app:layout_constraintStart_toEndOf="@+id/main_button" />
 
-    <Button
+    <ImageView
         android:id="@+id/main_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Main"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/calendar_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintHorizontal_weight="0.3"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/baseline_home_24"/>
 
 
     <ImageView
