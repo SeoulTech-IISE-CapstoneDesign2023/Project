@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateActivity">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/createActionToolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTodoText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="Todo제목을 작성하세요"
+        android:inputType="text"
+        android:textSize="25sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/todoTextView"
+        app:layout_constraintStart_toEndOf="@+id/todoTextView"
+        tools:layout_editor_absoluteY="96dp" />
+
+    <TextView
+        android:id="@+id/todoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="ToDo"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/createActionToolbar" />
+
+    <TextView
+        android:id="@+id/startDateTextView"
+        style="@style/Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시작"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/todoTextView"
+        app:layout_constraintTop_toBottomOf="@+id/todoTextView" />
+
+    <TextView
+        android:id="@+id/startDateValueTextView"
+        style="@style/Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="0000/00/00 오전 00:00"
+        android:textSize="24sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/startDateTextView"
+        app:layout_constraintEnd_toEndOf="@+id/editTodoText"
+        app:layout_constraintStart_toEndOf="@+id/startDateTextView"
+        app:layout_constraintTop_toBottomOf="@+id/editTodoText" />
+
+    <TextView
+        android:id="@+id/arriveDateTextView"
+        style="@style/Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="도착"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/startDateTextView"
+        app:layout_constraintTop_toBottomOf="@+id/startDateTextView" />
+
+    <TextView
+        android:id="@+id/arriveDateValueTextView"
+        style="@style/Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="0000/00/00 오전 00:00"
+        android:textSize="24sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/arriveDateTextView"
+        app:layout_constraintEnd_toEndOf="@+id/startDateValueTextView"
+        app:layout_constraintStart_toEndOf="@+id/arriveDateTextView"
+        app:layout_constraintTop_toBottomOf="@+id/startDateValueTextView" />
+
+    <Button
+        android:id="@+id/goTodoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Todo"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/goMappingButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/arriveDateTextView" />
+
+    <Button
+        android:id="@+id/goMappingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mapping"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/goTodoButton"
+        app:layout_constraintTop_toBottomOf="@+id/arriveDateValueTextView" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="409dp"
+        android:layout_height="454dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/goTodoButton"
+        android:layout_margin="0dp">
+
+    </FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
