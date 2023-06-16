@@ -1,32 +1,21 @@
 package com.example.capston.EditFragment
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
-import com.example.capston.CreateActivity
-import com.example.capston.R
 import com.example.capston.databinding.FragmentEditTodoBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EditTodoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditTodoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var binding : FragmentEditTodoBinding
+    private lateinit var binding: FragmentEditTodoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,17 +29,16 @@ class EditTodoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentEditTodoBinding.inflate(inflater,container, false)
-        binding.textInputEditText.addTextChangedListener{
+        binding = FragmentEditTodoBinding.inflate(inflater, container, false)
+        binding.textInputEditText.addTextChangedListener {
             it?.let { text ->
-                binding.textTextInputLayout.error = if (text.length > 100){
+                binding.textTextInputLayout.error = if (text.length > 100) {
                     "글자수를 초과하였습니다."
-                }else null
+                } else null
             }
         }
         return binding.root
     }
-
 
 
     companion object {

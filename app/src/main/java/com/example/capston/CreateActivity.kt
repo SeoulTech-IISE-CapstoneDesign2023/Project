@@ -28,7 +28,6 @@ class CreateActivity : AppCompatActivity() {
     private var timeString = ""
     private var startTime = ""
     private var arrivalTime = ""
-//    val intent = Intent(this, CreateActivity::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +46,11 @@ class CreateActivity : AppCompatActivity() {
                 replace(binding.frameLayout.id, mappingFragment) // 프래그먼트가 표시될 레이아웃 ID
             }
         }
+        //CalendarFragment에서 날짜 데이터 받아서 약속 시간 날짜만 가져오기
+        binding.startDateValueTextView.text = intent.getStringExtra("startDate") ?: "0000/00/00"
+
+
+
 
         binding.goTodoButton.setOnClickListener {
             val currentFragment = fManager.findFragmentById(binding.frameLayout.id)
@@ -70,6 +74,12 @@ class CreateActivity : AppCompatActivity() {
         }
         binding.arriveDateValueTextView.setOnClickListener {
             setDate(1)
+        }
+        binding.startTimeValueTextView.setOnClickListener {
+            setTime(0)
+        }
+        binding.arriveTimeValueTextView.setOnClickListener {
+            setTime(1)
         }
     }
 
@@ -102,19 +112,9 @@ class CreateActivity : AppCompatActivity() {
         }.show()
     }
 
-    private fun setDate(separator: Int) {
+    private fun setTime(separator:Int){
         val calendar = Calendar.getInstance()
-        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-            dateString = "${year}/ ${month + 1} / ${dayOfMonth}"
-            if (separator == 0) {
-                binding.startDateValueTextView.text = "$dateString $timeString"
-                startTime = "$dateString $timeString"
-            } else {
-                binding.arriveDateValueTextView.text = "$dateString $timeString"
-                arrivalTime = "$dateString $timeString"
-            }
-        }
-        val timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
             timeString = "오전 ${hourOfDay}:${minute}"
             if (hourOfDay > 12) {
                 timeString = "오후 ${hourOfDay - 12}:${minute}"
@@ -122,10 +122,10 @@ class CreateActivity : AppCompatActivity() {
                 timeString = "오후 ${hourOfDay}:${minute}"
             }
             if (separator == 0) {
-                binding.startDateValueTextView.text = "$dateString $timeString"
+                binding.startTimeValueTextView.text = "$timeString"
                 startTime = "$dateString ${hourOfDay}:${minute}"
             } else {
-                binding.arriveDateValueTextView.text = "$dateString $timeString"
+                binding.arriveTimeValueTextView.text = "$timeString"
                 arrivalTime = "$dateString ${hourOfDay}:${minute}"
             }
             // 출발시간이 도착시간보다 빨리 못하게 나중에 버튼누르면 안되게 해야함
@@ -137,7 +137,8 @@ class CreateActivity : AppCompatActivity() {
                 if (startDate != null) {
                     if (startDate >= arrivalDate){
                         Toast.makeText(this,"시작시간은 도착시간보다 늦을 수 없습니다",Toast.LENGTH_SHORT).show()
-                        binding.arriveDateValueTextView.text = "0000/00/00 오전 00:00"
+                        binding.arriveDateValueTextView.text = "0000/00/00"
+                        binding.arriveTimeValueTextView.text = "오전 00:00"
                         arrivalTime = ""
                     }
                 }
@@ -152,6 +153,20 @@ class CreateActivity : AppCompatActivity() {
             calendar.get(Calendar.MINUTE),
             true
         ).show()
+    }
+
+    private fun setDate(separator: Int) {
+        val calendar = Calendar.getInstance()
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            dateString = "${year}/ ${month + 1} / ${dayOfMonth}"
+            if (separator == 0) {
+                binding.startDateValueTextView.text = "$dateString"
+                startTime = "$dateString $timeString"
+            } else {
+                binding.arriveDateValueTextView.text = "$dateString"
+                arrivalTime = "$dateString $timeString"
+            }
+        }
         DatePickerDialog(
             this,
             dateSetListener,

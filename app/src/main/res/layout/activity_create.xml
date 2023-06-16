@@ -60,12 +60,25 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:text="0000/00/00 오전 00:00"
+        android:text="0000/00/00"
         android:textSize="24sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/startDateTextView"
-        app:layout_constraintEnd_toEndOf="@+id/editTodoText"
+        app:layout_constraintEnd_toStartOf="@+id/startTimeValueTextView"
         app:layout_constraintStart_toEndOf="@+id/startDateTextView"
         app:layout_constraintTop_toBottomOf="@+id/editTodoText" />
+
+    <TextView
+        android:id="@+id/startTimeValueTextView"
+        style="@style/Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="오전 00:00"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/startDateValueTextView"
+        app:layout_constraintBaseline_toBaselineOf="@+id/startDateValueTextView"
+        app:layout_constraintEnd_toEndOf="@+id/editTodoText"
+        />
 
     <TextView
         android:id="@+id/arriveDateTextView"
@@ -83,12 +96,25 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:text="0000/00/00 오전 00:00"
+        android:text="0000/00/00"
         android:textSize="24sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/arriveDateTextView"
         app:layout_constraintEnd_toEndOf="@+id/startDateValueTextView"
         app:layout_constraintStart_toEndOf="@+id/arriveDateTextView"
         app:layout_constraintTop_toBottomOf="@+id/startDateValueTextView" />
+
+    <TextView
+        android:id="@+id/arriveTimeValueTextView"
+        style="@style/Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="오전 00:00"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/startTimeValueTextView"
+        app:layout_constraintBaseline_toBaselineOf="@+id/arriveDateValueTextView"
+        app:layout_constraintStart_toEndOf="@+id/arriveDateValueTextView"
+         />
 
     <Button
         android:id="@+id/goTodoButton"
