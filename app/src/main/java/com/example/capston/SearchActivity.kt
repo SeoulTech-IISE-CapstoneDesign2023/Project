@@ -1,9 +1,12 @@
 package com.example.capston
 
 
+import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Address
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +15,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.databinding.ActivitySearchBinding
 import com.naver.maps.map.LocationTrackingMode
@@ -56,7 +61,6 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.createActionToolbar)
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         binding.startValueTextView.setOnClickListener {
             val intent = Intent(this, SearchWebActivity::class.java)
@@ -69,22 +73,26 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             getSearchResult.launch(intent)
         }
         binding.navermap.getMapAsync(this)
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         binding.myLocationButton.setOnClickListener {
-            if (myLocationlat == 0.0) {
-                Toast.makeText(this, "지도의 자기위치를 업데이트해주세요", Toast.LENGTH_SHORT).show()
-            } else {
-                getMyLocation(myLocationlat, myLocationlng) { result ->
-                    val address = result.replace("대한민국", "")
-                    runOnUiThread {
-                        binding.startValueTextView.text = address
-                    }
-                }
-            }
-
+            checkPermission()
         }
 
 
+    }
+
+    private fun updateStartTextView() {
+        if (myLocationlat == 0.0) {
+            Toast.makeText(this, "지도의 자기위치를 업데이트해주세요", Toast.LENGTH_SHORT).show()
+        } else {
+            getMyLocation(myLocationlat, myLocationlng) { result ->
+                val address = result.replace("대한민국", "")
+                runOnUiThread {
+                    binding.startValueTextView.text = address
+                }
+            }
+        }
     }
 
     //내 위경도를 주소로 변환
@@ -113,15 +121,16 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             putString("arrivalAddress", binding.arrivalValueTextView.text.toString())
             apply()
         }
-        Toast.makeText(this,"데이터가 저장됨",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "데이터가 저장됨", Toast.LENGTH_SHORT).show()
     }
-    private fun deletData(){
+
+    private fun deletData() {
         with(getSharedPreferences("addressInformation", Context.MODE_PRIVATE).edit()) {
             putString("startAddress", "")
             putString("arrivalAddress", "")
             apply()
         }
-        Toast.makeText(this,"데이터가 삭제됨",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "데이터가 삭제됨", Toast.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -134,7 +143,8 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 finish()
                 true
             }
-            R.id.cancelMenu ->{
+
+            R.id.cancelMenu -> {
                 deletData()
                 val intent = Intent(this, CreateActivity::class.java)
                 intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
@@ -158,9 +168,10 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        naverMap.locationSource = locationSource
         naverMap.mapType = NaverMap.MapType.Basic //네이버 지도 유형
         naverMap.uiSettings.isLocationButtonEnabled = true //현재위치 버튼
-        naverMap.locationSource = locationSource
         //위치변화할때 내 위경도 데이터 업데이트
         naverMap.addOnLocationChangeListener { location ->
             myLocationlat = location.latitude
@@ -168,16 +179,64 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun checkPermission() {
+        when {//permission이 되었을 때
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                updateStartTextView()
+            }
+            // permission을 거부가 되었을 때 다이얼로그로 한번더 확인
+            shouldShowRequestPermissionRationale(
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) -> {
+                showPermissionDialog()
+            }
+            else -> {
+                requestLocationTrack()
+            }
+        }
+
+    }
+
+    //위치권한 확인 다이얼로그
+    private fun showPermissionDialog() {
+        AlertDialog.Builder(this).apply {
+            setMessage("위치 정보를 가져오기 위해서는 위치추적 권한이 필요합니다")
+            setNegativeButton("취소", null)
+            setPositiveButton("동의") { _, _ ->
+                requestLocationTrack()
+            }
+        }.show()
+    }
+
+    //위치권한 요청
+    private fun requestLocationTrack() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (locationSource.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-            if (!locationSource.isActivated) { //권한이 거부됨
-                naverMap.locationTrackingMode = LocationTrackingMode.None
+        when(requestCode){
+            LOCATION_PERMISSION_REQUEST_CODE ->{
+                if(grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED){
+                    updateStartTextView()
+                }
             }
-            return
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
