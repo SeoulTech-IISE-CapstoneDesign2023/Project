@@ -51,10 +51,7 @@ class CalendarFragment : Fragment() {
                 binding.txtTodaylist.text = dateStr+" List"
             }
         }
-
-
         //일정 하나 상세 보기 -> 구현해야함
-
         return binding.root
     }
 

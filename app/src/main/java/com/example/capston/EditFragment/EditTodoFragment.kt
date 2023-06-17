@@ -1,5 +1,6 @@
 package com.example.capston.EditFragment
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,6 +17,23 @@ class EditTodoFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentEditTodoBinding
+
+    interface OnDataPassListener {//data를 전달하는 listener
+        fun onDataPass(data:Int?)
+    }
+    private lateinit var dataPassListener : OnDataPassListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        dataPassListener = context as OnDataPassListener
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)//data를 전달
+        binding.textInputEditText.addTextChangedListener {text->
+            dataPassListener.onDataPass(text?.length)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

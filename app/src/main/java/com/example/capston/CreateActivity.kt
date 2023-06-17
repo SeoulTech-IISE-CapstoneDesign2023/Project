@@ -15,12 +15,13 @@ import androidx.fragment.app.commit
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.EditFragment.EditTodoFragment
 import com.example.capston.databinding.ActivityCreateBinding
+import com.example.capston.databinding.FragmentEditTodoBinding
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class CreateActivity : AppCompatActivity() {
+class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private lateinit var binding: ActivityCreateBinding
     private var startAddress = ""
     private var arrivalAddress = ""
@@ -28,6 +29,7 @@ class CreateActivity : AppCompatActivity() {
     private var timeString = ""
     private var startTime = ""
     private var arrivalTime = ""
+    private var editTextLength = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,9 +88,13 @@ class CreateActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.okMenu -> {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                if (editTextLength > 100){
+                    Toast.makeText(this,"메모 글자수가 100을 넘었습니다.",Toast.LENGTH_SHORT).show()
+                }else{
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
                 true
             }
             R.id.cancelMenu ->{
@@ -187,5 +193,11 @@ class CreateActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         binding.createActionToolbar.inflateMenu(R.menu.create_menu)
         return true
+    }
+
+    //editTodoFragment에서 메모장 텍스트 길이 받아오기
+    override fun onDataPass(data: Int?) {
+        Log.d("DataPass","$data")
+        editTextLength = data!!
     }
 }
