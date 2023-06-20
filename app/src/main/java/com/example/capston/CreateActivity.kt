@@ -16,6 +16,8 @@ import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.EditFragment.EditTodoFragment
 import com.example.capston.databinding.ActivityCreateBinding
 import com.example.capston.databinding.FragmentEditTodoBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -23,6 +25,7 @@ import java.util.Locale
 
 class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private lateinit var binding: ActivityCreateBinding
+    lateinit var user: String
     private var startAddress = ""
     private var arrivalAddress = ""
     private var dateString = ""
@@ -36,6 +39,8 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         binding = ActivityCreateBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.createActionToolbar)
+        user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
         getData()
         val fManager = supportFragmentManager
         val mappingFragment = EditMappingFragment.newInstance(startAddress, arrivalAddress)
@@ -53,7 +58,7 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
 
 
 
-
+        //일정 fragment
         binding.goTodoButton.setOnClickListener {
             val currentFragment = fManager.findFragmentById(binding.frameLayout.id)
             if (currentFragment !is EditTodoFragment) {
@@ -62,7 +67,7 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
                 }
             }
         }
-
+        //mapping fragment
         binding.goMappingButton.setOnClickListener {
             val currentFragment = fManager.findFragmentById(binding.frameLayout.id)
             if (currentFragment !is EditMappingFragment) {
@@ -91,8 +96,7 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
                 if (editTextLength > 100){
                     Toast.makeText(this,"메모 글자수가 100을 넘었습니다.",Toast.LENGTH_SHORT).show()
                 }else{
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
+                    putTodo()
                     finish()
                 }
                 true
@@ -105,7 +109,29 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
+    private fun putTodo() {
+        val title = binding.editTodoText.text.toString()  //제목 입력창에 작성한 내용 문자열로 받아 title 변수에 저장
+        val st_date = binding.startDateValueTextView.text.toString()
+        val st_time = binding.startTimeValueTextView.text.toString()
+        val end_date = binding.arriveDateValueTextView.text.toString()
+        val end_time = binding.arriveTimeValueTextView.text.toString()
+        val check = splitDate(st_date)
+        val clickedYear = check[0].trim()
+        val clickedMonth = check[1].trim()
+        val clickedDay = check[2].trim()
+//        val place = todoFragmentBinding.place.getText().toString()
+//        val memo = todoFragmentBinding.memo.getText().toString()
+        val todo = Todo(title, st_date, st_time, end_date, end_time, null, null)   //todo data class에 필요한 내용 넣고 todo 변수에 저장
+        FirebaseDatabase.getInstance().getReference("calendar").child(user)
+            .child("$clickedYear"+"년").child("$clickedMonth"+"월").child("$clickedDay"+"일")
+            .push().setValue(todo).addOnSuccessListener {
+                Toast.makeText(applicationContext,"일정 생성 완료",Toast.LENGTH_SHORT).show();
+                Log.i("FirebaseData", "데이터 전송에 성공하였습니다.")
+                Log.i("FirebaseData", "title:${todo.title}, time:${todo.st_time}")
+            }.addOnCanceledListener {
+                Log.i("FirebaseData", "데이터 전송에 실패하였습니다")
+            }
+    }
     private fun showAlertDialog(){
         AlertDialog.Builder(this).apply {
             setMessage("일정저장을 취소하시겠습니까?")
@@ -188,7 +214,14 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
             arrivalAddress = getString("arrivalAddress", "").toString()
         }
     }
-
+    private fun splitDate(date: String): Array<String> {
+        val splitText = date.split("/")
+        val resultDate: Array<String> = Array(3){""}
+        resultDate[0] = splitText[0]  //year
+        resultDate[1] = splitText[1]  //month
+        resultDate[2] = splitText[2]  //day
+        return resultDate
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         binding.createActionToolbar.inflateMenu(R.menu.create_menu)
