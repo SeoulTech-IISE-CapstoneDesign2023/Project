@@ -38,7 +38,7 @@
         android:src="@drawable/baseline_add_circle_24" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/todoRecyclerView"
         android:layout_width="366dp"
         android:layout_height="321dp"
         android:layout_marginTop="5dp"
