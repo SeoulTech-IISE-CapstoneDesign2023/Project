@@ -2533,6 +2533,7 @@ drawable abc_vector_test
 drawable avd_hide_password
 drawable avd_show_password
 drawable baseline_add_circle_24
+drawable baseline_arrow_forward_24
 drawable baseline_calendar_month_24
 drawable baseline_directions_bus_24
 drawable baseline_directions_car_24
@@ -2766,11 +2767,13 @@ id animateToStart
 id antiClockwise
 id anticipate
 id arc
+id arrivalAreaTextView
 id arrivalTextView
 id arrivalValueTextView
 id arriveDateTextView
 id arriveDateValueTextView
 id arriveTimeValueTextView
+id arrowImageView
 id asConfigured
 id async
 id auto
@@ -3086,8 +3089,8 @@ id right
 id rightToLeft
 id right_icon
 id right_side
-id roadSearchValueTextView
 id rounded
+id routeSearchResultRecyclerView
 id row_index_key
 id save_non_transition_alpha
 id save_overlay_view
@@ -3111,6 +3114,7 @@ id search_plate
 id search_src_text
 id search_voice_btn
 id searchlayer
+id sectionTimeTextView
 id select_dialog_listview
 id selected
 id selection_type
@@ -3143,6 +3147,7 @@ id src_in
 id src_over
 id standard
 id start
+id startAreaTextView
 id startDateTextView
 id startDateValueTextView
 id startHorizontal
@@ -3210,9 +3215,11 @@ id toggle
 id toolbar2
 id top
 id topPanel
+id totalTimeTextView
 id touch_outside
 id trackingTimeSpinner
 id trackingTimeTextView
+id trafficTypeTextView
 id transitionToEnd
 id transitionToStart
 id transition_current_scene
@@ -3361,6 +3368,7 @@ layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
 layout fragment_time_table
+layout item_route
 layout item_todo
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
@@ -3948,6 +3956,7 @@ style Platform_V21_AppCompat_Light
 style Platform_V25_AppCompat
 style Platform_V25_AppCompat_Light
 style Platform_Widget_AppCompat_Spinner
+style RouteText
 style RtlOverlay_DialogWindowTitle_AppCompat
 style RtlOverlay_Widget_AppCompat_ActionBar_TitleItem
 style RtlOverlay_Widget_AppCompat_DialogTitle_Icon

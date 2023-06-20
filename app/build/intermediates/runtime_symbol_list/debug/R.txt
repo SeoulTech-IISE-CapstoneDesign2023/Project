@@ -2532,6 +2532,7 @@ int drawable abc_vector_test 0x7f080055
 int drawable avd_hide_password 0x7f080056
 int drawable avd_show_password 0x7f080057
 int drawable baseline_add_circle_24 0x7f080058
+int drawable baseline_arrow_forward_24 0x7f0800ed
 int drawable baseline_calendar_month_24 0x7f080059
 int drawable baseline_directions_bus_24 0x7f08005a
 int drawable baseline_directions_car_24 0x7f08005b
@@ -2765,11 +2766,13 @@ int id animateToStart 0x7f090051
 int id antiClockwise 0x7f090052
 int id anticipate 0x7f090053
 int id arc 0x7f090054
+int id arrivalAreaTextView 0x7f090237
 int id arrivalTextView 0x7f090055
 int id arrivalValueTextView 0x7f090056
 int id arriveDateTextView 0x7f090057
 int id arriveDateValueTextView 0x7f090058
 int id arriveTimeValueTextView 0x7f090059
+int id arrowImageView 0x7f090238
 int id asConfigured 0x7f09005a
 int id async 0x7f09005b
 int id auto 0x7f09005c
@@ -3085,8 +3088,8 @@ int id right 0x7f090191
 int id rightToLeft 0x7f090192
 int id right_icon 0x7f090193
 int id right_side 0x7f090194
-int id roadSearchValueTextView 0x7f090195
 int id rounded 0x7f090196
+int id routeSearchResultRecyclerView 0x7f09023c
 int id row_index_key 0x7f090197
 int id save_non_transition_alpha 0x7f090198
 int id save_overlay_view 0x7f090199
@@ -3110,6 +3113,7 @@ int id search_plate 0x7f0901aa
 int id search_src_text 0x7f0901ab
 int id search_voice_btn 0x7f0901ac
 int id searchlayer 0x7f0901ad
+int id sectionTimeTextView 0x7f090239
 int id select_dialog_listview 0x7f0901ae
 int id selected 0x7f0901af
 int id selection_type 0x7f0901b0
@@ -3142,6 +3146,7 @@ int id src_in 0x7f0901ca
 int id src_over 0x7f0901cb
 int id standard 0x7f0901cc
 int id start 0x7f0901cd
+int id startAreaTextView 0x7f09023a
 int id startDateTextView 0x7f0901ce
 int id startDateValueTextView 0x7f0901cf
 int id startHorizontal 0x7f0901d0
@@ -3209,9 +3214,11 @@ int id toggle 0x7f09020d
 int id toolbar2 0x7f09020e
 int id top 0x7f09020f
 int id topPanel 0x7f090210
+int id totalTimeTextView 0x7f09023d
 int id touch_outside 0x7f090211
 int id trackingTimeSpinner 0x7f090212
 int id trackingTimeTextView 0x7f090213
+int id trafficTypeTextView 0x7f09023b
 int id transitionToEnd 0x7f090214
 int id transitionToStart 0x7f090215
 int id transition_current_scene 0x7f090216
@@ -3360,6 +3367,7 @@ int layout fragment_edit_mapping 0x7f0c0034
 int layout fragment_edit_todo 0x7f0c0035
 int layout fragment_main 0x7f0c0036
 int layout fragment_time_table 0x7f0c0037
+int layout item_route 0x7f0c0094
 int layout item_todo 0x7f0c0038
 int layout m3_alert_dialog 0x7f0c0039
 int layout m3_alert_dialog_actions 0x7f0c003a
@@ -3947,6 +3955,7 @@ int style Platform_V21_AppCompat_Light 0x7f120133
 int style Platform_V25_AppCompat 0x7f120134
 int style Platform_V25_AppCompat_Light 0x7f120135
 int style Platform_Widget_AppCompat_Spinner 0x7f120136
+int style RouteText 0x7f120403
 int style RtlOverlay_DialogWindowTitle_AppCompat 0x7f120137
 int style RtlOverlay_Widget_AppCompat_ActionBar_TitleItem 0x7f120138
 int style RtlOverlay_Widget_AppCompat_DialogTitle_Icon 0x7f120139

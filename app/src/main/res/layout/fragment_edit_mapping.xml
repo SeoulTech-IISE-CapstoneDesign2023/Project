@@ -87,18 +87,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/trackingTimeSpinner" />
 
-    <TextView
-        android:id="@+id/roadSearchValueTextView"
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/routeSearchResultRecyclerView"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:gravity="center"
-        android:text="길찾기 정보"
-        android:textSize="36sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_button" />
+        app:layout_constraintTop_toBottomOf="@+id/totalTimeTextView" />
 
     <androidx.constraintlayout.helper.widget.Layer
         android:id="@+id/searchlayer"
@@ -106,6 +102,19 @@
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="arrivalValueTextView,startValueTextView"
         tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/totalTimeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="총소요시간"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_button"
+        android:visibility="invisible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

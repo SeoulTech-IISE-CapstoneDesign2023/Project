@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.helper.widget.Layer;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.capston.R;
@@ -29,7 +30,7 @@ public final class FragmentEditMappingBinding implements ViewBinding {
   public final TextView arrivalValueTextView;
 
   @NonNull
-  public final TextView roadSearchValueTextView;
+  public final RecyclerView routeSearchResultRecyclerView;
 
   @NonNull
   public final Button searchButton;
@@ -44,6 +45,9 @@ public final class FragmentEditMappingBinding implements ViewBinding {
   public final TextView startValueTextView;
 
   @NonNull
+  public final TextView totalTimeTextView;
+
+  @NonNull
   public final Spinner trackingTimeSpinner;
 
   @NonNull
@@ -51,18 +55,19 @@ public final class FragmentEditMappingBinding implements ViewBinding {
 
   private FragmentEditMappingBinding(@NonNull ConstraintLayout rootView,
       @NonNull TextView arrivalTextView, @NonNull TextView arrivalValueTextView,
-      @NonNull TextView roadSearchValueTextView, @NonNull Button searchButton,
+      @NonNull RecyclerView routeSearchResultRecyclerView, @NonNull Button searchButton,
       @NonNull Layer searchlayer, @NonNull TextView startTextView,
-      @NonNull TextView startValueTextView, @NonNull Spinner trackingTimeSpinner,
-      @NonNull TextView trackingTimeTextView) {
+      @NonNull TextView startValueTextView, @NonNull TextView totalTimeTextView,
+      @NonNull Spinner trackingTimeSpinner, @NonNull TextView trackingTimeTextView) {
     this.rootView = rootView;
     this.arrivalTextView = arrivalTextView;
     this.arrivalValueTextView = arrivalValueTextView;
-    this.roadSearchValueTextView = roadSearchValueTextView;
+    this.routeSearchResultRecyclerView = routeSearchResultRecyclerView;
     this.searchButton = searchButton;
     this.searchlayer = searchlayer;
     this.startTextView = startTextView;
     this.startValueTextView = startValueTextView;
+    this.totalTimeTextView = totalTimeTextView;
     this.trackingTimeSpinner = trackingTimeSpinner;
     this.trackingTimeTextView = trackingTimeTextView;
   }
@@ -106,9 +111,9 @@ public final class FragmentEditMappingBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.roadSearchValueTextView;
-      TextView roadSearchValueTextView = ViewBindings.findChildViewById(rootView, id);
-      if (roadSearchValueTextView == null) {
+      id = R.id.routeSearchResultRecyclerView;
+      RecyclerView routeSearchResultRecyclerView = ViewBindings.findChildViewById(rootView, id);
+      if (routeSearchResultRecyclerView == null) {
         break missingId;
       }
 
@@ -136,6 +141,12 @@ public final class FragmentEditMappingBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.totalTimeTextView;
+      TextView totalTimeTextView = ViewBindings.findChildViewById(rootView, id);
+      if (totalTimeTextView == null) {
+        break missingId;
+      }
+
       id = R.id.trackingTimeSpinner;
       Spinner trackingTimeSpinner = ViewBindings.findChildViewById(rootView, id);
       if (trackingTimeSpinner == null) {
@@ -149,8 +160,9 @@ public final class FragmentEditMappingBinding implements ViewBinding {
       }
 
       return new FragmentEditMappingBinding((ConstraintLayout) rootView, arrivalTextView,
-          arrivalValueTextView, roadSearchValueTextView, searchButton, searchlayer, startTextView,
-          startValueTextView, trackingTimeSpinner, trackingTimeTextView);
+          arrivalValueTextView, routeSearchResultRecyclerView, searchButton, searchlayer,
+          startTextView, startValueTextView, totalTimeTextView, trackingTimeSpinner,
+          trackingTimeTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

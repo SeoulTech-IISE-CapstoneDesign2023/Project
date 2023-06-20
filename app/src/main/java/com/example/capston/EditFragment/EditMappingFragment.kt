@@ -2,6 +2,7 @@ package com.example.capston.EditFragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,9 +11,12 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.capston.PublicTransitRouteConnection
 import com.example.capston.PublicTransitRouteSearchAPIService
 import com.example.capston.R
+import com.example.capston.RouteAdapter
 import com.example.capston.SearchActivity
 import com.example.capston.databinding.FragmentEditMappingBinding
 import com.example.capston.retrofit.PublicTransitRoute
@@ -35,6 +39,7 @@ class EditMappingFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentEditMappingBinding
+    private var minTotalTime: Int? = null
     private var info = mutableListOf<Info>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +65,8 @@ class EditMappingFragment : Fragment() {
             val intent = Intent(requireContext(), SearchActivity::class.java)
             startActivity(intent)
         }
+        //recylcerView adapter
+        initRecyclerView()
         // searchActivity에서 출발도착장소 업데이트
         binding.startValueTextView.text = param1
         binding.arrivalValueTextView.text = param2
@@ -73,9 +80,27 @@ class EditMappingFragment : Fragment() {
             val endX = 127.034667
             val endY = 37.507705
             getPublicTransitRouteSearchData(startX, startY, endX, endY)
+            val handler = Handler()
+            handler.postDelayed({
+                binding.totalTimeTextView.apply {
+                    setText("총 소요시간 : ${minTotalTime}분")
+                    isVisible = true
+                }
+
+                initRecyclerView()
+
+            }, 1000)
         }
 
         return binding.root
+    }
+
+    private fun initRecyclerView() {
+        val routeAdapter = RouteAdapter(info)
+        Log.d("info", "$info")
+        binding.routeSearchResultRecyclerView.adapter = routeAdapter
+        binding.routeSearchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
     }
 
     private fun getPublicTransitRouteSearchData(
@@ -102,19 +127,34 @@ class EditMappingFragment : Fragment() {
                 val data = response.body()
                 val pathType = data?.result?.path?.get(1) // 1: 지하철, 2: 버스 3:버스+지하철
                 val minTimePath = data?.result?.path?.minByOrNull { it.info.totalTime }
-                val minTotalTime = minTimePath?.info?.totalTime
+                minTotalTime = minTimePath?.info?.totalTime
                 val minTotalWalk = minTimePath?.info?.totalWalk
                 val minSubPathList = mutableListOf<SubPath>()
                 minTimePath?.subPath?.forEach { subPath ->
-                    minSubPathList.add(subPath)
+                    if (subPath.sectionTime != 0) minSubPathList.add(subPath)
+                    if (subPath.trafficType ==1){
+                        subPath.endName += "역"
+                        subPath.startName +="역"
+                    }
                 }
-                val info1 = trafficTypeCase(minSubPathList[0])
+                //info데이터 초기화
+                info = mutableListOf<Info>()
                 minSubPathList.forEach {
                     info.add(trafficTypeCase(it))
                 }
-                //지금 각 케이스에 대해서 정보를 가져오는 것은 성공 그러면 이제 ui를 업데이트해야함
-                //recyclerView를 활용
-                Log.d("data", info1.toString())
+                //맨처음 도착지점 같은 경우 두번째 리스트에 있는 것으로 설정
+                for (i in 0 until info.size) {
+                    if (i > 0 && i < info.size - 1 && info[i].endName == null) {
+                        info[i].endName = info[i + 1].startName
+                    }
+                    if (i > 0 && info[i].startName == null){
+                        info[i].startName = info[i -1].endName
+                    }
+                }
+                info[0].startName = "출발"
+                info[info.size -1].endName = "도착"
+                info[0].endName = info[1].startName
+                info[info.size - 1].startName = info[info.size - 2].endName
                 Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()
             }
 
@@ -157,8 +197,8 @@ class EditMappingFragment : Fragment() {
 
     data class Info(
         val trafficType: Int,
-        val startName: String?,
-        val endName: String?,
+        var startName: String?,
+        var endName: String?,
         val sectionTime: Int?,
         val lane: Int?,
         val busno: String?,
