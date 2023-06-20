@@ -1,9 +1,7 @@
 package com.example.capston.EditFragment
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,6 +16,7 @@ import com.example.capston.R
 import com.example.capston.SearchActivity
 import com.example.capston.databinding.FragmentEditMappingBinding
 import com.example.capston.retrofit.PublicTransitRoute
+import com.example.capston.retrofit.SubPath
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +35,7 @@ class EditMappingFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentEditMappingBinding
+    private var info = mutableListOf<Info>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +64,7 @@ class EditMappingFragment : Fragment() {
         binding.startValueTextView.text = param1
         binding.arrivalValueTextView.text = param2
         //장소검색 버튼
-        binding.searchButton.setOnClickListener{
+        binding.searchButton.setOnClickListener {
             // 출발 주소와 도착 주소의 위경도를 가져오기
             // 이때 길찾기 경로가 대중교통일시 지하철 + 버스로 가져왔음
             // 그 주소를 가지고 길찾기 경로 파악
@@ -72,8 +72,7 @@ class EditMappingFragment : Fragment() {
             val startY = 37.631728
             val endX = 127.034667
             val endY = 37.507705
-            val resutlTextView = binding.roadSearchValueTextView
-            getPublicTransitRouteSearchData(startX,startY,endX, endY,resutlTextView)
+            getPublicTransitRouteSearchData(startX, startY, endX, endY)
         }
 
         return binding.root
@@ -84,7 +83,6 @@ class EditMappingFragment : Fragment() {
         startY: Double,
         endX: Double,
         endY: Double,
-        resultTextView: TextView
     ) {
         val retrofitApi = PublicTransitRouteConnection.getInstance()
             .create(PublicTransitRouteSearchAPIService::class.java)
@@ -106,17 +104,17 @@ class EditMappingFragment : Fragment() {
                 val minTimePath = data?.result?.path?.minByOrNull { it.info.totalTime }
                 val minTotalTime = minTimePath?.info?.totalTime
                 val minTotalWalk = minTimePath?.info?.totalWalk
-                val minSubPath = minTimePath?.subPath
-                // 해야할것은 1-지하철, 2-버스, 3-도보 이게 traffic Type임 그래서 이거에 해당되게 경로를 가져와야함
-                // subpath에 있는 것들을 리스트로 가져와서 각 traffic type에 맞게 case를 부여하면 됨
-                // 지하철일 경우 startName을 통해 출발역을 가져오고 lane에 있는 subwaycode로 몇호선인지 받아오고 endName을 통해 도착역을 가져옴 sectiontime으로 소요시간 가져옴
-                // 여기서 추가로 생각해야할것은 환승인 경우도 고려해야함 우선은 환승이 없을 때로 해보고 나중에 추가할예정
-                // 버스일 경우 sectionTime으로 소요시간 가져오고 busno로 버스 번호를 가져옴 startName과 endName으로 출발 도착 정류장을 가져옴
-                // 도보일 경우 제일 간단함 sectinoTime으로 시간만 가져오면 됨
-                // 여기서 추가로 뭔가 가능성있는 것을 찾아냄 html로 이런 경로에 대한 길찾기를 보여줄 수 있음
-                // 그래서 webView를 사용해서 경로를 지도에다가 대강 보여줄수있을 거 같음
-                resultTextView.text = minSubPath.toString()
-                Log.d("data", minSubPath.toString())
+                val minSubPathList = mutableListOf<SubPath>()
+                minTimePath?.subPath?.forEach { subPath ->
+                    minSubPathList.add(subPath)
+                }
+                val info1 = trafficTypeCase(minSubPathList[0])
+                minSubPathList.forEach {
+                    info.add(trafficTypeCase(it))
+                }
+                //지금 각 케이스에 대해서 정보를 가져오는 것은 성공 그러면 이제 ui를 업데이트해야함
+                //recyclerView를 활용
+                Log.d("data", info1.toString())
                 Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()
             }
 
@@ -126,6 +124,45 @@ class EditMappingFragment : Fragment() {
 
         })
     }
+
+    private fun trafficTypeCase(subPath: SubPath): Info {
+        val trafficType = subPath.trafficType //1-지하철, 2-버스, 3-도보
+        var startName: String? = null
+        var endName: String? = null
+        var sectionTime: Int? = null
+        var lane: Int? = null
+        var busno: String? = null
+        when (trafficType) {
+            //지하철일때
+            1 -> {
+                startName = subPath.startName
+                endName = subPath.endName
+                sectionTime = subPath.sectionTime
+                lane = subPath.lane.map { it.subwayCode }.firstOrNull()
+            }
+            //버스일때
+            2 -> {
+                startName = subPath.startName
+                endName = subPath.endName
+                busno = subPath.lane.map { it.busNo }.firstOrNull()
+                sectionTime = subPath.sectionTime
+            }
+            //도보일때
+            3 -> {
+                sectionTime = subPath.sectionTime
+            }
+        }
+        return Info(trafficType, startName, endName, sectionTime, lane, busno)
+    }
+
+    data class Info(
+        val trafficType: Int,
+        val startName: String?,
+        val endName: String?,
+        val sectionTime: Int?,
+        val lane: Int?,
+        val busno: String?,
+    )
 
 
     companion object {
