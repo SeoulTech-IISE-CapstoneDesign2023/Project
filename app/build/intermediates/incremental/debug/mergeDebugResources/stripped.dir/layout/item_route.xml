@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/trafficTypeTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이동수단"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/sectionTimeTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="이동시간"
+        app:layout_constraintBaseline_toBaselineOf="@+id/detailTypeTextView"
+        app:layout_constraintStart_toEndOf="@+id/detailTypeTextView" />
+
+    <TextView
+        android:id="@+id/detailTypeTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:visibility="invisible"
+        app:layout_constraintBaseline_toBaselineOf="@id/trafficTypeTextView"
+        app:layout_constraintStart_toEndOf="@+id/trafficTypeTextView" />
+
+    <ImageView
+        android:id="@+id/arrowImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_forward_24"
+        app:layout_constraintBottom_toBottomOf="@+id/startAreaTextView"
+        app:layout_constraintEnd_toStartOf="@+id/arrivalAreaTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/startAreaTextView"
+        app:layout_constraintTop_toBottomOf="@+id/sectionTimeTextView" />
+
+    <TextView
+        android:id="@+id/startAreaTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시작지점"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/arrivalAreaTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sectionTimeTextView" />
+
+
+    <TextView
+        android:id="@+id/arrivalAreaTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="도착지점"
+        app:layout_constraintBaseline_toBaselineOf="@+id/startAreaTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/startAreaTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

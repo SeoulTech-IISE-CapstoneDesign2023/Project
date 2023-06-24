@@ -2856,6 +2856,7 @@ int id design_menu_item_action_area 0x7f0900ab
 int id design_menu_item_action_area_stub 0x7f0900ac
 int id design_menu_item_text 0x7f0900ad
 int id design_navigation_view 0x7f0900ae
+int id detailTypeTextView 0x7f09023c
 int id dialog_button 0x7f0900af
 int id dimensions 0x7f0900b0
 int id direct 0x7f0900b1

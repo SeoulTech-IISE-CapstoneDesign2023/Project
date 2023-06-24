@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.capston.PublicTransitRouteConnection
 import com.example.capston.PublicTransitRouteSearchAPIService
@@ -24,6 +25,8 @@ import com.example.capston.retrofit.SubPath
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,6 +44,8 @@ class EditMappingFragment : Fragment() {
     private lateinit var binding: FragmentEditMappingBinding
     private var minTotalTime: Int? = null
     private var info = mutableListOf<Info>()
+    private val g by lazy { android.location.Geocoder(requireContext(), Locale.KOREAN) } //geocoder
+    private var locationList = Array<Double>(4, { 0.0 })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,34 +77,66 @@ class EditMappingFragment : Fragment() {
         binding.arrivalValueTextView.text = param2
         //장소검색 버튼
         binding.searchButton.setOnClickListener {
-            // 출발 주소와 도착 주소의 위경도를 가져오기
-            // 이때 길찾기 경로가 대중교통일시 지하철 + 버스로 가져왔음
-            // 그 주소를 가지고 길찾기 경로 파악
-            val startX = 127.077472
-            val startY = 37.631728
-            val endX = 127.035378
-            val endY = 37.524536
-            getPublicTransitRouteSearchData(startX, startY, endX, endY)
-            val handler = Handler()
-            handler.postDelayed({
-                binding.totalTimeTextView.apply {
-                    setText("총 소요시간 : ${minTotalTime}분")
-                    isVisible = true
+            val startAdress = binding.startValueTextView.text.toString()
+            val arrivalAdress = binding.arrivalValueTextView.text.toString()
+            geocoder(startAdress) { lat, lng ->
+                locationList[0] = lng!!
+                locationList[1] = lat!!
+                geocoder(arrivalAdress) { lat, lng ->
+                    locationList[2] = lng!!
+                    locationList[3] = lat!!
+                    val startX = locationList[0]
+                    val startY = locationList[1]
+                    val endX = locationList[2]
+                    val endY = locationList[3]
+                    requireActivity().runOnUiThread {
+                        getPublicTransitRouteSearchData(startX, startY, endX, endY)
+                        val handler = Handler()
+                        handler.postDelayed({
+                            binding.totalTimeTextView.apply {
+                                setText("총 소요시간 : ${minTotalTime}분")
+                                isVisible = true
+                            }
+                            initRecyclerView()
+                        }, 1000)
+                    }
                 }
-
-                initRecyclerView()
-
-            }, 1000)
+            }
         }
 
         return binding.root
     }
 
+    //주소를 위경도로 변환
+    private fun geocoder(address: String, callback: (lat: Double?, lng: Double?) -> Unit) {
+        Thread {
+            try {
+                val adrresses = g.getFromLocationName(address, 1)
+                if (adrresses!!.isNotEmpty()) {
+                    val location = adrresses[0]
+                    val lat = location.latitude
+                    val lng = location.longitude
+                    callback(lat, lng)
+                } else {
+                    callback(null, null)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                callback(null, null)
+            }
+        }.start()
+    }
+
     private fun initRecyclerView() {
         val routeAdapter = RouteAdapter(info)
         Log.d("info", "$info")
-        binding.routeSearchResultRecyclerView.adapter = routeAdapter
-        binding.routeSearchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.routeSearchResultRecyclerView.apply {
+            adapter = routeAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            val dividerItemDecoration =
+                DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+            addItemDecoration(dividerItemDecoration)
+        }
         Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
     }
 
@@ -132,9 +169,9 @@ class EditMappingFragment : Fragment() {
                 val minSubPathList = mutableListOf<SubPath>()
                 minTimePath?.subPath?.forEach { subPath ->
                     if (subPath.sectionTime != 0) minSubPathList.add(subPath)
-                    if (subPath.trafficType ==1){
+                    if (subPath.trafficType == 1) {
                         subPath.endName += "역"
-                        subPath.startName +="역"
+                        subPath.startName += "역"
                     }
                 }
                 //info데이터 초기화
@@ -142,17 +179,18 @@ class EditMappingFragment : Fragment() {
                 minSubPathList.forEach {
                     info.add(trafficTypeCase(it))
                 }
+                Log.d("info", "$info")
                 //맨처음 도착지점 같은 경우 두번째 리스트에 있는 것으로 설정
                 for (i in 0 until info.size) {
                     if (i > 0 && i < info.size - 1 && info[i].endName == null) {
                         info[i].endName = info[i + 1].startName
                     }
-                    if (i > 0 && info[i].startName == null){
-                        info[i].startName = info[i -1].endName
+                    if (i > 0 && info[i].startName == null) {
+                        info[i].startName = info[i - 1].endName
                     }
                 }
                 info[0].startName = "출발지"
-                info[info.size -1].endName = "도착지"
+                info[info.size - 1].endName = "도착지"
                 info[0].endName = info[1].startName
                 info[info.size - 1].startName = info[info.size - 2].endName
                 Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()

@@ -48,6 +48,10 @@
         "source": "C:\\Users\\samsung\\.gradle\\daemon\\8.0\\com.example.capston.app-main-44:\\drawable\\baseline_directions_bus_24.xml"
     },
     {
+        "merged": "com.example.capston.app-merged_res-42:/layout_item_route.xml.flat",
+        "source": "com.example.capston.app-main-44:/layout/item_route.xml"
+    },
+    {
         "merged": "C:\\Users\\samsung\\.gradle\\daemon\\8.0\\com.example.capston.app-merged_res-42:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
         "source": "C:\\Users\\samsung\\.gradle\\daemon\\8.0\\com.example.capston.app-main-44:\\mipmap-xxxhdpi\\ic_launcher.webp"
     },
@@ -138,10 +142,6 @@
     {
         "merged": "C:\\Users\\samsung\\.gradle\\daemon\\8.0\\com.example.capston.app-merged_res-42:\\mipmap-xxhdpi_ic_launcher.webp.flat",
         "source": "C:\\Users\\samsung\\.gradle\\daemon\\8.0\\com.example.capston.app-main-44:\\mipmap-xxhdpi\\ic_launcher.webp"
-    },
-    {
-        "merged": "com.example.capston.app-merged_res-42:/layout_fragment_edit_mapping.xml.flat",
-        "source": "com.example.capston.app-main-44:/layout/fragment_edit_mapping.xml"
     },
     {
         "merged": "C:\\Users\\samsung\\.gradle\\daemon\\8.0\\com.example.capston.app-merged_res-42:\\drawable_ic_launcher_background.xml.flat",

@@ -95,6 +95,8 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+
+
     //내 위경도를 주소로 변환
     private fun getMyLocation(lat: Double, lng: Double, callback: (result: String) -> Unit) {
         Thread {

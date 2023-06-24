@@ -27,6 +27,9 @@ public final class ItemRouteBinding implements ViewBinding {
   public final ImageView arrowImageView;
 
   @NonNull
+  public final TextView detailTypeTextView;
+
+  @NonNull
   public final TextView sectionTimeTextView;
 
   @NonNull
@@ -37,11 +40,12 @@ public final class ItemRouteBinding implements ViewBinding {
 
   private ItemRouteBinding(@NonNull ConstraintLayout rootView,
       @NonNull TextView arrivalAreaTextView, @NonNull ImageView arrowImageView,
-      @NonNull TextView sectionTimeTextView, @NonNull TextView startAreaTextView,
-      @NonNull TextView trafficTypeTextView) {
+      @NonNull TextView detailTypeTextView, @NonNull TextView sectionTimeTextView,
+      @NonNull TextView startAreaTextView, @NonNull TextView trafficTypeTextView) {
     this.rootView = rootView;
     this.arrivalAreaTextView = arrivalAreaTextView;
     this.arrowImageView = arrowImageView;
+    this.detailTypeTextView = detailTypeTextView;
     this.sectionTimeTextView = sectionTimeTextView;
     this.startAreaTextView = startAreaTextView;
     this.trafficTypeTextView = trafficTypeTextView;
@@ -86,6 +90,12 @@ public final class ItemRouteBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.detailTypeTextView;
+      TextView detailTypeTextView = ViewBindings.findChildViewById(rootView, id);
+      if (detailTypeTextView == null) {
+        break missingId;
+      }
+
       id = R.id.sectionTimeTextView;
       TextView sectionTimeTextView = ViewBindings.findChildViewById(rootView, id);
       if (sectionTimeTextView == null) {
@@ -105,7 +115,7 @@ public final class ItemRouteBinding implements ViewBinding {
       }
 
       return new ItemRouteBinding((ConstraintLayout) rootView, arrivalAreaTextView, arrowImageView,
-          sectionTimeTextView, startAreaTextView, trafficTypeTextView);
+          detailTypeTextView, sectionTimeTextView, startAreaTextView, trafficTypeTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

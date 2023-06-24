@@ -2,6 +2,7 @@ package com.example.capston
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.databinding.FragmentEditMappingBinding
@@ -34,6 +35,8 @@ class RouteAdapter(
                         startAreaTextView.text = info.startName
                         arrivalAreaTextView.text = info.endName
                         sectionTimeTextView.text = info.sectionTime.toString() + "분"
+                        detailTypeTextView.text = "${info.lane}호선"
+                        detailTypeTextView.isVisible = true
                     }
 
                     2 -> {
@@ -41,6 +44,8 @@ class RouteAdapter(
                         startAreaTextView.text = info.startName
                         arrivalAreaTextView.text = info.endName
                         sectionTimeTextView.text = info.sectionTime.toString() + "분"
+                        detailTypeTextView.text = info.busno
+                        detailTypeTextView.isVisible = true
                     }
 
                     3 -> {
