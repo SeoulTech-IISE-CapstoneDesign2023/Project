@@ -77,8 +77,8 @@ class EditMappingFragment : Fragment() {
             // 그 주소를 가지고 길찾기 경로 파악
             val startX = 127.077472
             val startY = 37.631728
-            val endX = 127.034667
-            val endY = 37.507705
+            val endX = 127.035378
+            val endY = 37.524536
             getPublicTransitRouteSearchData(startX, startY, endX, endY)
             val handler = Handler()
             handler.postDelayed({
@@ -151,8 +151,8 @@ class EditMappingFragment : Fragment() {
                         info[i].startName = info[i -1].endName
                     }
                 }
-                info[0].startName = "출발"
-                info[info.size -1].endName = "도착"
+                info[0].startName = "출발지"
+                info[info.size -1].endName = "도착지"
                 info[0].endName = info[1].startName
                 info[info.size - 1].startName = info[info.size - 2].endName
                 Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()
