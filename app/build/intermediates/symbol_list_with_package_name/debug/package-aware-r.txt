@@ -2535,6 +2535,7 @@ drawable avd_show_password
 drawable baseline_add_circle_24
 drawable baseline_arrow_forward_24
 drawable baseline_calendar_month_24
+drawable baseline_change_circle_24
 drawable baseline_directions_bus_24
 drawable baseline_directions_car_24
 drawable baseline_directions_walk_24
@@ -2812,6 +2813,7 @@ id center_vertical
 id chain
 id chain2
 id chains
+id changeAddressButton
 id checkbox
 id checked
 id chip

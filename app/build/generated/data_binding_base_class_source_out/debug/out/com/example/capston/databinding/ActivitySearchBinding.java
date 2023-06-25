@@ -4,7 +4,7 @@ package com.example.capston.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,19 +29,22 @@ public final class ActivitySearchBinding implements ViewBinding {
   public final TextView arrivalValueTextView;
 
   @NonNull
-  public final ImageButton carWayButton;
+  public final ImageView carWayButton;
+
+  @NonNull
+  public final ImageView changeAddressButton;
 
   @NonNull
   public final Toolbar createActionToolbar;
 
   @NonNull
-  public final ImageButton myLocationButton;
+  public final ImageView myLocationButton;
 
   @NonNull
   public final MapView navermap;
 
   @NonNull
-  public final ImageButton publicTransportButton;
+  public final ImageView publicTransportButton;
 
   @NonNull
   public final TextView startTextView;
@@ -50,18 +53,20 @@ public final class ActivitySearchBinding implements ViewBinding {
   public final TextView startValueTextView;
 
   @NonNull
-  public final ImageButton walkingButton;
+  public final ImageView walkingButton;
 
   private ActivitySearchBinding(@NonNull ConstraintLayout rootView,
       @NonNull TextView arrivalTextView, @NonNull TextView arrivalValueTextView,
-      @NonNull ImageButton carWayButton, @NonNull Toolbar createActionToolbar,
-      @NonNull ImageButton myLocationButton, @NonNull MapView navermap,
-      @NonNull ImageButton publicTransportButton, @NonNull TextView startTextView,
-      @NonNull TextView startValueTextView, @NonNull ImageButton walkingButton) {
+      @NonNull ImageView carWayButton, @NonNull ImageView changeAddressButton,
+      @NonNull Toolbar createActionToolbar, @NonNull ImageView myLocationButton,
+      @NonNull MapView navermap, @NonNull ImageView publicTransportButton,
+      @NonNull TextView startTextView, @NonNull TextView startValueTextView,
+      @NonNull ImageView walkingButton) {
     this.rootView = rootView;
     this.arrivalTextView = arrivalTextView;
     this.arrivalValueTextView = arrivalValueTextView;
     this.carWayButton = carWayButton;
+    this.changeAddressButton = changeAddressButton;
     this.createActionToolbar = createActionToolbar;
     this.myLocationButton = myLocationButton;
     this.navermap = navermap;
@@ -111,8 +116,14 @@ public final class ActivitySearchBinding implements ViewBinding {
       }
 
       id = R.id.carWayButton;
-      ImageButton carWayButton = ViewBindings.findChildViewById(rootView, id);
+      ImageView carWayButton = ViewBindings.findChildViewById(rootView, id);
       if (carWayButton == null) {
+        break missingId;
+      }
+
+      id = R.id.changeAddressButton;
+      ImageView changeAddressButton = ViewBindings.findChildViewById(rootView, id);
+      if (changeAddressButton == null) {
         break missingId;
       }
 
@@ -123,7 +134,7 @@ public final class ActivitySearchBinding implements ViewBinding {
       }
 
       id = R.id.myLocationButton;
-      ImageButton myLocationButton = ViewBindings.findChildViewById(rootView, id);
+      ImageView myLocationButton = ViewBindings.findChildViewById(rootView, id);
       if (myLocationButton == null) {
         break missingId;
       }
@@ -135,7 +146,7 @@ public final class ActivitySearchBinding implements ViewBinding {
       }
 
       id = R.id.publicTransportButton;
-      ImageButton publicTransportButton = ViewBindings.findChildViewById(rootView, id);
+      ImageView publicTransportButton = ViewBindings.findChildViewById(rootView, id);
       if (publicTransportButton == null) {
         break missingId;
       }
@@ -153,14 +164,15 @@ public final class ActivitySearchBinding implements ViewBinding {
       }
 
       id = R.id.walkingButton;
-      ImageButton walkingButton = ViewBindings.findChildViewById(rootView, id);
+      ImageView walkingButton = ViewBindings.findChildViewById(rootView, id);
       if (walkingButton == null) {
         break missingId;
       }
 
       return new ActivitySearchBinding((ConstraintLayout) rootView, arrivalTextView,
-          arrivalValueTextView, carWayButton, createActionToolbar, myLocationButton, navermap,
-          publicTransportButton, startTextView, startValueTextView, walkingButton);
+          arrivalValueTextView, carWayButton, changeAddressButton, createActionToolbar,
+          myLocationButton, navermap, publicTransportButton, startTextView, startValueTextView,
+          walkingButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

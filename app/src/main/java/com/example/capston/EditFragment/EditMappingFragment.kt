@@ -68,10 +68,12 @@ class EditMappingFragment : Fragment() {
         )
         binding.searchlayer.setOnClickListener {
             val intent = Intent(requireContext(), SearchActivity::class.java)
+            intent.putExtra("startAddress", binding.startValueTextView.text.toString())
+            intent.putExtra("arrivalAddress", binding.arrivalValueTextView.text.toString())
             startActivity(intent)
         }
         //recylcerView adapter
-        initRecyclerView()
+
         // searchActivity에서 출발도착장소 업데이트
         binding.startValueTextView.text = param1
         binding.arrivalValueTextView.text = param2
@@ -80,28 +82,35 @@ class EditMappingFragment : Fragment() {
             val startAdress = binding.startValueTextView.text.toString()
             val arrivalAdress = binding.arrivalValueTextView.text.toString()
             geocoder(startAdress) { lat, lng ->
-                locationList[0] = lng!!
-                locationList[1] = lat!!
-                geocoder(arrivalAdress) { lat, lng ->
-                    locationList[2] = lng!!
-                    locationList[3] = lat!!
-                    val startX = locationList[0]
-                    val startY = locationList[1]
-                    val endX = locationList[2]
-                    val endY = locationList[3]
+                if (lat == null || lng == null) {
                     requireActivity().runOnUiThread {
-                        getPublicTransitRouteSearchData(startX, startY, endX, endY)
-                        val handler = Handler()
-                        handler.postDelayed({
-                            binding.totalTimeTextView.apply {
-                                setText("총 소요시간 : ${minTotalTime}분")
-                                isVisible = true
-                            }
-                            initRecyclerView()
-                        }, 1000)
+                        Toast.makeText(requireContext(), "주소를 입력해주세요", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    locationList[0] = lng
+                    locationList[1] = lat
+                    geocoder(arrivalAdress) { lat, lng ->
+                        locationList[2] = lng!!
+                        locationList[3] = lat!!
+                        val startX = locationList[0]
+                        val startY = locationList[1]
+                        val endX = locationList[2]
+                        val endY = locationList[3]
+                        requireActivity().runOnUiThread {
+                            getPublicTransitRouteSearchData(startX, startY, endX, endY)
+                            val handler = Handler()
+                            handler.postDelayed({
+                                binding.totalTimeTextView.apply {
+                                    setText("총 소요시간 : ${minTotalTime}분")
+                                    isVisible = true
+                                }
+                                initRecyclerView()
+                            }, 1000)
+                        }
                     }
                 }
             }
+
         }
 
         return binding.root
