@@ -12,6 +12,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.capston.databinding.FragmentMainBinding
@@ -25,14 +26,14 @@ import com.google.firebase.database.ktx.getValue
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class MainFragment : Fragment(), OnItemLongClickListener {
+class MainFragment : Fragment(), OnItemLongClickListener,OnItemShortClickListener {
     lateinit var binding: FragmentMainBinding
     private var param1: String? = null
     private var param2: String? = null
     lateinit var user: String
     private var todayStr: String = ""
     val todoList = arrayListOf<Todo>()
-    val adapter = TodoListAdapter(todoList, this)
+    val adapter = TodoListAdapter(todoList, this,this)
 
     lateinit var yearToday: String
     lateinit var monthToday: String
@@ -68,10 +69,6 @@ class MainFragment : Fragment(), OnItemLongClickListener {
         // 오늘 todolist 불러오기
         todayDate(todayStr)
 
-        //알림 배너 버튼 -> 구현해야함
-//        binding.noticeButton.setOnClickListener{
-//
-//        }
 
         //일정 생성 버튼 플러스버튼누르면 오늘날짜 createActivity에 값 추가 및 이동
         binding.addtodoButton.setOnClickListener {
@@ -80,8 +77,6 @@ class MainFragment : Fragment(), OnItemLongClickListener {
             requireActivity().startActivity(intent)
 
         }
-
-        //일정 하나 상세 보기 -> 구현해야함
         return binding.root
     }
 
@@ -92,7 +87,8 @@ class MainFragment : Fragment(), OnItemLongClickListener {
         monthToday = todayInfo[1].trim()
         dayToday = todayInfo[2].trim()
         FirebaseDatabase.getInstance().getReference("calendar").child(user)
-            .child("$yearToday" + "년").child("$monthToday" + "월").child("$dayToday" + "일")
+            .child("$yearToday"+"년").child("$monthToday"+"월").child("$dayToday"+"일")
+            .orderByChild("st_time")
             .addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -100,6 +96,7 @@ class MainFragment : Fragment(), OnItemLongClickListener {
                     for (data in dataSnapshot.children) {
                         todoList.add(data.getValue<Todo>()!!)
                     }
+                    todoList.sortBy{ it.st_time }
                     adapter.notifyDataSetChanged()          //화면 업데이트
                 }
             })
@@ -113,7 +110,11 @@ class MainFragment : Fragment(), OnItemLongClickListener {
         resultDate[2] = splitText[2]  //day
         return resultDate
     }
-
+    override fun onShortClick(position: Int) {
+        val intent = Intent(requireContext(), CreateActivity::class.java)
+        intent.putExtra("todo", position)
+        startActivity(intent)
+    }
     override fun onLongClick(position: Int) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         builder.setTitle("일정 삭제")
@@ -130,11 +131,26 @@ class MainFragment : Fragment(), OnItemLongClickListener {
     }
 
     private fun deleteTodo(position: Int) {
-        todoList.removeAt(position)
-        FirebaseDatabase.getInstance().getReference("calendar")
+        val value = todoList[position].title
+        todoList.removeAt(position) // todoList에서 삭제
+        val databaseReference = FirebaseDatabase.getInstance().getReference("calendar").child(user)
             .child("$yearToday" + "년").child("$monthToday" + "월").child("$dayToday" + "일")
-            .removeValue()
-        adapter.notifyDataSetChanged()
+        val query = databaseReference.orderByChild("title").equalTo(value)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {}
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (data in dataSnapshot.children) {
+                    data.ref.removeValue()
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(requireContext(), "일정 삭제에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                }
+            }
+        })
     }
 
     companion object {
