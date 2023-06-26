@@ -1,9 +1,8 @@
 package com.example.capston.EditFragment
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
+import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,15 +11,22 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.capston.PublicTransitRouteConnection
 import com.example.capston.PublicTransitRouteSearchAPIService
 import com.example.capston.R
+import com.example.capston.RouteAdapter
 import com.example.capston.SearchActivity
 import com.example.capston.databinding.FragmentEditMappingBinding
 import com.example.capston.retrofit.PublicTransitRoute
+import com.example.capston.retrofit.SubPath
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +42,10 @@ class EditMappingFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentEditMappingBinding
+    private var minTotalTime: Int? = null
+    private var info = mutableListOf<Info>()
+    private val g by lazy { android.location.Geocoder(requireContext(), Locale.KOREAN) } //geocoder
+    private var locationList = Array<Double>(4, { 0.0 })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,25 +68,85 @@ class EditMappingFragment : Fragment() {
         )
         binding.searchlayer.setOnClickListener {
             val intent = Intent(requireContext(), SearchActivity::class.java)
+            intent.putExtra("startAddress", binding.startValueTextView.text.toString())
+            intent.putExtra("arrivalAddress", binding.arrivalValueTextView.text.toString())
             startActivity(intent)
         }
+        //recylcerView adapter
+
         // searchActivity에서 출발도착장소 업데이트
         binding.startValueTextView.text = param1
         binding.arrivalValueTextView.text = param2
         //장소검색 버튼
-        binding.searchButton.setOnClickListener{
-            // 출발 주소와 도착 주소의 위경도를 가져오기
-            // 이때 길찾기 경로가 대중교통일시 지하철 + 버스로 가져왔음
-            // 그 주소를 가지고 길찾기 경로 파악
-            val startX = 127.077472
-            val startY = 37.631728
-            val endX = 127.034667
-            val endY = 37.507705
-            val resutlTextView = binding.roadSearchValueTextView
-            getPublicTransitRouteSearchData(startX,startY,endX, endY,resutlTextView)
+        binding.searchButton.setOnClickListener {
+            val startAdress = binding.startValueTextView.text.toString()
+            val arrivalAdress = binding.arrivalValueTextView.text.toString()
+            geocoder(startAdress) { lat, lng ->
+                if (lat == null || lng == null) {
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(requireContext(), "주소를 입력해주세요", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    locationList[0] = lng
+                    locationList[1] = lat
+                    geocoder(arrivalAdress) { lat, lng ->
+                        locationList[2] = lng!!
+                        locationList[3] = lat!!
+                        val startX = locationList[0]
+                        val startY = locationList[1]
+                        val endX = locationList[2]
+                        val endY = locationList[3]
+                        requireActivity().runOnUiThread {
+                            getPublicTransitRouteSearchData(startX, startY, endX, endY)
+                            val handler = Handler()
+                            handler.postDelayed({
+                                binding.totalTimeTextView.apply {
+                                    setText("총 소요시간 : ${minTotalTime}분")
+                                    isVisible = true
+                                }
+                                initRecyclerView()
+                            }, 1000)
+                        }
+                    }
+                }
+            }
+
         }
 
         return binding.root
+    }
+
+    //주소를 위경도로 변환
+    private fun geocoder(address: String, callback: (lat: Double?, lng: Double?) -> Unit) {
+        Thread {
+            try {
+                val adrresses = g.getFromLocationName(address, 1)
+                if (adrresses!!.isNotEmpty()) {
+                    val location = adrresses[0]
+                    val lat = location.latitude
+                    val lng = location.longitude
+                    callback(lat, lng)
+                } else {
+                    callback(null, null)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                callback(null, null)
+            }
+        }.start()
+    }
+
+    private fun initRecyclerView() {
+        val routeAdapter = RouteAdapter(info)
+        Log.d("info", "$info")
+        binding.routeSearchResultRecyclerView.apply {
+            adapter = routeAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            val dividerItemDecoration =
+                DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+            addItemDecoration(dividerItemDecoration)
+        }
+        Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
     }
 
     private fun getPublicTransitRouteSearchData(
@@ -84,7 +154,6 @@ class EditMappingFragment : Fragment() {
         startY: Double,
         endX: Double,
         endY: Double,
-        resultTextView: TextView
     ) {
         val retrofitApi = PublicTransitRouteConnection.getInstance()
             .create(PublicTransitRouteSearchAPIService::class.java)
@@ -104,19 +173,35 @@ class EditMappingFragment : Fragment() {
                 val data = response.body()
                 val pathType = data?.result?.path?.get(1) // 1: 지하철, 2: 버스 3:버스+지하철
                 val minTimePath = data?.result?.path?.minByOrNull { it.info.totalTime }
-                val minTotalTime = minTimePath?.info?.totalTime
+                minTotalTime = minTimePath?.info?.totalTime
                 val minTotalWalk = minTimePath?.info?.totalWalk
-                val minSubPath = minTimePath?.subPath
-                // 해야할것은 1-지하철, 2-버스, 3-도보 이게 traffic Type임 그래서 이거에 해당되게 경로를 가져와야함
-                // subpath에 있는 것들을 리스트로 가져와서 각 traffic type에 맞게 case를 부여하면 됨
-                // 지하철일 경우 startName을 통해 출발역을 가져오고 lane에 있는 subwaycode로 몇호선인지 받아오고 endName을 통해 도착역을 가져옴 sectiontime으로 소요시간 가져옴
-                // 여기서 추가로 생각해야할것은 환승인 경우도 고려해야함 우선은 환승이 없을 때로 해보고 나중에 추가할예정
-                // 버스일 경우 sectionTime으로 소요시간 가져오고 busno로 버스 번호를 가져옴 startName과 endName으로 출발 도착 정류장을 가져옴
-                // 도보일 경우 제일 간단함 sectinoTime으로 시간만 가져오면 됨
-                // 여기서 추가로 뭔가 가능성있는 것을 찾아냄 html로 이런 경로에 대한 길찾기를 보여줄 수 있음
-                // 그래서 webView를 사용해서 경로를 지도에다가 대강 보여줄수있을 거 같음
-                resultTextView.text = minSubPath.toString()
-                Log.d("data", minSubPath.toString())
+                val minSubPathList = mutableListOf<SubPath>()
+                minTimePath?.subPath?.forEach { subPath ->
+                    if (subPath.sectionTime != 0) minSubPathList.add(subPath)
+                    if (subPath.trafficType == 1) {
+                        subPath.endName += "역"
+                        subPath.startName += "역"
+                    }
+                }
+                //info데이터 초기화
+                info = mutableListOf<Info>()
+                minSubPathList.forEach {
+                    info.add(trafficTypeCase(it))
+                }
+                Log.d("info", "$info")
+                //맨처음 도착지점 같은 경우 두번째 리스트에 있는 것으로 설정
+                for (i in 0 until info.size) {
+                    if (i > 0 && i < info.size - 1 && info[i].endName == null) {
+                        info[i].endName = info[i + 1].startName
+                    }
+                    if (i > 0 && info[i].startName == null) {
+                        info[i].startName = info[i - 1].endName
+                    }
+                }
+                info[0].startName = "출발지"
+                info[info.size - 1].endName = "도착지"
+                info[0].endName = info[1].startName
+                info[info.size - 1].startName = info[info.size - 2].endName
                 Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()
             }
 
@@ -126,6 +211,45 @@ class EditMappingFragment : Fragment() {
 
         })
     }
+
+    private fun trafficTypeCase(subPath: SubPath): Info {
+        val trafficType = subPath.trafficType //1-지하철, 2-버스, 3-도보
+        var startName: String? = null
+        var endName: String? = null
+        var sectionTime: Int? = null
+        var lane: Int? = null
+        var busno: String? = null
+        when (trafficType) {
+            //지하철일때
+            1 -> {
+                startName = subPath.startName
+                endName = subPath.endName
+                sectionTime = subPath.sectionTime
+                lane = subPath.lane.map { it.subwayCode }.firstOrNull()
+            }
+            //버스일때
+            2 -> {
+                startName = subPath.startName
+                endName = subPath.endName
+                busno = subPath.lane.map { it.busNo }.firstOrNull()
+                sectionTime = subPath.sectionTime
+            }
+            //도보일때
+            3 -> {
+                sectionTime = subPath.sectionTime
+            }
+        }
+        return Info(trafficType, startName, endName, sectionTime, lane, busno)
+    }
+
+    data class Info(
+        val trafficType: Int,
+        var startName: String?,
+        var endName: String?,
+        val sectionTime: Int?,
+        val lane: Int?,
+        val busno: String?,
+    )
 
 
     companion object {

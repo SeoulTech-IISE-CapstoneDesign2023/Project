@@ -62,16 +62,27 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
         setSupportActionBar(binding.createActionToolbar)
 
-        binding.startValueTextView.setOnClickListener {
-            val intent = Intent(this, SearchWebActivity::class.java)
-            isArrivalValueTextViewClicked = false
-            getSearchResult.launch(intent)
+        val startAddress = intent.getStringExtra("startAddress")
+        val arrivalAddress = intent.getStringExtra("arrivalAddress")
+
+        binding.startValueTextView.apply {
+            text = startAddress
+            setOnClickListener {
+                val intent = Intent(context, SearchWebActivity::class.java)
+                isArrivalValueTextViewClicked = false
+                getSearchResult.launch(intent)
+            }
         }
-        binding.arrivalValueTextView.setOnClickListener {
-            val intent = Intent(this, SearchWebActivity::class.java)
-            isArrivalValueTextViewClicked = true
-            getSearchResult.launch(intent)
+
+        binding.arrivalValueTextView.apply {
+            text = arrivalAddress
+            setOnClickListener {
+                val intent = Intent(context, SearchWebActivity::class.java)
+                isArrivalValueTextViewClicked = true
+                getSearchResult.launch(intent)
+            }
         }
+
         binding.navermap.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
@@ -79,7 +90,17 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             checkPermission()
         }
 
+        binding.changeAddressButton.setOnClickListener{
+            changeAddress()
+        }
 
+
+    }
+
+    private fun changeAddress(){
+        val str = binding.startValueTextView.text.toString()
+        binding.startValueTextView.text = binding.arrivalValueTextView.text.toString()
+        binding.arrivalValueTextView.text = str
     }
 
     private fun updateStartTextView() {
@@ -94,6 +115,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
 
     //내 위경도를 주소로 변환
     private fun getMyLocation(lat: Double, lng: Double, callback: (result: String) -> Unit) {
@@ -136,25 +158,42 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.okMenu -> {
-                saveData()
-                val intent = Intent(this, CreateActivity::class.java)
-                intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
-                startActivity(intent)
-                finish()
+                if (binding.arrivalValueTextView.text == "" || binding.startValueTextView.text == "") {
+                    Toast.makeText(this, "주소를 입력해주세요", Toast.LENGTH_SHORT).show()
+                } else {
+                    saveData()
+                    val intent = Intent(this, CreateActivity::class.java)
+                    intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
+                    startActivity(intent)
+                    finish()
+                }
+
+                Log.d("okMenu",binding.startValueTextView.text.toString())
+
                 true
             }
 
             R.id.cancelMenu -> {
-                deletData()
-                val intent = Intent(this, CreateActivity::class.java)
-                intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
-                startActivity(intent)
-                finish()
+                cancelMenuDialog()
                 true
             }
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun cancelMenuDialog() {
+        AlertDialog.Builder(this).apply {
+            setMessage("주소를 정말 삭제하시겠습니까?")
+            setNegativeButton("아니오", null)
+            setPositiveButton("네") { _, _ ->
+                deletData()
+                val intent = Intent(context, CreateActivity::class.java)
+                intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
+                startActivity(intent)
+                finish()
+            }
+        }.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -196,6 +235,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             ) -> {
                 showPermissionDialog()
             }
+
             else -> {
                 requestLocationTrack()
             }
@@ -231,9 +271,9 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        when(requestCode){
-            LOCATION_PERMISSION_REQUEST_CODE ->{
-                if(grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED){
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
                     updateStartTextView()
                 }
             }
