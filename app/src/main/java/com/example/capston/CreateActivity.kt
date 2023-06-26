@@ -25,6 +25,7 @@ import java.util.Locale
 
 class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private lateinit var binding: ActivityCreateBinding
+    var todoKeys: java.util.ArrayList<String> = arrayListOf()   //일정 키 목록
     lateinit var user: String
     private var startAddress = ""
     private var arrivalAddress = ""
@@ -33,6 +34,7 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private var startTime = ""
     private var arrivalTime = ""
     private var editTextLength = 0
+    private var isEditMode = false  // 추가: 편집 모드 여부를 나타내는 변수
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,15 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         setSupportActionBar(binding.createActionToolbar)
         user = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
+        //list에서 일정 하나 선택했을 때 내용 수정
+        val todo = intent.getParcelableExtra<Todo>("todo")
+        if (todo != null) {
+            // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
+            initializeEditMode(todo)
+        } else {
+            // 새로운 Todo를 생성하는 경우, 화면을 초기화
+            initializeCreateMode()
+        }
         getData()
         val fManager = supportFragmentManager
         val mappingFragment = EditMappingFragment.newInstance(startAddress, arrivalAddress)
@@ -53,10 +64,6 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
                 replace(binding.frameLayout.id, mappingFragment) // 프래그먼트가 표시될 레이아웃 ID
             }
         }
-        //CalendarFragment에서 날짜 데이터 받아서 약속 시간 날짜만 가져오기
-        binding.startDateValueTextView.text = intent.getStringExtra("startDate") ?: "0000/00/00"
-
-
 
         //일정 fragment
         binding.goTodoButton.setOnClickListener {
@@ -89,14 +96,41 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
             setTime(1)
         }
     }
-
+    private fun initializeEditMode(todo: Todo) {
+        // 기존의 Todo를 수정하는 경우, 해당 Todo의 정보를 사용하여 화면을 초기화
+        isEditMode = true  // 기존 Todo를 수정하는 편집 모드임을 나타냄
+        // Todo의 제목
+        binding.editTodoText.setText(todo.title)
+        // 시작 날짜 및 시간
+        binding.startDateValueTextView.text = todo.st_date
+        binding.startTimeValueTextView.text = todo.st_time
+        // 도착 날짜 및 시간
+        binding.arriveDateValueTextView.text = todo.end_date
+        binding.arriveTimeValueTextView.text = todo.end_time
+    }
+    private fun initializeCreateMode() {
+        // 화면을 초기화하는 작업 수행
+        binding.editTodoText.setText("")
+        binding.startDateValueTextView.text = intent.getStringExtra("startDate") ?: "0000/00/00"
+        binding.startTimeValueTextView.text = "오전 00:00"
+        binding.arriveDateValueTextView.text = "0000/00/00"
+        binding.arriveTimeValueTextView.text = "오전 00:00"
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val todoKey = intent.getStringExtra("todoKey")
+
         return when (item.itemId) {
             R.id.okMenu -> {
                 if (editTextLength > 100){
                     Toast.makeText(this,"메모 글자수가 100을 넘었습니다.",Toast.LENGTH_SHORT).show()
                 }else{
-                    putTodo()
+                    if (isEditMode) {
+                        // 기존의 Todo를 수정하는 경우
+                        updateTodo(todoKey!!)
+                    } else {
+                        // 새로운 Todo를 생성하는 경우
+                        createTodo()
+                    }
                     finish()
                 }
                 true
@@ -109,28 +143,78 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
             else -> super.onOptionsItemSelected(item)
         }
     }
-    private fun putTodo() {
+    private fun createTodo() {
         val title = binding.editTodoText.text.toString()  //제목 입력창에 작성한 내용 문자열로 받아 title 변수에 저장
         val st_date = binding.startDateValueTextView.text.toString()
         val st_time = binding.startTimeValueTextView.text.toString()
         val end_date = binding.arriveDateValueTextView.text.toString()
         val end_time = binding.arriveTimeValueTextView.text.toString()
+//        val place = todoFragmentBinding.place.getText().toString()
+//        val memo = todoFragmentBinding.memo.getText().toString()
+
         val check = splitDate(st_date)
         val clickedYear = check[0].trim()
         val clickedMonth = check[1].trim()
         val clickedDay = check[2].trim()
-//        val place = todoFragmentBinding.place.getText().toString()
-//        val memo = todoFragmentBinding.memo.getText().toString()
         val todo = Todo(title, st_date, st_time, end_date, end_time, null, null)   //todo data class에 필요한 내용 넣고 todo 변수에 저장
-        FirebaseDatabase.getInstance().getReference("calendar").child(user)
-            .child("$clickedYear"+"년").child("$clickedMonth"+"월").child("$clickedDay"+"일")
-            .push().setValue(todo).addOnSuccessListener {
-                Toast.makeText(applicationContext,"일정 생성 완료",Toast.LENGTH_SHORT).show();
-                Log.i("FirebaseData", "데이터 전송에 성공하였습니다.")
-                Log.i("FirebaseData", "title:${todo.title}, time:${todo.st_time}")
-            }.addOnCanceledListener {
-                Log.i("FirebaseData", "데이터 전송에 실패하였습니다")
-            }
+        val TodoRef = FirebaseDatabase.getInstance().getReference("calendar")
+            .child(user)
+            .child("$clickedYear" + "년")
+            .child("$clickedMonth" + "월")
+            .child("$clickedDay" + "일")
+            .push()
+        todoKeys.add(TodoRef.key!!)
+        TodoRef.setValue(todo).addOnSuccessListener {
+            Toast.makeText(applicationContext,"일정 생성 완료",Toast.LENGTH_SHORT).show();
+            Log.i("FirebaseData", "${todoKeys}")
+            Log.i("FirebaseData", "데이터 전송에 성공하였습니다.")
+            Log.i("FirebaseData", "title:${todo.title}, time:${todo.st_time}")
+        }.addOnCanceledListener {
+            Log.i("FirebaseData", "데이터 전송에 실패하였습니다")
+        }
+    }
+    private fun updateTodo(todoKey: String) {
+        val todoKey = intent.getStringExtra("todoKey")
+
+        val title = binding.editTodoText.text.toString()
+        val st_date = binding.startDateValueTextView.text.toString()
+        val st_time = binding.startTimeValueTextView.text.toString()
+        val end_date = binding.arriveDateValueTextView.text.toString()
+        val end_time = binding.arriveTimeValueTextView.text.toString()
+
+        val check = splitDate(st_date)
+        val clickedYear = check[0].trim()
+        val clickedMonth = check[1].trim()
+        val clickedDay = check[2].trim()
+
+        val todoUpdates: MutableMap<String, Any> = HashMap()
+        todoUpdates["title"] = title
+        todoUpdates["st_date"] = st_date
+        todoUpdates["st_time"] = st_time
+        todoUpdates["end_date"] = end_date
+        todoUpdates["end_time"] = end_time
+
+        val todoReference = FirebaseDatabase.getInstance().getReference("calendar")
+            .child(user)
+            .child("$clickedYear" + "년")
+            .child("$clickedMonth" + "월")
+            .child("$clickedDay" + "일")
+
+        if (todoKey != null) {
+            todoReference
+                .child(todoKey)
+                .setValue(todoUpdates)
+                .addOnSuccessListener {
+                    Toast.makeText(applicationContext, "일정 수정 완료", Toast.LENGTH_SHORT).show()
+                    Log.i("FirebaseData", "데이터 업데이트에 성공하였습니다.")
+                    Log.i("FirebaseData", "title:${title}, time:${st_time}")
+                    Log.d("TodoKeys", todoKey) // 또는 Toast 메시지를 사용하거나 디버거를 이용하여 확인할 수 있습니다.
+                }
+                .addOnCanceledListener {
+                    Log.i("FirebaseData", "데이터 업데이트에 실패하였습니다.")
+                }
+        }
+
     }
     private fun showAlertDialog(){
         AlertDialog.Builder(this).apply {
@@ -148,16 +232,13 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         val calendar = Calendar.getInstance()
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
             timeString = "오전 ${hourOfDay}:${minute}"
-            if (hourOfDay > 12) {
-                timeString = "오후 ${hourOfDay - 12}:${minute}"
-            } else if (hourOfDay == 12) {
-                timeString = "오후 ${hourOfDay}:${minute}"
-            }
+            val isAfternoon = hourOfDay >= 12
+            val timeString = "${if (isAfternoon) "오후" else "오전"} ${hourOfDay}:${minute}"
             if (separator == 0) {
-                binding.startTimeValueTextView.text = "$timeString"
+                binding.startTimeValueTextView.text = timeString
                 startTime = "$dateString ${hourOfDay}:${minute}"
             } else {
-                binding.arriveTimeValueTextView.text = "$timeString"
+                binding.arriveTimeValueTextView.text = timeString
                 arrivalTime = "$dateString ${hourOfDay}:${minute}"
             }
             // 출발시간이 도착시간보다 빨리 못하게 나중에 버튼누르면 안되게 해야함

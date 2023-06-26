@@ -64,7 +64,8 @@ dependencies {
     //retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
-
+    //Calendar custom
+    implementation 'com.prolificinteractive:material-calendarview:1.4.3'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:32.1.0')
     // Add the dependencies for Firebase products you want to use

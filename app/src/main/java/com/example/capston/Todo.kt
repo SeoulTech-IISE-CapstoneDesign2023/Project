@@ -1,5 +1,8 @@
 package com.example.capston
 
+import android.os.Parcel
+import android.os.Parcelable
+
 data class Todo(
     val title: String = "",         //일정 제목
     val st_date: String = "",       //일정 시작 날짜
@@ -8,4 +11,34 @@ data class Todo(
     val end_time: String ?= null,   //일정 종료 시간
     val place: String? = null,      //일정 장소
     val memo: String? = null,       //일정 관련 메모
-)
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: ""
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(title)
+        parcel.writeString(st_date)
+        parcel.writeString(st_time)
+        parcel.writeString(end_date)
+        parcel.writeString(end_time)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Todo> {
+        override fun createFromParcel(parcel: Parcel): Todo {
+            return Todo(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Todo?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
