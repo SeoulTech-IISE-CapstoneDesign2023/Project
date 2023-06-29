@@ -24,6 +24,16 @@
         app:layout_constraintStart_toEndOf="@+id/detailTypeTextView" />
 
     <TextView
+        android:id="@+id/waitingTimeTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="대기시간"
+        app:layout_constraintStart_toEndOf="@id/sectionTimeTextView"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/detailTypeTextView"
         style="@style/RouteText"
         android:layout_width="wrap_content"
