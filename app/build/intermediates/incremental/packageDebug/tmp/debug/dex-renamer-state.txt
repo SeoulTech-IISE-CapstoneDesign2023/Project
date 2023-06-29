@@ -1,11 +1,11 @@
-#Sun Jun 25 23:36:33 KST 2023
-base.0=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.2=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
-base.3=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
-base.4=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
-base.5=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
-base.6=C\:\\gitClone\\Project\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+#Fri Jun 30 03:53:18 KST 2023
+base.0=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.1=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.2=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
+base.3=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeProjectDexDebug/6/classes.dex
+base.4=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeProjectDexDebug/7/classes.dex
+base.5=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeProjectDexDebug/8/classes.dex
+base.6=/Users/heogeonho/Documents/Project/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=14/classes.dex

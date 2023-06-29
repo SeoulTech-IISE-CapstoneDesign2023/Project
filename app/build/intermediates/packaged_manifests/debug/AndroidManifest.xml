@@ -45,6 +45,9 @@
         android:testOnly="true"
         android:theme="@style/Theme.Capston" >
         <activity
+            android:name="com.example.capston.SignUpActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.capston.SearchWebActivity"
             android:exported="false" />
         <activity

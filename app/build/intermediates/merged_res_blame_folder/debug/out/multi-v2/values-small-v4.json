@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.capston.app-mergeDebugResources-40:/values-small-v4/values-small-v4.xml",
+            "outputFile": "com.example.capston.app-mergeDebugResources-41:/values-small-v4/values-small-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\58dcf7e9703610dee11a55335c5dd16f\\transformed\\material-1.5.0\\res\\values-small-v4\\values-small-v4.xml",
+                    "source": "/Users/heogeonho/.gradle/caches/transforms-3/58dcf7e9703610dee11a55335c5dd16f/transformed/material-1.5.0/res/values-small-v4/values-small-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
