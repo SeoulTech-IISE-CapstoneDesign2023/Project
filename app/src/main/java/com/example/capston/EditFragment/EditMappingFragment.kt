@@ -24,9 +24,6 @@ import com.example.capston.retrofit.SubPath
 import com.example.capston.subway.SubwayTimeTableConnection
 import com.example.capston.subway.SubwayTimeTableService
 import com.example.retrofit_example.retrofit2.stationTimeTableDTO
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,8 +31,7 @@ import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,7 +64,7 @@ class EditMappingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentEditMappingBinding.inflate(inflater, container, false)
         //spinner adapter
         binding.trackingTimeSpinner.adapter = ArrayAdapter.createFromResource(
@@ -111,7 +107,11 @@ class EditMappingFragment : Fragment() {
                             val handler = Handler()
                             handler.postDelayed({
                                 binding.totalTimeTextView.apply {
-                                    setText("총 소요시간 : ${minTotalTime}분")
+                                    if (minTotalTime == null) {
+                                        text = "현재이용가능한 대중교통 없음"
+                                    } else {
+                                        text = "총 소요시간 : ${minTotalTime}분"
+                                    }
                                     isVisible = true
                                 }
                                 initRecyclerView()
@@ -130,6 +130,7 @@ class EditMappingFragment : Fragment() {
     private fun getPublicTransportationData(
         stationId: String,
         wayCode: Int,
+        plusTime:Int = 0,
         callback: (Int?) -> Unit
     ) {
 
@@ -147,69 +148,77 @@ class EditMappingFragment : Fragment() {
                 val waitingTimes: MutableList<String> = mutableListOf()
                 val data = response.body()
                 val currentTime = Calendar.getInstance()
-                val hour = currentTime.get(Calendar.HOUR_OF_DAY)//핸드폰 현재 시
-                val minute = currentTime.get(Calendar.MINUTE)// 현드폰 현재 분
-                Log.d("currentTime", "$hour $minute")
+                var hour = currentTime.get(Calendar.HOUR_OF_DAY)//핸드폰 현재 시
+                var minute = currentTime.get(Calendar.MINUTE) + plusTime// 현드폰 현재 분 + 앞에있는 경로 시간
 
-                if (wayCode == 1) {
-                    data?.result?.OrdList?.up?.time?.forEach { time ->
-                        if (time.Idx == hour || (time.Idx)-1 == hour ) {
-                            val timeTable = time.list // 해당 시간에 맞는 지하철 시간표
-                            Log.d("timeTable", timeTable)
-                            val regex = Regex("\\d+\\([^)]+\\)")
-                            waitingTimes.addAll(
-                                regex.findAll(timeTable)
-                                    .mapNotNull { matchResult ->
-                                        val timeString = matchResult.value // ex) "04(동두천)"
-                                        val time =
-                                            timeString.substringBefore('(').toInt() // 분 부분 추출
-                                        if (minute < time) {
-                                            timeString.substring(0, 2)
-                                        } else {
-                                            null
-                                        }
-                                    }
-                            )
-                        }
-                    }
-                    latestTime = if ((waitingTimes[0].toInt() - minute) >= 0) {
-                        waitingTimes[0].toInt() - minute
-                    }else {
-                        minute + 60 - waitingTimes[0].toInt()
-                    }
-                    callback(latestTime)
-                } else if(wayCode == 2) {
-                    data?.result?.OrdList?.down?.time?.forEach { time ->
-                        if (time.Idx == hour) {
-                            val timeTable = time.list // 해당 시간에 맞는 지하철 시간표
-                            Log.d("timeTable", timeTable)
-                            val regex = Regex("\\d+\\([^)]+\\)")
-                            waitingTimes.addAll(
-                                regex.findAll(timeTable)
-                                    .mapNotNull { matchResult ->
-                                        val timeString = matchResult.value // ex) "04(동두천)"
-                                        val time =
-                                            timeString.substringBefore('(').toInt() // 분 부분 추출
-                                        if (minute < time) {
-                                            timeString.substring(0, 2)
-                                        } else {
-                                            null
-                                        }
-                                    }
-                            )
-                        }
-                    }
-                    latestTime = if ((waitingTimes[0].toInt() - minute) >= 0) {
-                        waitingTimes[0].toInt() - minute
-                    }else {
-                        minute + 60 - waitingTimes[0].toInt()
-                    }
-                    callback(latestTime)
-                }else {
-                    callback(null)
+                if(minute >= 60){
+                    hour += 1
+                    minute -= 60
                 }
 
-                Log.d("latestTime",latestTime.toString())
+                when (wayCode) {
+                    1 -> {
+                        data?.result?.OrdList?.up?.time?.forEach { time ->
+                            if (time.Idx == hour || (time.Idx) - 1 == hour) {
+                                val timeTable = time.list // 해당 시간에 맞는 지하철 시간표
+                                Log.d("timeTable", timeTable)
+                                val regex = Regex("\\d+\\([^)]+\\)")
+                                waitingTimes.addAll(
+                                    regex.findAll(timeTable)
+                                        .mapNotNull { matchResult ->
+                                            val timeString = matchResult.value // ex) "04(동두천)"
+                                            val time =
+                                                timeString.substringBefore('(').toInt() // 분 부분 추출
+                                            if (minute < time) {
+                                                timeString.substring(0, 2)
+                                            } else {
+                                                null
+                                            }
+                                        }
+                                )
+                            }
+                        }
+                        latestTime = if ((waitingTimes[0].toInt() - minute) >= 0) {
+                            waitingTimes[0].toInt() - minute
+                        } else {
+                            minute + 60 - waitingTimes[0].toInt()
+                        }
+                        callback(latestTime)
+                    }
+                    2 -> {
+                        data?.result?.OrdList?.down?.time?.forEach { time ->
+                            if (time.Idx == hour) {
+                                val timeTable = time.list // 해당 시간에 맞는 지하철 시간표
+                                Log.d("timeTable", timeTable)
+                                val regex = Regex("\\d+\\([^)]+\\)")
+                                waitingTimes.addAll(
+                                    regex.findAll(timeTable)
+                                        .mapNotNull { matchResult ->
+                                            val timeString = matchResult.value // ex) "04(동두천)"
+                                            val time =
+                                                timeString.substringBefore('(').toInt() // 분 부분 추출
+                                            if (minute < time) {
+                                                timeString.substring(0, 2)
+                                            } else {
+                                                null
+                                            }
+                                        }
+                                )
+                            }
+                        }
+                        latestTime = if ((waitingTimes[0].toInt() - minute) >= 0) {
+                            waitingTimes[0].toInt() - minute
+                        } else {
+                            minute + 60 - waitingTimes[0].toInt()
+                        }
+                        callback(latestTime)
+                    }
+                    else -> {
+                        callback(null)
+                    }
+                }
+
+                Log.d("latestTime", latestTime.toString())
 
             }
 
@@ -289,15 +298,14 @@ class EditMappingFragment : Fragment() {
                     }
                 }
                 //info데이터 초기화
-                info = mutableListOf<Info>()
-
+                info = mutableListOf()
                 //비동기적이여서 쓰레드를 새로만듬
-                Thread{
+                Thread {
                     // 순차적으로 하기위해서 countdonwlatch사용
                     val countDownLatch = CountDownLatch(minSubPathList.size)
-                    for(item in minSubPathList){
+                    for (item in minSubPathList) {
                         val innerCountDownLatch = CountDownLatch(1)
-                        trafficTypeCase(item){data ->
+                        trafficTypeCase(item) { data ->
                             info.add(data)
                             innerCountDownLatch.countDown()
                         }
@@ -321,7 +329,27 @@ class EditMappingFragment : Fragment() {
                     info[info.size - 1].endName = "도착지"
                     info[0].endName = info[1].startName
                     info[info.size - 1].startName = info[info.size - 2].endName
-                    requireActivity().runOnUiThread{
+
+                    // 변경된 대기시간을 가져와야함
+                    if(info.isNotEmpty()){
+                        var plusTime = 0
+                        val countDownLatch2 = CountDownLatch(info.size)
+                        for (data in info){
+                            plusTime += data.sectionTime!!
+                            if(data.waitTime != null){
+
+                                getPublicTransportationData(data.subwayCode!!,data.wayCode!!,plusTime){
+                                    data.waitTime = it
+                                }
+                                countDownLatch2.countDown()
+                            }
+                        }
+                        countDownLatch2.await()
+                    }
+                    Log.d("info", "$info")
+
+
+                    requireActivity().runOnUiThread {
                         Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()
                     }
                 }.start()
@@ -337,17 +365,16 @@ class EditMappingFragment : Fragment() {
     }
 
 
-    private fun trafficTypeCase(subPath: SubPath, callback: (Info) -> Unit){
+    private fun trafficTypeCase(subPath: SubPath, callback: (Info) -> Unit) {
         val trafficType = subPath.trafficType //1-지하철, 2-버스, 3-도보
         var startName: String? = null
         var endName: String? = null
-        var sectionTime: Int? = null
+        var sectionTime: Int?
         var lane: Int? = null
         var busno: String? = null
         var subwayCode: String? = null // 지하철 코드
         var wayCode = 0 // 1.상행 2. 하행
         var waitTime: Int? = null
-        var index : Int? = null
         when (trafficType) {
             //지하철일때
             1 -> {
@@ -357,7 +384,7 @@ class EditMappingFragment : Fragment() {
                 lane = subPath.lane.map { it.subwayCode }.firstOrNull()
                 subwayCode = subPath.startID.toString()
                 wayCode = subPath.wayCode
-                getPublicTransportationData(subwayCode,wayCode){time ->
+                getPublicTransportationData(subwayCode, wayCode) { time ->
                     waitTime = time
                     val info = Info(
                         trafficType,
@@ -368,8 +395,7 @@ class EditMappingFragment : Fragment() {
                         busno,
                         subwayCode,
                         wayCode,
-                        waitTime,
-                        index
+                        waitTime
                     )
                     callback(info)
                 }
@@ -383,7 +409,7 @@ class EditMappingFragment : Fragment() {
                 sectionTime = subPath.sectionTime
                 subwayCode = subPath.startID.toString()
                 wayCode = subPath.wayCode
-                getPublicTransportationData(subwayCode,wayCode){time ->
+                getPublicTransportationData(subwayCode, wayCode) { time ->
                     waitTime = time
                     val info = Info(
                         trafficType,
@@ -394,8 +420,7 @@ class EditMappingFragment : Fragment() {
                         busno,
                         subwayCode,
                         wayCode,
-                        waitTime,
-                        index
+                        waitTime
                     )
                     callback(info)
                 }
@@ -405,7 +430,7 @@ class EditMappingFragment : Fragment() {
                 sectionTime = subPath.sectionTime
                 subwayCode = subPath.startID.toString()
                 wayCode = subPath.wayCode
-                getPublicTransportationData(subwayCode,wayCode){time ->
+                getPublicTransportationData(subwayCode, wayCode) { time ->
                     waitTime = time
                     val info = Info(
                         trafficType,
@@ -416,8 +441,7 @@ class EditMappingFragment : Fragment() {
                         busno,
                         subwayCode,
                         wayCode,
-                        waitTime,
-                        index
+                        waitTime
                     )
                     callback(info)
                 }
@@ -434,8 +458,7 @@ class EditMappingFragment : Fragment() {
         val busno: String?,
         val subwayCode: String?,
         val wayCode: Int?,
-        val waitTime: Int?,
-        var index :Int?
+        var waitTime: Int?,
     )
 
 
