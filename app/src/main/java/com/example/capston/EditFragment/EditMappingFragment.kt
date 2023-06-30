@@ -13,14 +13,20 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.capston.route.PublicTransitRouteConnection
-import com.example.capston.route.PublicTransitRouteSearchAPIService
+import com.example.capston.Bus.realLocation.BusRealLocationAPIService
+import com.example.capston.Bus.realLocation.BusRealLocationConnection
+import com.example.capston.Bus.realLocation.BusRealTimeLocationDTO
+import com.example.capston.Bus.realtime.BusRealTimeAPIService
+import com.example.capston.Bus.realtime.BusRealTimeConnection
+import com.example.capston.Bus.realtime.RealTimeArrivalBus
 import com.example.capston.R
-import com.example.capston.route.RouteAdapter
 import com.example.capston.SearchActivity
 import com.example.capston.databinding.FragmentEditMappingBinding
 import com.example.capston.retrofit.PublicTransitRoute
 import com.example.capston.retrofit.SubPath
+import com.example.capston.route.PublicTransitRoteConnection
+import com.example.capston.route.PublicTransitRoteSearchAPIService
+import com.example.capston.route.RoteAdapter
 import com.example.capston.subway.SubwayTimeTableConnection
 import com.example.capston.subway.SubwayTimeTableService
 import com.example.retrofit_example.retrofit2.stationTimeTableDTO
@@ -130,7 +136,7 @@ class EditMappingFragment : Fragment() {
     private fun getPublicTransportationData(
         stationId: String,
         wayCode: Int,
-        plusTime:Int = 0,
+        plusTime: Int = 0,
         callback: (Int?) -> Unit
     ) {
 
@@ -151,7 +157,7 @@ class EditMappingFragment : Fragment() {
                 var hour = currentTime.get(Calendar.HOUR_OF_DAY)//핸드폰 현재 시
                 var minute = currentTime.get(Calendar.MINUTE) + plusTime// 현드폰 현재 분 + 앞에있는 경로 시간
 
-                if(minute >= 60){
+                if (minute >= 60) {
                     hour += 1
                     minute -= 60
                 }
@@ -185,6 +191,7 @@ class EditMappingFragment : Fragment() {
                         }
                         callback(latestTime)
                     }
+
                     2 -> {
                         data?.result?.OrdList?.down?.time?.forEach { time ->
                             if (time.Idx == hour) {
@@ -213,6 +220,7 @@ class EditMappingFragment : Fragment() {
                         }
                         callback(latestTime)
                     }
+
                     else -> {
                         callback(null)
                     }
@@ -251,7 +259,7 @@ class EditMappingFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        val routeAdapter = RouteAdapter(info)
+        val routeAdapter = RoteAdapter(info)
         Log.d("info", "$info")
         binding.routeSearchResultRecyclerView.apply {
             adapter = routeAdapter
@@ -263,14 +271,59 @@ class EditMappingFragment : Fragment() {
         Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
     }
 
+    private fun getRealTimeArrivalBus(stationId: Int) {
+        val retrofitApi =
+            BusRealTimeConnection.getInstance().create(BusRealTimeAPIService::class.java)
+        val call = retrofitApi.getBusRealTime(
+            "HFzt2MlKKNAzow6eacQK7TsnOIrG0jNcK5vZ3FV9mEQ",
+            stationId
+        )
+
+        call.enqueue(object : Callback<RealTimeArrivalBus> {
+            override fun onResponse(
+                call: Call<RealTimeArrivalBus>,
+                response: Response<RealTimeArrivalBus>
+            ) {
+                val data = response.body()
+                //todo 여기에서 실시간 데이터를 추출할때 필요한 요소는 stationID는 이미있어서 괜찮고 routeID를 얻어야함 그래서 추가로 routeID를 얻어오는 작업을 할 예정
+            }
+
+            override fun onFailure(call: Call<RealTimeArrivalBus>, t: Throwable) {
+                Toast.makeText(context, "버스실시간 도착정보를 불러오지 못하였습니다", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun getRouteId(busId: Int) {
+        val retrofitApi =
+            BusRealLocationConnection.getInstance().create(BusRealLocationAPIService::class.java)
+        val call = retrofitApi.getRouteId(
+            "HFzt2MlKKNAzow6eacQK7TsnOIrG0jNcK5vZ3FV9mEQ",
+            busId
+        )
+
+        call.enqueue(object : Callback<BusRealTimeLocationDTO>{
+            override fun onResponse(
+                call: Call<BusRealTimeLocationDTO>,
+                response: Response<BusRealTimeLocationDTO>
+            ) {
+                //todo 여기서는 busId를 넣으면은 routeID를 가져오는 작업을 진행해야한다
+            }
+
+            override fun onFailure(call: Call<BusRealTimeLocationDTO>, t: Throwable) {
+                Toast.makeText(context,"버스RouteId를 가져오지 못했습니다.",Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     private fun getPublicTransitRouteSearchData(
         startX: Double,
         startY: Double,
         endX: Double,
         endY: Double,
     ) {
-        val retrofitApi = PublicTransitRouteConnection.getInstance()
-            .create(PublicTransitRouteSearchAPIService::class.java)
+        val retrofitApi = PublicTransitRoteConnection.getInstance()
+            .create(PublicTransitRoteSearchAPIService::class.java)
         val call = retrofitApi.getPublicTransitRoute(
             "HFzt2MlKKNAzow6eacQK7TsnOIrG0jNcK5vZ3FV9mEQ",
             startX.toString(),
@@ -331,14 +384,18 @@ class EditMappingFragment : Fragment() {
                     info[info.size - 1].startName = info[info.size - 2].endName
 
                     // 변경된 대기시간을 가져와야함
-                    if(info.isNotEmpty()){
+                    if (info.isNotEmpty()) {
                         var plusTime = 0
                         val countDownLatch2 = CountDownLatch(info.size)
-                        for (data in info){
+                        for (data in info) {
                             plusTime += data.sectionTime!!
-                            if(data.waitTime != null){
+                            if (data.waitTime != null) {
 
-                                getPublicTransportationData(data.subwayCode!!,data.wayCode!!,plusTime){
+                                getPublicTransportationData(
+                                    data.subwayCode!!,
+                                    data.wayCode!!,
+                                    plusTime
+                                ) {
                                     data.waitTime = it
                                 }
                                 countDownLatch2.countDown()

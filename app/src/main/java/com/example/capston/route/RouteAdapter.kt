@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.databinding.ItemRouteBinding
 
-class RouteAdapter(
+class RoteAdapter(
     private val list: MutableList<EditMappingFragment.Info>
-) : RecyclerView.Adapter<RouteAdapter.RouteViewHolder>() {
+) : RecyclerView.Adapter<RoteAdapter.RouteViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         val binding = ItemRouteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
