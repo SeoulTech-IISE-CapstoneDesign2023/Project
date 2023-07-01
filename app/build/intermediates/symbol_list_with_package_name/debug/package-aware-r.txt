@@ -2921,6 +2921,7 @@ id easeOut
 id east
 id editCheckPW
 id editEmail
+id editNickname
 id editPW
 id editTodoText
 id edit_query
@@ -3340,6 +3341,7 @@ id text
 id text2
 id textEnd
 id textInputEditText
+id textNik
 id textSpacerNoButtons
 id textSpacerNoTitle
 id textStart

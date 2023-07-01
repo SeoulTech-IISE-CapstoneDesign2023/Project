@@ -51,6 +51,7 @@ id createUserBtn
 id detailTypeTextView
 id editCheckPW
 id editEmail
+id editNickname
 id editPW
 id editTodoText
 id findPWBtn
@@ -185,6 +186,7 @@ id sunday2100
 id sunday2200
 id sunday2300
 id textInputEditText
+id textNik
 id textTextInputLayout
 id textView
 id textView2
