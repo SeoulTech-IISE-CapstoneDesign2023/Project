@@ -16,8 +16,12 @@ import androidx.core.content.ContextCompat
 import com.example.capston.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
+
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -32,6 +36,8 @@ class SignUpActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+        val textNik = binding.textNik
+
         val checkPW = binding.checkPW
         val authUserBtn = binding.authUserBtn
         val authEmailBtn = binding.authEmailBtn
@@ -41,6 +47,7 @@ class SignUpActivity : AppCompatActivity() {
         val editEmail = binding.editEmail
         val editPW = binding.editPW
         val editCheckPW = binding.editCheckPW
+        val editNickname = binding.editNickname
 
         val authCheckUser = binding.authCheckText1
         val authCheckEmail = binding.authCheckText2
@@ -132,7 +139,6 @@ class SignUpActivity : AppCompatActivity() {
                         .show()
                 }
             }
-            Log.d("geon_test_2323", "현재 이용자? ${auth.currentUser}")
         }
 
         authUserBtn.setOnClickListener {
@@ -154,7 +160,6 @@ class SignUpActivity : AppCompatActivity() {
                             authEmailBtn.visibility = View.VISIBLE
                             authCheckBtn.visibility = View.VISIBLE
 
-
                             editEmail.isEnabled = false
                             editPW.isEnabled = false
                             editCheckPW.isEnabled = false
@@ -164,7 +169,7 @@ class SignUpActivity : AppCompatActivity() {
                             val user = auth.currentUser
                             Toast.makeText(baseContext, "사용자가 생성되었습니다.", Toast.LENGTH_SHORT,)
                                 .show()
-                            Log.d("geon_test_user","user create $email & $user")
+                            Log.d("geon_test_user","user create -> email: $email")
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(baseContext, "이미 가입된 사용자입니다.", Toast.LENGTH_SHORT,)
@@ -179,7 +184,7 @@ class SignUpActivity : AppCompatActivity() {
                 Toast.makeText(baseContext, "비밀번호 일치 확인을 진행해주세요", Toast.LENGTH_SHORT,)
                     .show()
             }
-            Log.d("geon_test_email", "현재 이용자? ${auth.currentUser?.email}")
+            Log.d("geon_test_email", "current user email: ${auth.currentUser?.email}")
         }
 
         val user = auth.currentUser
@@ -193,6 +198,7 @@ class SignUpActivity : AppCompatActivity() {
         val MAX_RETRY_COUNT = 5 // 최대 반복 횟수
 
         val handler = Handler(Looper.getMainLooper())
+        var thread: Thread? = null
         var retryCount = 0 // 반복 횟수를 저장할 변수
 
         val runnable = object : Runnable {
@@ -207,24 +213,26 @@ class SignUpActivity : AppCompatActivity() {
                     // 원하는 결과가 나왔을 때 종료 및 알림 전송
                     if (user != null && user.isEmailVerified) {
                         // 성공 알림 전송
-                        Log.d("geon_test_email", "이메일 확인")
+                        Log.d("geon_test_check", "check email")
                         // 사용자가 로그인 상태이고 이메일이 확인되었습니다.
                         // 추가 작업 수행
                         authCheckUser.visibility = View.GONE
                         authCheckEmail.visibility = View.VISIBLE
                         authEmailBtn.visibility = View.GONE
                         authCheckBtn.visibility = View.GONE
+                        editNickname.visibility = View.VISIBLE
+                        textNik.visibility = View.VISIBLE
 
-                        createBtn.isEnabled = true
+                        //createBtn.isEnabled = true
                     } else {
                         if (retryCount < MAX_RETRY_COUNT) {
                             // 일정 시간 후에 작업을 반복하기 위해 핸들러에 다시 post
                             handler.postDelayed(this, 500)
                             retryCount++
-                            Log.d("geon_test_123", "사용자 이메일 인증 -> ${user?.isEmailVerified}")
+                            Log.d("geon_test_isFail", "auth ${user?.isEmailVerified}")
                         } else {
                             // 실패 알림 전송
-                            Log.d("geon_test_email", "이메일 인증 실패")
+                            Log.d("geon_test_isFail", "Email verification failed")
                         }
                     }
                 }
@@ -233,25 +241,80 @@ class SignUpActivity : AppCompatActivity() {
 
         // 버튼 클릭 이벤트에서 작업 시작
         authCheckBtn.setOnClickListener {
+            Log.d("test","Thread(runnable).start()...")
             retryCount = 0
             // 쓰레드 시작
-            Thread(runnable).start()
+            thread = Thread(runnable)
+            thread?.start()
 
-            Log.d("geon_test_email", "현재 이용자? ${auth.currentUser}")
+            Log.d("geon_test_email", "current user email: ${auth.currentUser?.email}")
         }
 
+        // 닉네임 입력 설정 -> 값이 존재해야 생성 버튼 활성화
+        editNickname.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                createBtn.isEnabled = false
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 텍스트가 변경될 때마다 호출됩니다.
+                val inputText = s.toString()
+                // 버튼 활성화/비활성화 조건을 확인합니다.
+                if (inputText != "") {
+                    createBtn.isEnabled = true
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+
+        // 생성 버튼 클릭 시 유정 닉네임 중복 여부 판단 및 데이터 저장
+        // 이후 흐름은 닉네임 값 가지고 메인화면
         createBtn.setOnClickListener {
+            thread?.interrupt()
             val user = Firebase.auth.currentUser
-
             val myUid = user?.uid
+            val nickname = editNickname.text.toString()
 
-            FirebaseDatabase.getInstance().getReference("User").child("users")
-                .child(myUid.toString()).child("uid").setValue(myUid)
+            val usersRef = FirebaseDatabase.getInstance().getReference("User")
+            val userData = usersRef.child("users")
 
-            Firebase.auth.signOut()
 
-            val intent = Intent(this,LoginActivity::class.java)
-            startActivity(intent)
+            userData.addValueEventListener(object : ValueEventListener {
+
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var count = 0
+
+                    for (snapshot in dataSnapshot.children) {
+                        val nicknameValue = snapshot.child("nickname").value.toString()
+                        Log.d("geon_test_dataRead", "check value: $nicknameValue")
+                        if (nickname == nicknameValue) {
+                            count = 1
+                            break
+                        } else continue
+                    }
+
+                    Log.d("geon_test_count", "cnt ->  $count")
+
+                    // 1이면 가입 0이면 가입 불가 구현
+                    // 닉네임 입력
+                    if (count == 0) {
+                        Log.d("geon_test_nick", "가입 가능")
+                        usersRef.child("users").child(myUid.toString()).setValue(User(myUid))
+                        val intent =
+                            Intent(this@SignUpActivity, MainActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Log.d("geon_test_nick", "가입 불가!!!!")
+                        Toast.makeText(baseContext, "이미 존재하는 닉네임입니다", Toast.LENGTH_SHORT,)
+                            .show()
+                    }
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // 에러 처리
+                    Toast.makeText(baseContext, "이미 존재하는 닉네임입니다", Toast.LENGTH_SHORT,)
+                        .show()
+                }
+            })
         }
     }
 

@@ -49,7 +49,13 @@ public final class ActivitySignUpBinding implements ViewBinding {
   public final EditText editEmail;
 
   @NonNull
+  public final EditText editNickname;
+
+  @NonNull
   public final EditText editPW;
+
+  @NonNull
+  public final TextView textNik;
 
   @NonNull
   public final TextView textView3;
@@ -64,8 +70,8 @@ public final class ActivitySignUpBinding implements ViewBinding {
       @NonNull TextView authCheckText1, @NonNull TextView authCheckText2,
       @NonNull Button authEmailBtn, @NonNull Button authUserBtn, @NonNull Button checkPW,
       @NonNull Button createUserBtn, @NonNull EditText editCheckPW, @NonNull EditText editEmail,
-      @NonNull EditText editPW, @NonNull TextView textView3, @NonNull TextView textView5,
-      @NonNull TextView textView7) {
+      @NonNull EditText editNickname, @NonNull EditText editPW, @NonNull TextView textNik,
+      @NonNull TextView textView3, @NonNull TextView textView5, @NonNull TextView textView7) {
     this.rootView = rootView;
     this.authCheckBtn = authCheckBtn;
     this.authCheckText1 = authCheckText1;
@@ -76,7 +82,9 @@ public final class ActivitySignUpBinding implements ViewBinding {
     this.createUserBtn = createUserBtn;
     this.editCheckPW = editCheckPW;
     this.editEmail = editEmail;
+    this.editNickname = editNickname;
     this.editPW = editPW;
+    this.textNik = textNik;
     this.textView3 = textView3;
     this.textView5 = textView5;
     this.textView7 = textView7;
@@ -163,9 +171,21 @@ public final class ActivitySignUpBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.editNickname;
+      EditText editNickname = ViewBindings.findChildViewById(rootView, id);
+      if (editNickname == null) {
+        break missingId;
+      }
+
       id = R.id.editPW;
       EditText editPW = ViewBindings.findChildViewById(rootView, id);
       if (editPW == null) {
+        break missingId;
+      }
+
+      id = R.id.textNik;
+      TextView textNik = ViewBindings.findChildViewById(rootView, id);
+      if (textNik == null) {
         break missingId;
       }
 
@@ -189,7 +209,7 @@ public final class ActivitySignUpBinding implements ViewBinding {
 
       return new ActivitySignUpBinding((ConstraintLayout) rootView, authCheckBtn, authCheckText1,
           authCheckText2, authEmailBtn, authUserBtn, checkPW, createUserBtn, editCheckPW, editEmail,
-          editPW, textView3, textView5, textView7);
+          editNickname, editPW, textNik, textView3, textView5, textView7);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
