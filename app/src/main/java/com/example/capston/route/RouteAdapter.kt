@@ -34,7 +34,7 @@ class RoteAdapter(
                         startAreaTextView.text = info.startName
                         arrivalAreaTextView.text = info.endName
                         sectionTimeTextView.text = info.sectionTime.toString() + "분"
-                        detailTypeTextView.text = "${info.lane}호선"
+                        detailTypeTextView.text = "${info.lane}호선" //todo 지하철 호선 추가
                         detailTypeTextView.isVisible = true
                         if (info.waitTime != null){
                             waitingTimeTextView.isVisible = true
