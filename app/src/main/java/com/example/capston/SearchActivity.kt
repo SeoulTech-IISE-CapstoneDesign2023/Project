@@ -7,9 +7,14 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Address
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -19,15 +24,21 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.databinding.ActivitySearchBinding
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 import java.util.Locale
+import java.util.concurrent.CountDownLatch
 
 
 class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -39,6 +50,9 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
     private var myLocationlng = 0.0
     private val g by lazy { android.location.Geocoder(this, Locale.KOREAN) } //geocoder
     private var address: List<Address>? = null
+    private var isChanged = false
+    private val startMarker = Marker()
+    private val arrivalMarker = Marker()
 
     //장소검색 도로명 주소 받아오기
     private val getSearchResult =
@@ -65,13 +79,33 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         val startAddress = intent.getStringExtra("startAddress")
         val arrivalAddress = intent.getStringExtra("arrivalAddress")
 
+
         binding.startValueTextView.apply {
             text = startAddress
             setOnClickListener {
                 val intent = Intent(context, SearchWebActivity::class.java)
                 isArrivalValueTextViewClicked = false
                 getSearchResult.launch(intent)
+                isChanged = false
             }
+
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    //텍스트 변경전 수행할 동작
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    // 텍스트 변경중에 수행하는 동작
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    //텍스트 변경후 수행할 동작 -> 카메라 위치 업데이트
+                    if (!isChanged) {
+                        updateStartMap()
+                    }
+
+                }
+            })
         }
 
         binding.arrivalValueTextView.apply {
@@ -80,7 +114,32 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 val intent = Intent(context, SearchWebActivity::class.java)
                 isArrivalValueTextViewClicked = true
                 getSearchResult.launch(intent)
+                isChanged = false
             }
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    //텍스트 변경전 수행할 동작
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    // 텍스트 변경중에 수행하는 동작
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    //텍스트 변경후 수행할 동작 -> 카메라 위치 업데이트
+                    if (!isChanged) {
+                        updateArrivalMap()
+                    }
+
+                }
+            })
+        }
+        binding.startTextView.setOnClickListener {
+            updateStartMap()
+        }
+
+        binding.arrivalTextView.setOnClickListener {
+            updateArrivalMap()
         }
 
         binding.navermap.getMapAsync(this)
@@ -88,16 +147,66 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding.myLocationButton.setOnClickListener {
             checkPermission()
+            isChanged = false
         }
 
-        binding.changeAddressButton.setOnClickListener{
+        binding.changeAddressButton.setOnClickListener {
             changeAddress()
+            updateStartMap()
+            updateArrivalMap()
+            isChanged = true
         }
-
-
+        updateArrivalMap()
+        updateStartMap()
     }
 
-    private fun changeAddress(){
+    private fun updateStartMap() {
+        geocoder(binding.startValueTextView.text.toString()) { lat, lng ->
+            if (lat != null && lng != null) {
+                Handler(Looper.getMainLooper()).post {
+                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lng))
+                    cameraUpdate.animate(CameraAnimation.Fly, 1000)
+                    naverMap.moveCamera(cameraUpdate)
+                    startMarker.apply {
+                        position = LatLng(lat, lng)
+                        icon = OverlayImage.fromResource(R.drawable.baseline_place_24)
+                        width = 150
+                        height = 150
+                        captionText = "출발지"
+                        captionTextSize = 20F
+                        iconTintColor = Color.GREEN
+                        map = naverMap
+                    }
+                }
+
+            }
+        }
+    }
+
+    private fun updateArrivalMap() {
+        geocoder(binding.arrivalValueTextView.text.toString()) { lat, lng ->
+            if (lat != null && lng != null) {
+                Handler(Looper.getMainLooper()).post {
+                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lng))
+                    cameraUpdate.animate(CameraAnimation.Fly, 1000)
+                    naverMap.moveCamera(cameraUpdate)
+                    arrivalMarker.apply {
+                        position = LatLng(lat, lng)
+                        icon = OverlayImage.fromResource(R.drawable.baseline_place_24)
+                        width = 150
+                        height = 150
+                        captionText = "도착지"
+                        captionTextSize = 20F
+                        iconTintColor = Color.BLUE
+                        map = naverMap
+                    }
+                }
+
+            }
+        }
+    }
+
+    private fun changeAddress() {
         val str = binding.startValueTextView.text.toString()
         binding.startValueTextView.text = binding.arrivalValueTextView.text.toString()
         binding.arrivalValueTextView.text = str
@@ -137,6 +246,25 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
+    private fun geocoder(address: String, callback: (lat: Double?, lng: Double?) -> Unit) {
+        Thread {
+            try {
+                val adrresses = g.getFromLocationName(address, 1)
+                if (adrresses!!.isNotEmpty()) {
+                    val location = adrresses[0]
+                    val lat = location.latitude
+                    val lng = location.longitude
+                    callback(lat, lng)
+                } else {
+                    callback(null, null)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                callback(null, null)
+            }
+        }.start()
+    }
+
     private fun saveData() {
         with(getSharedPreferences("addressInformation", Context.MODE_PRIVATE).edit()) {
             putString("startAddress", binding.startValueTextView.text.toString())
@@ -168,7 +296,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                     finish()
                 }
 
-                Log.d("okMenu",binding.startValueTextView.text.toString())
+                Log.d("okMenu", binding.startValueTextView.text.toString())
 
                 true
             }

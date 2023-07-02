@@ -60,6 +60,7 @@ class EditMappingFragment : Fragment() {
     private var locationList = Array(4) { 0.0 }
     private var latestTime: Int? = null
     private var isLoad = true
+    private val handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,27 +112,41 @@ class EditMappingFragment : Fragment() {
                         val endX = locationList[2]
                         val endY = locationList[3]
                         requireActivity().runOnUiThread {
-                            getPublicTransitRouteSearchData(startX, startY, endX, endY)
-                            val handler = Handler()
+                            getPublicTransitRouteSearchData(startX, startY, endX, endY, isLoad)
                             handler.postDelayed({
                                 initRecyclerView()
                                 if (isLoad) {
                                     binding.totalTimeTextView.apply {
-                                        if (minTotalTime == null) {
-                                            text = "현재이용가능한 대중교통 없음"
-                                        } else {
-                                            text = "총 소요시간 : ${minTotalTime}분"
-                                        }
+                                        text = "총 소요시간 : ${minTotalTime}분"
                                         isVisible = true
                                     }
+                                } else {
+                                    getPublicTransitRouteSearchData(
+                                        startX,
+                                        startY,
+                                        endX,
+                                        endY,
+                                        isLoad
+                                    )
+                                    handler.postDelayed({
+                                        initRecyclerView()
+                                        if (isLoad) {
+                                            binding.totalTimeTextView.apply {
+                                                text = "총 소요시간 : ${minTotalTime}분"
+                                                isVisible = true
+                                            }
+                                        }else {
+                                            Toast.makeText(requireContext(),"현재 이용가능한 대중교통은 없습니다.",Toast.LENGTH_SHORT).show()
+                                        }
+                                    },1500)
                                 }
+                                isLoad = true // 로딩유무 초기화
                             }, 1500)
                         }
                     }
                 }
             }
         }
-
         return binding.root
     }
 
@@ -280,8 +295,6 @@ class EditMappingFragment : Fragment() {
                 addItemDecoration(dividerItemDecoration)
             }
             Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(requireContext(), "현재이용가능한 대중교통은 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -351,6 +364,7 @@ class EditMappingFragment : Fragment() {
         startY: Double,
         endX: Double,
         endY: Double,
+        isLoad: Boolean,
     ) {
         val retrofitApi = PublicTransitRoteConnection.getInstance()
             .create(PublicTransitRoteSearchAPIService::class.java)
@@ -370,16 +384,34 @@ class EditMappingFragment : Fragment() {
                 val data = response.body()
                 val pathType = data?.result?.path?.get(1) // 1: 지하철, 2: 버스 3:버스+지하철
                 val minTimePath = data?.result?.path?.minByOrNull { it.info.totalTime }
-                minTotalTime = minTimePath?.info?.totalTime
-                val minTotalWalk = minTimePath?.info?.totalWalk
+                val nextMinTimePath =
+                    data?.result?.path?.filter { it.info.totalTime != minTimePath?.info?.totalTime }
+                        ?.minByOrNull { it.info.totalTime } // 최단시간의 경로중 대중교통이 없을 경우 그다음으로 빠른 경로를 추천
+                Log.d("minTimePath", minTimePath.toString())
+                Log.d("nextMinTimePath", nextMinTimePath.toString())
                 val minSubPathList = mutableListOf<SubPath>()
-                minTimePath?.subPath?.forEach { subPath ->
-                    if (subPath.sectionTime != 0) minSubPathList.add(subPath)
-                    if (subPath.trafficType == 1) {
-                        subPath.endName += "역"
-                        subPath.startName += "역"
+                if (isLoad) {
+                    minTotalTime = minTimePath?.info?.totalTime
+                    minTimePath?.subPath?.forEach { subPath ->
+                        if (subPath.sectionTime != 0) minSubPathList.add(subPath)
+                        if (subPath.trafficType == 1) {
+                            subPath.endName += "역"
+                            subPath.startName += "역"
+                        }
+                    }
+                } else {
+                    minTotalTime = nextMinTimePath?.info?.totalTime
+                    nextMinTimePath?.subPath?.forEach { subPath ->
+                        if (subPath.sectionTime != 0) minSubPathList.add(subPath)
+                        if (subPath.trafficType == 1) {
+                            subPath.endName += "역"
+                            subPath.startName += "역"
+                        }
                     }
                 }
+
+                val minTotalWalk = minTimePath?.info?.totalWalk
+
                 routeCount = minSubPathList.size
                 Log.d("minSubPathList", minSubPathList.size.toString())
                 //info데이터 초기화

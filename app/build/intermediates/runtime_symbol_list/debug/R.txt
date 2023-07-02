@@ -2561,6 +2561,7 @@ int drawable baseline_edit_calendar_24 0x7f08005f
 int drawable baseline_emoji_people_24 0x7f080060
 int drawable baseline_home_24 0x7f080061
 int drawable baseline_my_location_24 0x7f080062
+int drawable baseline_place_24 0x7f0800f4
 int drawable baseline_settings_24 0x7f080063
 int drawable baseline_table_chart_24 0x7f080064
 int drawable btn_checkbox_checked_mtrl 0x7f080065

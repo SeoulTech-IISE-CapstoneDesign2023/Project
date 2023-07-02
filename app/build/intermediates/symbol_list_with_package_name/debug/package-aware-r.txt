@@ -2562,6 +2562,7 @@ drawable baseline_edit_calendar_24
 drawable baseline_emoji_people_24
 drawable baseline_home_24
 drawable baseline_my_location_24
+drawable baseline_place_24
 drawable baseline_settings_24
 drawable baseline_table_chart_24
 drawable btn_checkbox_checked_mtrl
