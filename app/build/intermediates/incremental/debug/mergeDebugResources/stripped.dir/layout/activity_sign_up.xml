@@ -173,13 +173,13 @@
         android:id="@+id/editNickname"
         android:layout_width="250dp"
         android:layout_height="48dp"
-        android:layout_marginTop="264dp"
+        android:layout_marginTop="90dp"
         android:ems="10"
         android:hint="닉네임을 입력하세요"
         android:inputType="text"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@+id/editCheckPW"
-        app:layout_constraintHorizontal_bias="0.845"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/editCheckPW"
         app:layout_constraintTop_toBottomOf="@+id/editCheckPW" />
 

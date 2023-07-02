@@ -36,6 +36,7 @@ class SignUpActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+
         val textNik = binding.textNik
 
         val checkPW = binding.checkPW
@@ -191,14 +192,16 @@ class SignUpActivity : AppCompatActivity() {
 
         authEmailBtn.setOnClickListener {
             sendEmailVerification()
+            Toast.makeText(baseContext, "이메일을 전송하였습니다 이메일을 확인후 가입절차를 따라주세요", Toast.LENGTH_SHORT,)
+                .show()
         }
 
 
 
-        val MAX_RETRY_COUNT = 5 // 최대 반복 횟수
+        val MAX_RETRY_COUNT = 3 // 최대 반복 횟수
+        val INTERVAL_TIME = 500L // 0.5초를 밀리초로 표현한 값
 
         val handler = Handler(Looper.getMainLooper())
-        var thread: Thread? = null
         var retryCount = 0 // 반복 횟수를 저장할 변수
 
         val runnable = object : Runnable {
@@ -241,11 +244,9 @@ class SignUpActivity : AppCompatActivity() {
 
         // 버튼 클릭 이벤트에서 작업 시작
         authCheckBtn.setOnClickListener {
-            Log.d("test","Thread(runnable).start()...")
+            Log.d("geon_funTest"," handler.postDelayed(runnable, INTERVAL_TIME)...")
             retryCount = 0
-            // 쓰레드 시작
-            thread = Thread(runnable)
-            thread?.start()
+            handler.postDelayed(runnable, INTERVAL_TIME)
 
             Log.d("geon_test_email", "current user email: ${auth.currentUser?.email}")
         }
@@ -270,7 +271,6 @@ class SignUpActivity : AppCompatActivity() {
         // 생성 버튼 클릭 시 유정 닉네임 중복 여부 판단 및 데이터 저장
         // 이후 흐름은 닉네임 값 가지고 메인화면
         createBtn.setOnClickListener {
-            thread?.interrupt()
             val user = Firebase.auth.currentUser
             val myUid = user?.uid
             val nickname = editNickname.text.toString()
@@ -279,7 +279,7 @@ class SignUpActivity : AppCompatActivity() {
             val userData = usersRef.child("users")
 
 
-            userData.addValueEventListener(object : ValueEventListener {
+            userData.addListenerForSingleValueEvent(object : ValueEventListener {
 
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     var count = 0
@@ -299,7 +299,8 @@ class SignUpActivity : AppCompatActivity() {
                     // 닉네임 입력
                     if (count == 0) {
                         Log.d("geon_test_nick", "가입 가능")
-                        usersRef.child("users").child(myUid.toString()).setValue(User(myUid))
+                        usersRef.child("users").child(myUid.toString()).setValue(User(myUid, nickname))
+
                         val intent =
                             Intent(this@SignUpActivity, MainActivity::class.java)
                         startActivity(intent)
@@ -311,8 +312,6 @@ class SignUpActivity : AppCompatActivity() {
                 }
                 override fun onCancelled(databaseError: DatabaseError) {
                     // 에러 처리
-                    Toast.makeText(baseContext, "이미 존재하는 닉네임입니다", Toast.LENGTH_SHORT,)
-                        .show()
                 }
             })
         }

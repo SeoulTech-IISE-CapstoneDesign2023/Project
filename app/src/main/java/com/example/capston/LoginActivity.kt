@@ -23,8 +23,15 @@ class LoginActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
+        Log.d("geon_test_curUser","${auth.currentUser}")
+
+        if (auth.currentUser != null) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         // 임시 로그아웃
-        Firebase.auth.signOut()
+        // Firebase.auth.signOut()
 
         // 로그인 버튼 클릭 -> 로그인 과정 진행
         binding.SignInBtn.setOnClickListener{
