@@ -12,6 +12,7 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import com.example.capston.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -295,8 +296,6 @@ class SignUpActivity : AppCompatActivity() {
 
                     Log.d("geon_test_count", "cnt ->  $count")
 
-                    // 1이면 가입 0이면 가입 불가 구현
-                    // 닉네임 입력
                     if (count == 0) {
                         Log.d("geon_test_nick", "가입 가능")
                         usersRef.child("users").child(myUid.toString()).setValue(User(myUid, nickname))
@@ -315,6 +314,9 @@ class SignUpActivity : AppCompatActivity() {
                 }
             })
         }
+
+
+
     }
 
     override fun onDestroy() {
