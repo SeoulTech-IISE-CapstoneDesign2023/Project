@@ -22,6 +22,8 @@ import com.example.capston.Bus.realtime.RealTimeArrivalBus
 import com.example.capston.R
 import com.example.capston.SearchActivity
 import com.example.capston.databinding.FragmentEditMappingBinding
+import com.example.capston.retrofit.Info
+import com.example.capston.retrofit.Path
 import com.example.capston.retrofit.PublicTransitRoute
 import com.example.capston.retrofit.SubPath
 import com.example.capston.route.PublicTransitRoteConnection
@@ -37,6 +39,7 @@ import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
+import kotlin.math.min
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -54,13 +57,16 @@ class EditMappingFragment : Fragment() {
     private var param2: String? = null
     private lateinit var binding: FragmentEditMappingBinding
     private var minTotalTime: Int? = null
-    private var routeCount: Int? = null
     private var info = mutableListOf<Info>()
     private val g by lazy { android.location.Geocoder(requireContext(), Locale.KOREAN) } //geocoder
     private var locationList = Array(4) { 0.0 }
     private var latestTime: Int? = null
-    private var isLoad = true
     private val handler = Handler()
+    private var isFailed = 0
+    private var startX = 0.0
+    private var startY = 0.0
+    private var endX = 0.0
+    private var endY = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,45 +113,36 @@ class EditMappingFragment : Fragment() {
                     geocoder(arrivalAdress) { lat, lng ->
                         locationList[2] = lng!!
                         locationList[3] = lat!!
-                        val startX = locationList[0]
-                        val startY = locationList[1]
-                        val endX = locationList[2]
-                        val endY = locationList[3]
+                        Log.d(
+                            "locationList",
+                            "${locationList[0]} ${locationList[1]} ${locationList[2]} ${locationList[3]}"
+                        )
+                        startX = locationList[0]
+                        startY = locationList[1]
+                        endX = locationList[2]
+                        endY = locationList[3]
                         requireActivity().runOnUiThread {
-                            getPublicTransitRouteSearchData(startX, startY, endX, endY, isLoad)
+                            getPublicTransitRouteSearchData(startX, startY, endX, endY)
+                            Log.d("실행", "실행1")
                             handler.postDelayed({
                                 initRecyclerView()
-                                if (isLoad) {
+                                if(isFailed==0){
                                     binding.totalTimeTextView.apply {
-                                        text = "총 소요시간 : ${minTotalTime}분"
-                                        isVisible = true
-                                    }
-                                } else {
-                                    getPublicTransitRouteSearchData(
-                                        startX,
-                                        startY,
-                                        endX,
-                                        endY,
-                                        isLoad
-                                    )
-                                    handler.postDelayed({
-                                        initRecyclerView()
-                                        if (isLoad) {
-                                            binding.totalTimeTextView.apply {
-                                                text = "총 소요시간 : ${minTotalTime}분"
-                                                isVisible = true
-                                            }
-                                        }else {
-                                            Toast.makeText(requireContext(),"현재 이용가능한 대중교통은 없습니다.",Toast.LENGTH_SHORT).show()
+                                        if (minTotalTime != null) {
+                                            text = "총 소요시간 : ${minTotalTime}분"
+                                            isVisible = true
                                         }
-                                    },1500)
+                                    }
                                 }
-                                isLoad = true // 로딩유무 초기화
+
                             }, 1500)
+                            Log.d("실행","실행2")
                         }
                     }
                 }
             }
+            Toast.makeText(context,"길찾기 경로 로딩 중",Toast.LENGTH_SHORT).show()
+            isFailed = 0
         }
         return binding.root
     }
@@ -179,7 +176,6 @@ class EditMappingFragment : Fragment() {
                     hour += 1
                     minute -= 60
                 }
-
                 when (wayCode) {
                     1 -> {
                         data?.result?.OrdList?.up?.time?.forEach { time ->
@@ -209,12 +205,16 @@ class EditMappingFragment : Fragment() {
                                 minute + 60 - waitingTimes[0].toInt()
                             }
                             callback(latestTime)
+                        } else {
+                            callback(null)
                         }
+                        Log.d("latestTime", latestTime.toString())
                     }
+
 
                     2 -> {
                         data?.result?.OrdList?.down?.time?.forEach { time ->
-                            if (time.Idx == hour) {
+                            if (time.Idx == hour || (time.Idx) - 1 == hour) {
                                 val timeTable = time.list // 해당 시간에 맞는 지하철 시간표
                                 Log.d("timeTable", timeTable)
                                 val regex = Regex("\\d+\\([^)]+\\)")
@@ -240,16 +240,12 @@ class EditMappingFragment : Fragment() {
                                 minute + 60 - waitingTimes[0].toInt()
                             }
                             callback(latestTime)
+                        } else {
+                            callback(null)
                         }
-                    }
-
-                    else -> {
-                        callback(null)
+                        Log.d("latestTime", latestTime.toString())
                     }
                 }
-
-                Log.d("latestTime", latestTime.toString())
-
             }
 
             override fun onFailure(call: Call<stationTimeTableDTO>, t: Throwable) {
@@ -281,12 +277,17 @@ class EditMappingFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        val routeAdapter = RoteAdapter(info)
-        Log.d("info", "$info")
-        Log.d("info", "${info.size}")
-        if (routeCount != info.size) errorCallback() //대중교통 길찾기 경로가 다를 경우 error처리 todo 자동차는 생각을 해봐야함
-        Log.d("errorCallback", isLoad.toString())
-        if (isLoad) {
+        Log.d("실행","실행7")
+        //todo 자동차는 생각을 해봐야함
+        info.forEach{
+            if(it.waitTime == null && (it.trafficType ==1 || it.trafficType == 2)){
+                isFailed++
+            }
+            Log.d("실행","실행8")
+        }
+
+        if(isFailed==0){
+            val routeAdapter = RoteAdapter(info)
             binding.routeSearchResultRecyclerView.apply {
                 adapter = routeAdapter
                 layoutManager = LinearLayoutManager(requireContext())
@@ -294,9 +295,33 @@ class EditMappingFragment : Fragment() {
                     DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
                 addItemDecoration(dividerItemDecoration)
             }
+            Log.d("실행","실행9")
             Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
+        }else{
+            Thread{
+                getPublicTransitRouteSearchData(startX,startY,endX,endY)
+                Log.d("실행","실행10")
+                handler.postDelayed({
+                    val routeAdapter = RoteAdapter(info)
+                    requireActivity().runOnUiThread{
+                        binding.routeSearchResultRecyclerView.apply {
+                            adapter = routeAdapter
+                            layoutManager = LinearLayoutManager(requireContext())
+                            val dividerItemDecoration =
+                                DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                            addItemDecoration(dividerItemDecoration)
+                        }
+                        Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
+                        binding.totalTimeTextView.apply {
+                            if (minTotalTime != null) {
+                                text = "총 소요시간 : ${minTotalTime}분"
+                                isVisible = true
+                            }
+                        }
+                    }
+                },1500)
+            }.start()
         }
-
     }
 
     private fun getRealTimeArrivalBus(stationId: Int, routeId: Int, callback: (Int?) -> Unit) {
@@ -313,12 +338,19 @@ class EditMappingFragment : Fragment() {
                 response: Response<RealTimeArrivalBus>
             ) {
                 val data = response.body()
-                //todo 여기에서 실시간 데이터를 추출할때 필요한 요소는 stationID는 이미있어서 괜찮고 routeID를 얻어야함 그래서 추가로 routeID를 얻어오는 작업을 할 예정
-                val latestTime = data?.result?.real?.filter { it.localRouteId.toInt() == routeId }
-                    ?.map { it.arrival1.arrivalSec }?.firstOrNull() //초임
-                val latestTimeMinute = latestTime?.div(60)
-                Log.d("busLatestTime", latestTimeMinute.toString())
-                callback(latestTimeMinute)
+                // 여기에서 실시간 데이터를 추출할때 필요한 요소는 stationID는 이미있어서 괜찮고 routeID를 얻어야함 그래서 추가로 routeID를 얻어오는 작업을 할 예정
+                try {
+                    val latestTime =
+                        data?.result?.real?.filter { it.localRouteId.toInt() == routeId }
+                            ?.map { it.arrival1.arrivalSec }?.firstOrNull() //초임
+                    val latestTimeMinute = latestTime?.div(60)
+                    Log.d("busLatestTime", latestTimeMinute.toString())
+
+                    callback(latestTimeMinute)
+                } catch (e: NullPointerException) {
+                    callback(null)
+                }
+
 
             }
 
@@ -342,7 +374,7 @@ class EditMappingFragment : Fragment() {
                 call: Call<BusRealTimeLocationDTO>,
                 response: Response<BusRealTimeLocationDTO>
             ) {
-                //todo 여기서는 busId를 넣으면은 routeID를 가져오는 작업을 진행해야한다
+                //여기서는 busId를 넣으면은 routeID를 가져오는 작업을 진행
                 val data = response.body()
                 val routeId =
                     data?.result?.real?.filter { it.busId == busId.toString() }?.map { it.routeId }
@@ -364,7 +396,6 @@ class EditMappingFragment : Fragment() {
         startY: Double,
         endX: Double,
         endY: Double,
-        isLoad: Boolean,
     ) {
         val retrofitApi = PublicTransitRoteConnection.getInstance()
             .create(PublicTransitRoteSearchAPIService::class.java)
@@ -387,38 +418,29 @@ class EditMappingFragment : Fragment() {
                 val nextMinTimePath =
                     data?.result?.path?.filter { it.info.totalTime != minTimePath?.info?.totalTime }
                         ?.minByOrNull { it.info.totalTime } // 최단시간의 경로중 대중교통이 없을 경우 그다음으로 빠른 경로를 추천
-                Log.d("minTimePath", minTimePath.toString())
-                Log.d("nextMinTimePath", nextMinTimePath.toString())
-                val minSubPathList = mutableListOf<SubPath>()
-                if (isLoad) {
+                Log.d("minTimePath", minTimePath?.subPath.toString())
+                Log.d("nextMinTimePath", nextMinTimePath?.subPath.toString())
+                Log.d("실행","실행3")
+                var minSubPathList = mutableListOf<SubPath>()
+                //최단시간이 안되면 그다음 최단시간을 불러온다
+                if(isFailed==0) {
                     minTotalTime = minTimePath?.info?.totalTime
                     minTimePath?.subPath?.forEach { subPath ->
-                        if (subPath.sectionTime != 0) minSubPathList.add(subPath)
-                        if (subPath.trafficType == 1) {
-                            subPath.endName += "역"
-                            subPath.startName += "역"
-                        }
+                        minSubPathList.add(subPath)
                     }
-                } else {
+                }else{
                     minTotalTime = nextMinTimePath?.info?.totalTime
                     nextMinTimePath?.subPath?.forEach { subPath ->
-                        if (subPath.sectionTime != 0) minSubPathList.add(subPath)
-                        if (subPath.trafficType == 1) {
-                            subPath.endName += "역"
-                            subPath.startName += "역"
-                        }
+                        minSubPathList.add(subPath)
                     }
                 }
 
-                val minTotalWalk = minTimePath?.info?.totalWalk
-
-                routeCount = minSubPathList.size
-                Log.d("minSubPathList", minSubPathList.size.toString())
                 //info데이터 초기화
                 info = mutableListOf()
                 //비동기적이여서 쓰레드를 새로만듬
                 Thread {
                     // 순차적으로 하기위해서 countdonwlatch사용
+                    Log.d("실행","실행4")
                     val countDownLatch = CountDownLatch(minSubPathList.size)
                     for (item in minSubPathList) {
                         val innerCountDownLatch = CountDownLatch(1)
@@ -430,6 +452,8 @@ class EditMappingFragment : Fragment() {
                         countDownLatch.countDown()
                     }
                     countDownLatch.await()
+                    Log.d("실행","실행5")
+                    Log.d("info2", info.toString())
 
                     //맨처음 도착지점 같은 경우 두번째 리스트에 있는 것으로 설정
                     for (i in 0 until info.size) {
@@ -440,39 +464,46 @@ class EditMappingFragment : Fragment() {
                             info[i].startName = info[i - 1].endName
                         }
                     }
-                    info[0].startName = "출발지"
-                    info[info.size - 1].endName = "도착지"
-                    info[0].endName = info[1].startName
-                    info[info.size - 1].startName = info[info.size - 2].endName
-
-                    // 변경된 대기시간을 가져와야함
-                    if (info.isNotEmpty()) {
-                        var plusTime = 0
-                        val countDownLatch2 = CountDownLatch(info.size)
-                        for (data in info) {
-                            plusTime += data.sectionTime!!
-                            if (data.trafficType == 1 && data.waitTime != null) {
-                                getPublicTransportationData(
-                                    data.subwayCode!!,
-                                    data.wayCode!!,
-                                    plusTime
-                                ) { time ->
-                                    data.waitTime = time
-
+                    try { // info를 불러올수없는경우 거리가 가까울경우
+                        info[0].startName = "출발지"
+                        info[info.size - 1].endName = "도착지"
+                        info[0].endName = info[1].startName
+                        info[info.size - 1].startName = info[info.size - 2].endName
+                        // 변경된 대기시간을 가져와야함
+                        if (info.isNotEmpty()) {
+                            var plusTime = 0
+                            val countDownLatch2 = CountDownLatch(info.size)
+                            for (data in info) {
+                                plusTime += data.sectionTime!!
+                                if (data.trafficType == 1 && data.waitTime != null) {
+                                    getPublicTransportationData(
+                                        data.subwayCode!!,
+                                        data.wayCode!!,
+                                        plusTime
+                                    ) { time ->
+                                        data.waitTime = time
+                                    }
                                 }
                                 countDownLatch2.countDown()
                             }
+                            countDownLatch2.await()
+                            //만약 info데이터안에 지하철이나 버스의 현재 운영중인 경우가 없을 경우 그 다음 경로를 추천
+                            Log.d("infoaaa", "$info")
+                            Log.d("실행","실행6")
                         }
-                        countDownLatch2.await()
-                    }
-
-
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "길찾기 경로 로딩완료", Toast.LENGTH_SHORT).show()
+                    } catch (e: IndexOutOfBoundsException) {
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(
+                                requireContext(),
+                                "거리가 너무 가깝습니다(700m이내)",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        Log.d("실행","실행6")
                     }
                 }.start()
 
-
+                //todo pathListSize만큼 반복문을 돌면서 만약 대기시간이 null이 아닌값이 나온다면 그 경로를 알려주고 다 null이라면 이용가능한 대중교통이 없다고 알려주기
             }
 
             override fun onFailure(call: Call<PublicTransitRoute>, t: Throwable) {
@@ -503,7 +534,7 @@ class EditMappingFragment : Fragment() {
                 lane = subPath.lane.map { it.subwayCode }.firstOrNull()
                 subwayCode = subPath.startID.toString()
                 wayCode = subPath.wayCode
-                Log.d("subwayinfo1", info.toString())
+                Log.d("subwaydata", "$subwayCode, $wayCode")
                 getPublicTransportationData(subwayCode, wayCode) { time ->
                     waitTime = time
                     val info = Info(
@@ -518,9 +549,11 @@ class EditMappingFragment : Fragment() {
                         waitTime,
                         busId
                     )
-                    callback(info)
                     Log.d("subwayinfo", info.toString())
+                    callback(info)
+                    //지금 콜백이 실행이 안되고있다
                 }
+
             }
             //버스일때
             2 -> {
@@ -531,33 +564,45 @@ class EditMappingFragment : Fragment() {
                 subwayCode = subPath.startID.toString()
                 wayCode = subPath.wayCode
                 busId = subPath.lane.map { it.busID }.firstOrNull()
-                Log.d("businfo1", info.toString())
-                if (busId != null) { // routeID를 가져와서 그 routeId와 busid하고 결합해서 실시간 도착정보를 받아온다
-                    getRouteId(busId) { routeId ->
-                        if (routeId != null) {
-                            getRealTimeArrivalBus(subwayCode.toInt(), routeId) { time ->
-                                if (time != null) {
-                                    waitTime = time
-                                    val info = Info(
-                                        trafficType,
-                                        startName,
-                                        endName,
-                                        sectionTime,
-                                        lane,
-                                        busno,
-                                        subwayCode,
-                                        wayCode,
-                                        waitTime,
-                                        busId
-                                    )
-                                    callback(info)
-                                    Log.d("businfo", info.toString())
-                                }
-                            }
+                Log.d("busid", busId.toString())
+                Log.d("startId", subwayCode)
+                // busID를 입력하게 되면 routeID를 얻게 된다.
+                getRouteId(busId!!) { routeId ->
+                    if (routeId != null) {
+                        getRealTimeArrivalBus(subwayCode.toInt(), routeId) { time -> //얻은 루트아이디와 busID를 활용해서 하면된다
+                            waitTime = time
+                            val info = Info(
+                                trafficType,
+                                startName,
+                                endName,
+                                sectionTime,
+                                lane,
+                                busno,
+                                subwayCode,
+                                wayCode,
+                                waitTime,
+                                busId
+                            )
+                            callback(info)
+                            Log.d("businfo", info.toString())
                         }
+                    }else{
+                        val info = Info(
+                            trafficType,
+                            startName,
+                            endName,
+                            sectionTime,
+                            lane,
+                            busno,
+                            subwayCode,
+                            wayCode,
+                            waitTime,
+                            busId
+                        )
+                        callback(info)
+                        Log.d("businfo", info.toString())
                     }
                 }
-
             }
             //도보일때
             3 -> {
@@ -575,13 +620,9 @@ class EditMappingFragment : Fragment() {
                     busId
                 )
                 callback(info)
-                Log.d("walkinfo", info.toString())
+                Log.d("walkinfo", info.toString())//그다음 이쪽이 2번째로 작동
             }
         }
-    }
-
-    private fun errorCallback() {
-        isLoad = false
     }
 
     data class Info(

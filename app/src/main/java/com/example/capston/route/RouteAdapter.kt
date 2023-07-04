@@ -64,8 +64,8 @@ class RoteAdapter(
                         }
 
                         detailTypeTextView.isVisible = true
+                        waitingTimeTextView.isVisible = true
                         if (info.waitTime != null) {
-                            waitingTimeTextView.isVisible = true
                             waitingTimeTextView.text = "대기시간 ${info.waitTime}분"
                         } else if (info.waitTime == 0) {
                             waitingTimeTextView.text = "곧도착"
@@ -82,11 +82,11 @@ class RoteAdapter(
                         sectionTimeTextView.text = info.sectionTime.toString() + "분"
                         detailTypeTextView.text = info.busno
                         detailTypeTextView.isVisible = true
-                        if (info.waitTime != null) {
-                            waitingTimeTextView.isVisible = true
-                            waitingTimeTextView.text = "대기시간 ${info.waitTime}분"
-                        } else if (info.waitTime == 0) {
+                        waitingTimeTextView.isVisible = true
+                        if (info.waitTime == 0) {
                             waitingTimeTextView.text = "곧도착"
+                        } else if (info.waitTime != null) {
+                            waitingTimeTextView.text = "대기시간 ${info.waitTime}분"
                         } else {
                             waitingTimeTextView.text = "운행정보 없음"
                         }

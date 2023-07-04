@@ -13,7 +13,7 @@ interface PublicTransitRoteSearchAPIService {
         @Query("SY") startY: String,
         @Query("EX") endX: String,
         @Query("EY") endY: String,
-        @Query("OPT") opt: Int = 1,
+        @Query("OPT") opt: Int = 0,
         @Query("SearchType") searchType :Int = 0,
         @Query("SearchPathType") searchPathType : Int = 0,
         ): Call<PublicTransitRoute>

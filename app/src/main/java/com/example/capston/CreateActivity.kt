@@ -314,4 +314,33 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         Log.d("DataPass","$data")
         editTextLength = data!!
     }
+
+    private fun saveDateData(){
+        with(getSharedPreferences("date",Context.MODE_PRIVATE).edit()){
+            putString("startDate",binding.startDateValueTextView.text.toString())
+            putString("startTime",binding.startTimeValueTextView.text.toString())
+            putString("arrivalDate",binding.arriveDateValueTextView.text.toString())
+            putString("arrivalTime",binding.arriveTimeValueTextView.text.toString())
+            apply()
+        }
+    }
+
+    private fun loadDate(){
+        with(getSharedPreferences("date",Context.MODE_PRIVATE)){
+            binding.startDateValueTextView.text = getString("startDate",intent.getStringExtra("startDate") ?: "0000/00/00")
+            binding.startTimeValueTextView.text = getString("startTime","오전 00:00" )
+            binding.arriveDateValueTextView.text = getString("arrivalDate","0000/00/00")
+            binding.arriveTimeValueTextView.text = getString("arrivalTime","오전 00:00")
+        }
+    }
+    //액티비티 다시켜질대 데이터 로드
+    override fun onResume() {
+        loadDate()
+        super.onResume()
+    }
+    //액티비티 꺼질때 데이터 저장
+    override fun onDestroy() {
+        saveDateData()
+        super.onDestroy()
+    }
 }
