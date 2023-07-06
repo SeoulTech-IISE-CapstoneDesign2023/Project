@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.commit
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.EditFragment.EditTodoFragment
@@ -35,6 +36,8 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private var arrivalTime = ""
     private var editTextLength = 0
     private var isEditMode = false  // 추가: 편집 모드 여부를 나타내는 변수
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +98,15 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         binding.arriveTimeValueTextView.setOnClickListener {
             setTime(1)
         }
+
+        binding.startDateValueTextView.addTextChangedListener {
+            saveDateData()
+        }
+
+        binding.startTimeValueTextView.addTextChangedListener{
+            saveDateData()
+        }
+
     }
     private fun initializeEditMode(todo: Todo) {
         // 기존의 Todo를 수정하는 경우, 해당 Todo의 정보를 사용하여 화면을 초기화
@@ -271,7 +283,7 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private fun setDate(separator: Int) {
         val calendar = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            dateString = "${year}/ ${month + 1} / ${dayOfMonth}"
+            dateString = "${year}/ ${month + 1}/ ${dayOfMonth}"
             if (separator == 0) {
                 binding.startDateValueTextView.text = "$dateString"
                 startTime = "$dateString $timeString"
@@ -317,20 +329,20 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
 
     private fun saveDateData(){
         with(getSharedPreferences("date",Context.MODE_PRIVATE).edit()){
-            putString("startDate",binding.startDateValueTextView.text.toString())
-            putString("startTime",binding.startTimeValueTextView.text.toString())
-            putString("arrivalDate",binding.arriveDateValueTextView.text.toString())
-            putString("arrivalTime",binding.arriveTimeValueTextView.text.toString())
+            putString("startDate1",binding.startDateValueTextView.text.toString())
+            putString("startTime1",binding.startTimeValueTextView.text.toString())
+            putString("arrivalDate1",binding.arriveDateValueTextView.text.toString())
+            putString("arrivalTime1",binding.arriveTimeValueTextView.text.toString())
             apply()
         }
     }
 
     private fun loadDate(){
         with(getSharedPreferences("date",Context.MODE_PRIVATE)){
-            binding.startDateValueTextView.text = getString("startDate",intent.getStringExtra("startDate") ?: "0000/00/00")
-            binding.startTimeValueTextView.text = getString("startTime","오전 00:00" )
-            binding.arriveDateValueTextView.text = getString("arrivalDate","0000/00/00")
-            binding.arriveTimeValueTextView.text = getString("arrivalTime","오전 00:00")
+            binding.startDateValueTextView.text = getString("startDate1",intent.getStringExtra("startDate") ?: "0000/00/00")
+            binding.startTimeValueTextView.text = getString("startTime1","오전 00:00" )
+            binding.arriveDateValueTextView.text = getString("arrivalDate1","0000/00/00")
+            binding.arriveTimeValueTextView.text = getString("arrivalTime1","오전 00:00")
         }
     }
     //액티비티 다시켜질대 데이터 로드

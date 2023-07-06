@@ -2795,6 +2795,8 @@ id anticipate
 id arc
 id arrivalAreaTextView
 id arrivalTextView
+id arrivalTime
+id arrivalTimeTextView
 id arrivalValueTextView
 id arriveDateTextView
 id arriveDateValueTextView
@@ -2881,6 +2883,8 @@ id decorated_disabled
 id default_activity_button
 id defaults
 id deltaRelative
+id departureTime
+id departureTimeTextView
 id dependency_ordering
 id design_bottom_sheet
 id design_menu_item_action_area
@@ -3316,6 +3320,8 @@ id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
+id taxiFare
+id taxiFareTextView
 id test_checkbox_android_button_tint
 id test_checkbox_app_button_tint
 id test_radiobutton_android_button_tint
@@ -3402,6 +3408,9 @@ id toggle
 id toolbar2
 id top
 id topPanel
+id totalFair
+id totalFairTextView
+id totalTime
 id totalTimeTextView
 id touch_outside
 id trackingTimeSpinner
@@ -3608,6 +3617,7 @@ layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
 layout fragment_time_table
+layout item_car
 layout item_route
 layout item_todo
 layout m3_alert_dialog

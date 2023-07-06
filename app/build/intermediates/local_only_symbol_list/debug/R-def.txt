@@ -25,6 +25,8 @@ drawable square
 id addtodo_button
 id arrivalAreaTextView
 id arrivalTextView
+id arrivalTime
+id arrivalTimeTextView
 id arrivalValueTextView
 id arriveDateTextView
 id arriveDateValueTextView
@@ -38,6 +40,8 @@ id carWayButton
 id changeAddressButton
 id createActionToolbar
 id createPlan
+id departureTime
+id departureTimeTextView
 id detailTypeTextView
 id editTodoText
 id frameLayout
@@ -168,6 +172,8 @@ id sunday2000
 id sunday2100
 id sunday2200
 id sunday2300
+id taxiFare
+id taxiFareTextView
 id textInputEditText
 id textTextInputLayout
 id textView
@@ -227,6 +233,9 @@ id todoTextView
 id todoTime
 id todotitle
 id toolbar2
+id totalFair
+id totalFairTextView
+id totalTime
 id totalTimeTextView
 id trackingTimeSpinner
 id trackingTimeTextView
@@ -294,6 +303,7 @@ layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
 layout fragment_time_table
+layout item_car
 layout item_route
 layout item_todo
 menu create_menu
