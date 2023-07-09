@@ -1,5 +1,6 @@
 package com.example.capston.EditFragment
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -14,11 +15,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.capston.PublicTransitRouteConnection
-import com.example.capston.PublicTransitRouteSearchAPIService
-import com.example.capston.R
-import com.example.capston.RouteAdapter
-import com.example.capston.SearchActivity
+import com.example.capston.*
 import com.example.capston.databinding.FragmentEditMappingBinding
 import com.example.capston.retrofit.PublicTransitRoute
 import com.example.capston.retrofit.SubPath
@@ -33,11 +30,6 @@ import java.util.Locale
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EditMappingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditMappingFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
@@ -46,6 +38,17 @@ class EditMappingFragment : Fragment() {
     private var info = mutableListOf<Info>()
     private val g by lazy { android.location.Geocoder(requireContext(), Locale.KOREAN) } //geocoder
     private var locationList = Array<Double>(4, { 0.0 })
+
+    interface OnDataPassListener {//data를 전달하는 listener
+    fun onStartPass(startPlace: String)
+        fun onArrivePass(arrivePlace: String)
+    }
+    private lateinit var dataPassListener : EditTodoFragment.OnDataPassListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        dataPassListener = context as EditTodoFragment.OnDataPassListener
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +63,17 @@ class EditMappingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEditMappingBinding.inflate(inflater, container, false)
+        //list에서 일정 하나 선택했을 때 내용 수정
+        val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
+        if (todo != null) {
+            // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
+            binding.startValueTextView.text = todo.startPlace
+            binding.arrivalValueTextView.text = todo.arrivePlace
+        } else {
+            // 새로운 Todo를 생성하는 경우, 화면을 초기화
+            binding.startValueTextView.text = ""
+            binding.arrivalValueTextView.text = ""
+        }
         //spinner adapter
         binding.trackingTimeSpinner.adapter = ArrayAdapter.createFromResource(
             requireContext(),

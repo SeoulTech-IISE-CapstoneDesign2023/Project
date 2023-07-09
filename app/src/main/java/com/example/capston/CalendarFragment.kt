@@ -3,6 +3,7 @@ package com.example.capston
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -75,11 +76,11 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             saveDate()
         }
         // 오늘 날짜 받아오기
-        val today = android.icu.util.Calendar.getInstance()
-        val todayYear = today[android.icu.util.Calendar.YEAR]
-        val todayMonth = today[android.icu.util.Calendar.MONTH]
-        val todayDay = today[android.icu.util.Calendar.DAY_OF_MONTH]
-        val todayStr = "${todayYear}/${todayMonth + 1}/$todayDay"
+        var today = Calendar.getInstance()
+        var todayYear = today[Calendar.YEAR]
+        var todayMonth = today[Calendar.MONTH]
+        var todayDay = today[Calendar.DAY_OF_MONTH]
+        val todayStr = "${todayYear}/ ${todayMonth + 1}/ $todayDay"
 
         // 시작 할 때 오늘 todolist 불러오기
         clickedDate(todayStr)
@@ -91,7 +92,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             val dayOfMonth = date.day
             dateStr = "${year}/ ${month}/ $dayOfMonth"
             //오늘 날짜는 항상 Today's List
-            if (dateStr == LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/ M/ dd"))){
+            if (dateStr == LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/ M/ d"))){
                 binding.txtTodaylist.text = "Today's List"
             }else{
                 binding.txtTodaylist.text = dateStr+" List"
@@ -99,6 +100,12 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             //날짜에 따른 todolist 불러오기
             clickedDate(dateStr)
         }
+        Log.d("TimetableFragment", "${todoList}")
+        // TimetableFragment 생성 및 데이터 전달
+        val bundle = Bundle()
+        var fragment = TimeTableFragment()
+        bundle.putParcelableArrayList("todoList", todoList)
+        fragment.arguments = bundle
         return binding.root
     }
     //캘린더에서 선택한 날짜 데이터 저장
@@ -143,8 +150,14 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         return resultDate
     }
     override fun onShortClick(position: Int) {
-        val todo = todoList[position] // 선택한 위치의 Todo 객체를 가져옴
+        Log.d("TimetableFragment", "${todoList}")
+        val todo = todoList[position] // 선택한 위치의 Todo객체를 가져옴
         val todoKey = todoKeys[position]
+        //Fragment로 데이터 전송
+        val bundle = Bundle()
+        bundle.putParcelable("todo", todo)
+        bundle.putString("todoKey", todoKey)
+        //Activity로 데이터 전송
         val intent = Intent(requireContext(), CreateActivity::class.java)
         intent.putExtra("todo", todo)
         intent.putExtra("todoKey",todoKey)
