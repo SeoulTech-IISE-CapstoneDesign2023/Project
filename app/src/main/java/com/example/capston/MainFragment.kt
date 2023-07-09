@@ -33,6 +33,7 @@ class MainFragment : Fragment(), OnItemLongClickListener,OnItemShortClickListene
     lateinit var user: String
     private var todayStr: String = ""
     val todoList = arrayListOf<Todo>()
+    var todoKeys: java.util.ArrayList<String> = arrayListOf()   //메시지 키 목록
     val adapter = TodoListAdapter(todoList, this,this)
 
     lateinit var yearToday: String
@@ -111,8 +112,16 @@ class MainFragment : Fragment(), OnItemLongClickListener,OnItemShortClickListene
         return resultDate
     }
     override fun onShortClick(position: Int) {
+        val todo = todoList[position] // 선택한 위치의 todo객체를 가져옴
+        val todoKey = todoKeys[position]
+        //Fragment로 데이터 전송
+        val bundle = Bundle()
+        bundle.putParcelable("todo", todo)
+        bundle.putString("todoKey", todoKey)
+        //Activity로 데이터 전송
         val intent = Intent(requireContext(), CreateActivity::class.java)
-        intent.putExtra("todo", position)
+        intent.putExtra("todo", todo)
+        intent.putExtra("todoKey",todoKey)
         startActivity(intent)
     }
     override fun onLongClick(position: Int) {

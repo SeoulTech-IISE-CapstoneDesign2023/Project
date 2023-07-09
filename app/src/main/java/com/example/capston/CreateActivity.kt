@@ -23,7 +23,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
+class CreateActivity : AppCompatActivity(),
+    EditTodoFragment.OnDataPassListener,
+    EditMappingFragment.OnDataPassListener{
     private lateinit var binding: ActivityCreateBinding
     var todoKeys: java.util.ArrayList<String> = arrayListOf()   //일정 키 목록
     lateinit var user: String
@@ -34,6 +36,10 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
     private var startTime = ""
     private var arrivalTime = ""
     private var editTextLength = 0
+    private var editTextPlace = ""
+    private var editTextMemo = ""
+    private var editStartPlace = ""
+    private var editArrivePlace = ""
     private var isEditMode = false  // 추가: 편집 모드 여부를 나타내는 변수
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +53,8 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         val todo = intent.getParcelableExtra<Todo>("todo")
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
+            Log.d("DataPass","time is :${todo.st_time}")
+            Log.d("DataPass","create place is :${todo.place}")
             initializeEditMode(todo)
         } else {
             // 새로운 Todo를 생성하는 경우, 화면을 초기화
@@ -149,14 +157,16 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         val st_time = binding.startTimeValueTextView.text.toString()
         val end_date = binding.arriveDateValueTextView.text.toString()
         val end_time = binding.arriveTimeValueTextView.text.toString()
-//        val place = todoFragmentBinding.place.getText().toString()
-//        val memo = todoFragmentBinding.memo.getText().toString()
+        val place = editTextPlace
+        val memo = editTextMemo
+        val startPlace = editStartPlace
+        val arrivePlace = editArrivePlace
 
         val check = splitDate(st_date)
         val clickedYear = check[0].trim()
         val clickedMonth = check[1].trim()
         val clickedDay = check[2].trim()
-        val todo = Todo(title, st_date, st_time, end_date, end_time, null, null)   //todo data class에 필요한 내용 넣고 todo 변수에 저장
+        val todo = Todo(title, st_date, st_time, end_date, end_time, place, memo, startPlace, arrivePlace)
         val TodoRef = FirebaseDatabase.getInstance().getReference("calendar")
             .child(user)
             .child("$clickedYear" + "년")
@@ -181,6 +191,10 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         val st_time = binding.startTimeValueTextView.text.toString()
         val end_date = binding.arriveDateValueTextView.text.toString()
         val end_time = binding.arriveTimeValueTextView.text.toString()
+        val place = editTextPlace
+        val memo = editTextMemo
+        val startPlace = editStartPlace
+        val arrivePlace = editArrivePlace
 
         val check = splitDate(st_date)
         val clickedYear = check[0].trim()
@@ -193,6 +207,10 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         todoUpdates["st_time"] = st_time
         todoUpdates["end_date"] = end_date
         todoUpdates["end_time"] = end_time
+        todoUpdates["place"] = place
+        todoUpdates["memo"] = memo
+        todoUpdates["startPlace"] = startPlace
+        todoUpdates["arrivePlace"] = arrivePlace
 
         val todoReference = FirebaseDatabase.getInstance().getReference("calendar")
             .child(user)
@@ -309,9 +327,30 @@ class CreateActivity : AppCompatActivity(),EditTodoFragment.OnDataPassListener {
         return true
     }
 
-    //editTodoFragment에서 메모장 텍스트 길이 받아오기
+    //EditTodoFragment에서 메모장 텍스트 길이 받아오기
     override fun onDataPass(data: Int?) {
-        Log.d("DataPass","$data")
+        Log.d("DataPass","memo's lenght is :$data")
         editTextLength = data!!
+    }
+    //EditTodoFragment에서 메모장 텍스트 받아오기
+    override fun onMemoPass(memo: String) {
+        Log.d("DataPass","memo is :$memo")
+        editTextMemo = memo
+    }
+    //EditTodoFragment에서 장소 텍스트 받아오기
+    override fun onPlacePass(place: String) {
+        Log.d("DataPass","place is :$place")
+        editTextPlace = place
+    }
+    //EditMappingFragment에서 출발지 텍스트 받아오기
+    override fun onStartPass(startPlace: String) {
+        Log.d("DataPass","startPlace is :$startPlace")
+        editStartPlace = startPlace
+
+    }
+    //EditMappingFragment에서 도착지 텍스트 받아오기
+    override fun onArrivePass(arrivePlace: String) {
+        Log.d("DataPass","arrivePlace is :$arrivePlace")
+        editArrivePlace = arrivePlace
     }
 }

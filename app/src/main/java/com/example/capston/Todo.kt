@@ -11,8 +11,14 @@ data class Todo(
     val end_time: String ?= null,   //일정 종료 시간
     val place: String? = null,      //일정 장소
     val memo: String? = null,       //일정 관련 메모
+    val startPlace: String ?= null,   //일정 출발지
+    val arrivePlace: String ?= null,   //일정 도착지
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
@@ -26,6 +32,10 @@ data class Todo(
         parcel.writeString(st_time)
         parcel.writeString(end_date)
         parcel.writeString(end_time)
+        parcel.writeString(place)
+        parcel.writeString(memo)
+        parcel.writeString(startPlace)
+        parcel.writeString(arrivePlace)
     }
 
     override fun describeContents(): Int {

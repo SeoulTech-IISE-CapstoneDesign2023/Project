@@ -2,11 +2,13 @@ package com.example.capston.EditFragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
+import com.example.capston.Todo
 import com.example.capston.databinding.FragmentEditTodoBinding
 
 private const val ARG_PARAM1 = "param1"
@@ -20,6 +22,8 @@ class EditTodoFragment : Fragment() {
 
     interface OnDataPassListener {//data를 전달하는 listener
         fun onDataPass(data:Int?)
+        fun onMemoPass(memo: String)
+        fun onPlacePass(place: String)
     }
     private lateinit var dataPassListener : OnDataPassListener
 
@@ -30,6 +34,12 @@ class EditTodoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)//data를 전달
+        binding.placeEditTextView.addTextChangedListener { text ->
+            dataPassListener.onPlacePass(text.toString())
+        }
+        binding.textInputEditText.addTextChangedListener {text->
+            dataPassListener.onMemoPass(text.toString())
+        }
         binding.textInputEditText.addTextChangedListener {text->
             dataPassListener.onDataPass(text?.length)
         }
@@ -48,6 +58,18 @@ class EditTodoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEditTodoBinding.inflate(inflater, container, false)
+        //list에서 일정 하나 선택했을 때 내용 수정
+        val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
+        if (todo != null) {
+            // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
+            Log.d("DataPass","place is :${todo.place}")
+            binding.placeEditTextView.setText(todo.place)
+            binding.textInputEditText.setText(todo.memo)
+        } else {
+            // 새로운 Todo를 생성하는 경우, 화면을 초기화
+            binding.placeEditTextView.setText("")
+            binding.textInputEditText.setText("")
+        }
         binding.textInputEditText.addTextChangedListener {
             it?.let { text ->
                 binding.textTextInputLayout.error = if (text.length > 100) {
@@ -60,15 +82,6 @@ class EditTodoFragment : Fragment() {
 
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EditTodoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             EditTodoFragment().apply {
