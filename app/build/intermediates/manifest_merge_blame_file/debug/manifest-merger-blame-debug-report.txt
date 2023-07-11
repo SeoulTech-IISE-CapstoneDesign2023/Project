@@ -6,19 +6,19 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="30"
-8-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml
+8-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml
 9        android:targetSdkVersion="33" />
-9-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml
+9-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-11-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:5:5-79
-11-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:5:22-76
+11-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:5:5-79
+11-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:5:22-76
 12    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-12-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:6:5-81
-12-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:6:22-78
+12-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:6:5-81
+12-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:6:22-78
 13    <uses-permission android:name="android.permission.INTERNET" />
-13-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:7:5-67
-13-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:7:22-64
+13-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:7:5-67
+13-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:7:22-64
 14    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 14-->[com.google.firebase:firebase-auth:22.0.0] /Users/heogeonho/.gradle/caches/transforms-3/b009670aa39d80ca0d1017123999f76a/transformed/jetified-firebase-auth-22.0.0/AndroidManifest.xml:26:5-79
 14-->[com.google.firebase:firebase-auth:22.0.0] /Users/heogeonho/.gradle/caches/transforms-3/b009670aa39d80ca0d1017123999f76a/transformed/jetified-firebase-auth-22.0.0/AndroidManifest.xml:26:22-76
@@ -61,82 +61,82 @@
 32-->[androidx.core:core:1.9.0] /Users/heogeonho/.gradle/caches/transforms-3/ca98aa1355f374f7969d1c544fe1c1d8/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
 33
 34    <application
-34-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:9:5-47:19
+34-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:9:5-47:19
 35        android:allowBackup="true"
-35-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:10:9-35
+35-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:10:9-35
 36        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 36-->[androidx.core:core:1.9.0] /Users/heogeonho/.gradle/caches/transforms-3/ca98aa1355f374f7969d1c544fe1c1d8/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
 37        android:dataExtractionRules="@xml/data_extraction_rules"
-37-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:11:9-65
+37-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:11:9-65
 38        android:debuggable="true"
 39        android:extractNativeLibs="false"
 40        android:fullBackupContent="@xml/backup_rules"
-40-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:12:9-54
+40-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:12:9-54
 41        android:icon="@mipmap/ic_launcher"
-41-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:13:9-43
+41-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:13:9-43
 42        android:label="@string/app_name"
-42-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:14:9-41
+42-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:14:9-41
 43        android:roundIcon="@mipmap/ic_launcher_round"
-43-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:15:9-54
+43-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:15:9-54
 44        android:supportsRtl="true"
-44-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:16:9-35
+44-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:16:9-35
 45        android:testOnly="true"
 46        android:theme="@style/Theme.Capston" >
-46-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:17:9-45
+46-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:17:9-45
 47        <activity
-47-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:19:9-21:40
-48            android:name="com.example.capston.SignUpActivity"
-48-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:20:13-43
+47-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:19:9-21:40
+48            android:name="com.example.capston.Login.SignUpActivity"
+48-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:20:13-49
 49            android:exported="false" />
-49-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:21:13-37
+49-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:21:13-37
 50        <activity
-50-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:22:9-24:40
+50-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:22:9-24:40
 51            android:name="com.example.capston.SearchWebActivity"
-51-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:23:13-46
+51-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:23:13-46
 52            android:exported="false" />
-52-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:24:13-37
+52-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:24:13-37
 53        <activity
-53-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:25:9-27:40
+53-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:25:9-27:40
 54            android:name="com.example.capston.SearchActivity"
-54-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:26:13-43
+54-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:26:13-43
 55            android:exported="false" />
-55-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:27:13-37
+55-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:27:13-37
 56        <activity
-56-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:28:9-30:40
+56-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:28:9-30:40
 57            android:name="com.example.capston.CreateActivity"
-57-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:29:13-43
+57-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:29:13-43
 58            android:exported="false" />
-58-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:30:13-37
+58-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:30:13-37
 59        <activity
-59-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:31:9-39:20
-60            android:name="com.example.capston.LoginActivity"
-60-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:32:13-42
+59-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:31:9-39:20
+60            android:name="com.example.capston.Login.LoginActivity"
+60-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:32:13-48
 61            android:exported="true" >
-61-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:33:13-36
+61-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:33:13-36
 62            <intent-filter>
-62-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:34:13-38:29
+62-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:34:13-38:29
 63                <action android:name="android.intent.action.MAIN" />
-63-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:35:17-69
-63-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:35:25-66
+63-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:35:17-69
+63-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:35:25-66
 64
 65                <category android:name="android.intent.category.LAUNCHER" />
-65-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:37:17-77
-65-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:37:27-74
+65-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:37:17-77
+65-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:37:27-74
 66            </intent-filter>
 67        </activity>
 68        <activity
-68-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:40:9-42:39
+68-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:40:9-42:39
 69            android:name="com.example.capston.MainActivity"
-69-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:41:13-41
+69-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:41:13-41
 70            android:exported="true" />
-70-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:42:13-36
+70-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:42:13-36
 71
 72        <meta-data
-72-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:44:9-46:42
+72-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:44:9-46:42
 73            android:name="com.naver.maps.map.CLIENT_ID"
-73-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:45:13-56
+73-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:45:13-56
 74            android:value="48lgtnhsi5" />
-74-->/Users/heogeonho/Documents/Project/app/src/main/AndroidManifest.xml:46:13-39
+74-->/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/AndroidManifest.xml:46:13-39
 75
 76        <service
 76-->[com.google.firebase:firebase-database-ktx:20.2.2] /Users/heogeonho/.gradle/caches/transforms-3/d096485992576d8069206489cecb553d/transformed/jetified-firebase-database-ktx-20.2.2/AndroidManifest.xml:11:9-17:19

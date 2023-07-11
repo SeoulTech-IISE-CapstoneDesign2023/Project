@@ -45,7 +45,7 @@
         android:testOnly="true"
         android:theme="@style/Theme.Capston" >
         <activity
-            android:name="com.example.capston.SignUpActivity"
+            android:name="com.example.capston.Login.SignUpActivity"
             android:exported="false" />
         <activity
             android:name="com.example.capston.SearchWebActivity"
@@ -57,7 +57,7 @@
             android:name="com.example.capston.CreateActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.capston.LoginActivity"
+            android:name="com.example.capston.Login.LoginActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,13 +1,19 @@
-package com.example.capston
+package com.example.capston.Login
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.NonNull
+import com.example.capston.MainActivity
 import com.example.capston.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
@@ -23,15 +29,39 @@ class LoginActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = Firebase.auth
 
-        Log.d("geon_test_curUser","${auth.currentUser}")
+        Log.d("geon_test_curUser","현재 사용자 로그인 여부 ${auth.currentUser?.email}")
 
-        if (auth.currentUser != null) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+        // 인증 상태 변화 이벤트 처리
+        val user = auth.currentUser
+        if (user != null) {
+            // 사용자가 로그인한 경우
+            Log.d("geon_test","로그인 처리")
+
+            val userData = FirebaseDatabase.getInstance().getReference("user")
+            userData.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var count = 0
+                    for (snapshot in dataSnapshot.children) {
+                        if (snapshot.key == auth.currentUser?.uid) {
+                            count = 1
+                            break
+                        } else continue
+                    }
+                    if (count == 1) {
+                        val intent =
+                            Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
+                    } else Firebase.auth.signOut()
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // 에러 처리
+                }
+            })
+        } else {
+            // 사용자가 로그아웃한 경우 또는 인증 정보가 없는 경우
+            Firebase.auth.signOut()
         }
 
-        // 임시 로그아웃
-        // Firebase.auth.signOut()
 
         // 로그인 버튼 클릭 -> 로그인 과정 진행
         binding.SignInBtn.setOnClickListener{
@@ -55,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("geon_test_login", "signInWithEmail:success")
 
-                            val intent = Intent(this,MainActivity::class.java)
+                            val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
 
                             val currentUser = auth.currentUser
@@ -76,7 +106,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.SignUpBtn.setOnClickListener{
-            val intent = Intent(this,SignUpActivity::class.java)
+            val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
 

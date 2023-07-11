@@ -21,14 +21,14 @@
                     }
                 },
                 {
-                    "source": "/Users/heogeonho/Documents/Project/app/src/main/res/values-night/themes.xml",
+                    "source": "/Users/heogeonho/AndroidStudioProjects/Project/app/src/main/res/values-night/themes.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
-                        "startOffsets": "102",
+                        "startOffsets": "100",
                         "endLines": "5",
                         "endColumns": "12",
-                        "endOffsets": "319"
+                        "endOffsets": "314"
                     },
                     "to": {
                         "startLines": "2",

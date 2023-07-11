@@ -1,4 +1,4 @@
-package com.example.capston
+package com.example.capston.Login
 
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -12,8 +12,10 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import com.example.capston.MainActivity
+import com.example.capston.R
+import com.example.capston.User
 import com.example.capston.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -80,7 +82,9 @@ class SignUpActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 checkStatusPW = 0
                 editCheckPW.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
-                editCheckPW.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext, R.color.black))
+                editCheckPW.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext,
+                    R.color.black
+                ))
             }
             override fun afterTextChanged(s: Editable?) {
             }
@@ -93,7 +97,9 @@ class SignUpActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 checkStatusPW = 0
                 editCheckPW.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
-                editCheckPW.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext, R.color.black))
+                editCheckPW.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext,
+                    R.color.black
+                ))
 
             }
             override fun afterTextChanged(s: Editable?) {
@@ -171,7 +177,7 @@ class SignUpActivity : AppCompatActivity() {
                             val user = auth.currentUser
                             Toast.makeText(baseContext, "사용자가 생성되었습니다.", Toast.LENGTH_SHORT,)
                                 .show()
-                            Log.d("geon_test_user","user create -> email: $email")
+                            Log.d("geon_test_user","create user -> email: $email")
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(baseContext, "이미 가입된 사용자입니다.", Toast.LENGTH_SHORT,)
@@ -186,7 +192,6 @@ class SignUpActivity : AppCompatActivity() {
                 Toast.makeText(baseContext, "비밀번호 일치 확인을 진행해주세요", Toast.LENGTH_SHORT,)
                     .show()
             }
-            Log.d("geon_test_email", "current user email: ${auth.currentUser?.email}")
         }
 
         val user = auth.currentUser
@@ -245,7 +250,7 @@ class SignUpActivity : AppCompatActivity() {
 
         // 버튼 클릭 이벤트에서 작업 시작
         authCheckBtn.setOnClickListener {
-            Log.d("geon_funTest"," handler.postDelayed(runnable, INTERVAL_TIME)...")
+            Log.d("geon_test_func","handler.postDelayed(runnable, INTERVAL_TIME)...")
             retryCount = 0
             handler.postDelayed(runnable, INTERVAL_TIME)
 
@@ -276,9 +281,7 @@ class SignUpActivity : AppCompatActivity() {
             val myUid = user?.uid
             val nickname = editNickname.text.toString()
 
-            val usersRef = FirebaseDatabase.getInstance().getReference("User")
-            val userData = usersRef.child("users")
-
+            val userData = FirebaseDatabase.getInstance().getReference("user")
 
             userData.addListenerForSingleValueEvent(object : ValueEventListener {
 
@@ -286,7 +289,8 @@ class SignUpActivity : AppCompatActivity() {
                     var count = 0
 
                     for (snapshot in dataSnapshot.children) {
-                        val nicknameValue = snapshot.child("nickname").value.toString()
+                        val nicknameValue = snapshot.child("user_info").child("nickname").value
+                            .toString()
                         Log.d("geon_test_dataRead", "check value: $nicknameValue")
                         if (nickname == nicknameValue) {
                             count = 1
@@ -298,7 +302,8 @@ class SignUpActivity : AppCompatActivity() {
 
                     if (count == 0) {
                         Log.d("geon_test_nick", "가입 가능")
-                        usersRef.child("users").child(myUid.toString()).setValue(User(myUid, nickname))
+                        userData.child(myUid.toString())
+                            .child("user_info").child("nickname").setValue(nickname)
 
                         val intent =
                             Intent(this@SignUpActivity, MainActivity::class.java)
@@ -327,6 +332,7 @@ class SignUpActivity : AppCompatActivity() {
 
         // 현재 사용자가 존재하는 경우
         if (currentUser != null && currentUser?.isEmailVerified == false) {
+            Log.d("geon_test_delete", "delete user(no auth)")
             // 사용자를 삭제합니다.
             currentUser.delete()
                 .addOnSuccessListener {
