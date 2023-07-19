@@ -24,6 +24,16 @@
         app:layout_constraintStart_toEndOf="@+id/detailTypeTextView" />
 
     <TextView
+        android:id="@+id/waitingTimeTextView"
+        style="@style/RouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="대기시간"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@id/sectionTimeTextView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/detailTypeTextView"
         style="@style/RouteText"
         android:layout_width="wrap_content"
@@ -39,19 +49,21 @@
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_arrow_forward_24"
         app:layout_constraintBottom_toBottomOf="@+id/startAreaTextView"
-        app:layout_constraintEnd_toStartOf="@+id/arrivalAreaTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/startAreaTextView"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sectionTimeTextView" />
 
     <TextView
         android:id="@+id/startAreaTextView"
         style="@style/RouteText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="시작지점"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/arrivalAreaTextView"
+        app:layout_constraintEnd_toStartOf="@+id/arrowImageView"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,13 +73,15 @@
     <TextView
         android:id="@+id/arrivalAreaTextView"
         style="@style/RouteText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:maxLines="1"
         android:text="도착지점"
         app:layout_constraintBaseline_toBaselineOf="@+id/startAreaTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/startAreaTextView" />
+        app:layout_constraintStart_toEndOf="@+id/arrowImageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

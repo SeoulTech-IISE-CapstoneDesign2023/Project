@@ -17,13 +17,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <WebView
-        android:id="@+id/searchWeb"
+    <EditText
+        android:id="@+id/editTextView"
+        app:layout_constraintTop_toBottomOf="@id/createActionToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/locationRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createActionToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextView"
+        tools:listitem="@layout/item_location"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

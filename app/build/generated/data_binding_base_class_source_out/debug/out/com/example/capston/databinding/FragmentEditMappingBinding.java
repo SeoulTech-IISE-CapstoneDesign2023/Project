@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -30,6 +31,12 @@ public final class FragmentEditMappingBinding implements ViewBinding {
   public final TextView arrivalValueTextView;
 
   @NonNull
+  public final ImageView carWayButton;
+
+  @NonNull
+  public final ImageView publicTransportButton;
+
+  @NonNull
   public final RecyclerView routeSearchResultRecyclerView;
 
   @NonNull
@@ -53,15 +60,22 @@ public final class FragmentEditMappingBinding implements ViewBinding {
   @NonNull
   public final TextView trackingTimeTextView;
 
+  @NonNull
+  public final ImageView walkingButton;
+
   private FragmentEditMappingBinding(@NonNull ConstraintLayout rootView,
       @NonNull TextView arrivalTextView, @NonNull TextView arrivalValueTextView,
+      @NonNull ImageView carWayButton, @NonNull ImageView publicTransportButton,
       @NonNull RecyclerView routeSearchResultRecyclerView, @NonNull Button searchButton,
       @NonNull Layer searchlayer, @NonNull TextView startTextView,
       @NonNull TextView startValueTextView, @NonNull TextView totalTimeTextView,
-      @NonNull Spinner trackingTimeSpinner, @NonNull TextView trackingTimeTextView) {
+      @NonNull Spinner trackingTimeSpinner, @NonNull TextView trackingTimeTextView,
+      @NonNull ImageView walkingButton) {
     this.rootView = rootView;
     this.arrivalTextView = arrivalTextView;
     this.arrivalValueTextView = arrivalValueTextView;
+    this.carWayButton = carWayButton;
+    this.publicTransportButton = publicTransportButton;
     this.routeSearchResultRecyclerView = routeSearchResultRecyclerView;
     this.searchButton = searchButton;
     this.searchlayer = searchlayer;
@@ -70,6 +84,7 @@ public final class FragmentEditMappingBinding implements ViewBinding {
     this.totalTimeTextView = totalTimeTextView;
     this.trackingTimeSpinner = trackingTimeSpinner;
     this.trackingTimeTextView = trackingTimeTextView;
+    this.walkingButton = walkingButton;
   }
 
   @Override
@@ -108,6 +123,18 @@ public final class FragmentEditMappingBinding implements ViewBinding {
       id = R.id.arrivalValueTextView;
       TextView arrivalValueTextView = ViewBindings.findChildViewById(rootView, id);
       if (arrivalValueTextView == null) {
+        break missingId;
+      }
+
+      id = R.id.carWayButton;
+      ImageView carWayButton = ViewBindings.findChildViewById(rootView, id);
+      if (carWayButton == null) {
+        break missingId;
+      }
+
+      id = R.id.publicTransportButton;
+      ImageView publicTransportButton = ViewBindings.findChildViewById(rootView, id);
+      if (publicTransportButton == null) {
         break missingId;
       }
 
@@ -159,10 +186,16 @@ public final class FragmentEditMappingBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.walkingButton;
+      ImageView walkingButton = ViewBindings.findChildViewById(rootView, id);
+      if (walkingButton == null) {
+        break missingId;
+      }
+
       return new FragmentEditMappingBinding((ConstraintLayout) rootView, arrivalTextView,
-          arrivalValueTextView, routeSearchResultRecyclerView, searchButton, searchlayer,
-          startTextView, startValueTextView, totalTimeTextView, trackingTimeSpinner,
-          trackingTimeTextView);
+          arrivalValueTextView, carWayButton, publicTransportButton, routeSearchResultRecyclerView,
+          searchButton, searchlayer, startTextView, startValueTextView, totalTimeTextView,
+          trackingTimeSpinner, trackingTimeTextView, walkingButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

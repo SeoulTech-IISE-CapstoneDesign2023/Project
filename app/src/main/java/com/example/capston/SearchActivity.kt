@@ -7,9 +7,14 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Address
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -19,15 +24,21 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.databinding.ActivitySearchBinding
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 import java.util.Locale
+import java.util.concurrent.CountDownLatch
 
 
 class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -39,6 +50,13 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
     private var myLocationlng = 0.0
     private val g by lazy { android.location.Geocoder(this, Locale.KOREAN) } //geocoder
     private var address: List<Address>? = null
+    private var isChanged = false
+    private val startMarker = Marker()
+    private val arrivalMarker = Marker()
+    private var startLng = 0.0
+    private var startLat = 0.0
+    private var arrivalLng = 0.0
+    private var arrivalLat = 0.0
 
     //장소검색 도로명 주소 받아오기
     private val getSearchResult =
@@ -47,10 +65,22 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 val data = result.data
                 if (data != null) {
                     val searchData = data.getStringExtra("data")
+                    val lat = data.getStringExtra("x")
+                    val lng = data.getStringExtra("y")
+                    Log.e("위경도넘어온거", "$lat $lng")
+
                     if (isArrivalValueTextViewClicked) {
                         binding.arrivalValueTextView.text = searchData
+                        updateArrivalMap(lat!!.toDouble(), lng!!.toDouble())
+                        arrivalLat = lat.toDouble()
+                        arrivalLng = lng.toDouble()
+                        saveLocation()
                     } else {
                         binding.startValueTextView.text = searchData
+                        updateStartMap(lat!!.toDouble(), lng!!.toDouble())
+                        startLat = lat.toDouble()
+                        startLng = lng.toDouble()
+                        saveLocation()
                     }
                 }
             }
@@ -65,12 +95,14 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         val startAddress = intent.getStringExtra("startAddress")
         val arrivalAddress = intent.getStringExtra("arrivalAddress")
 
+        loadLocation()
         binding.startValueTextView.apply {
             text = startAddress
             setOnClickListener {
                 val intent = Intent(context, SearchWebActivity::class.java)
                 isArrivalValueTextViewClicked = false
                 getSearchResult.launch(intent)
+                isChanged = false
             }
         }
 
@@ -80,7 +112,15 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 val intent = Intent(context, SearchWebActivity::class.java)
                 isArrivalValueTextViewClicked = true
                 getSearchResult.launch(intent)
+                isChanged = false
             }
+        }
+        binding.startTextView.setOnClickListener {
+            updateStartMap(startLat, startLng)
+        }
+
+        binding.arrivalTextView.setOnClickListener {
+            updateArrivalMap(arrivalLat, arrivalLng)
         }
 
         binding.navermap.getMapAsync(this)
@@ -88,16 +128,77 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding.myLocationButton.setOnClickListener {
             checkPermission()
+            isChanged = false
         }
 
-        binding.changeAddressButton.setOnClickListener{
+        binding.changeAddressButton.setOnClickListener {
             changeAddress()
+            val saveLat = startLat
+            val saveLng = startLng
+            startLat = arrivalLat
+            startLng = arrivalLng
+            arrivalLat = saveLat
+            arrivalLng = saveLng
+            updateStartMap(startLat, startLng)
+            updateArrivalMap(arrivalLat, arrivalLng)
+            isChanged = true
+            saveLocation()
         }
-
-
+        updateArrivalMap(arrivalLat, arrivalLng)
+        updateStartMap(startLat, startLng)
     }
 
-    private fun changeAddress(){
+    private fun updateStartMap(lat: Double, lng: Double) {
+        Log.e("출발", "$lat $lng")
+        geocoder(binding.startValueTextView.text.toString()) { _, _ ->
+            if (lat != null && lng != null) {
+                Handler(Looper.getMainLooper()).post {
+                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lng))
+                    cameraUpdate.animate(CameraAnimation.Fly, 1000)
+                    naverMap.moveCamera(cameraUpdate)
+                    naverMap.minZoom = 5.0
+                    naverMap.maxZoom = 18.0
+                    startMarker.apply {
+                        position = LatLng(lat, lng)
+                        icon = OverlayImage.fromResource(R.drawable.baseline_place_24)
+                        width = 150
+                        height = 150
+                        captionText = "출발지"
+                        captionTextSize = 20F
+                        iconTintColor = Color.GREEN
+                        map = naverMap
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateArrivalMap(lat: Double, lng: Double) {
+        Log.e("도착", "$lat $lng")
+        geocoder(binding.arrivalValueTextView.text.toString()) { _, _ ->
+            if (lat != null && lng != null) {
+                Handler(Looper.getMainLooper()).post {
+                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lng))
+                    cameraUpdate.animate(CameraAnimation.Fly, 1000)
+                    naverMap.moveCamera(cameraUpdate)
+                    naverMap.minZoom = 5.0
+                    naverMap.maxZoom = 18.0
+                    arrivalMarker.apply {
+                        position = LatLng(lat, lng)
+                        icon = OverlayImage.fromResource(R.drawable.baseline_place_24)
+                        width = 150
+                        height = 150
+                        captionText = "도착지"
+                        captionTextSize = 20F
+                        iconTintColor = Color.BLUE
+                        map = naverMap
+                    }
+                }
+            }
+        }
+    }
+
+    private fun changeAddress() {
         val str = binding.startValueTextView.text.toString()
         binding.startValueTextView.text = binding.arrivalValueTextView.text.toString()
         binding.arrivalValueTextView.text = str
@@ -137,6 +238,25 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
+    private fun geocoder(address: String, callback: (lat: Double?, lng: Double?) -> Unit) {
+        Thread {
+            try {
+                val adrresses = g.getFromLocationName(address, 1)
+                if (adrresses!!.isNotEmpty()) {
+                    val location = adrresses[0]
+                    val lat = location.latitude
+                    val lng = location.longitude
+                    callback(lat, lng)
+                } else {
+                    callback(null, null)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                callback(null, null)
+            }
+        }.start()
+    }
+
     private fun saveData() {
         with(getSharedPreferences("addressInformation", Context.MODE_PRIVATE).edit()) {
             putString("startAddress", binding.startValueTextView.text.toString())
@@ -168,7 +288,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                     finish()
                 }
 
-                Log.d("okMenu",binding.startValueTextView.text.toString())
+                Log.d("okMenu", binding.startValueTextView.text.toString())
 
                 true
             }
@@ -279,5 +399,25 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    //출발 도착 위경도 저장
+    private fun saveLocation() {
+        with(getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
+            putString("startLat", startLat.toString())
+            putString("startLng", startLng.toString())
+            putString("arrivalLat", arrivalLat.toString())
+            putString("arrivalLng", arrivalLng.toString())
+            apply()
+        }
+    }
+
+    private fun loadLocation() {
+        with(getSharedPreferences("location", Context.MODE_PRIVATE)) {
+            startLat = getString("startLat", "0.0")!!.toDouble()
+            startLng = getString("startLng", "0.0")!!.toDouble()
+            arrivalLat = getString("arrivalLat", "0.0")!!.toDouble()
+            arrivalLng = getString("arrivalLng", "0.0")!!.toDouble()
+        }
     }
 }

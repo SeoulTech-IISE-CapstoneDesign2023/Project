@@ -4,11 +4,12 @@ package com.example.capston.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.capston.R;
@@ -24,13 +25,18 @@ public final class ActivitySearchWebBinding implements ViewBinding {
   public final Toolbar createActionToolbar;
 
   @NonNull
-  public final WebView searchWeb;
+  public final EditText editTextView;
+
+  @NonNull
+  public final RecyclerView locationRecyclerView;
 
   private ActivitySearchWebBinding(@NonNull ConstraintLayout rootView,
-      @NonNull Toolbar createActionToolbar, @NonNull WebView searchWeb) {
+      @NonNull Toolbar createActionToolbar, @NonNull EditText editTextView,
+      @NonNull RecyclerView locationRecyclerView) {
     this.rootView = rootView;
     this.createActionToolbar = createActionToolbar;
-    this.searchWeb = searchWeb;
+    this.editTextView = editTextView;
+    this.locationRecyclerView = locationRecyclerView;
   }
 
   @Override
@@ -66,14 +72,20 @@ public final class ActivitySearchWebBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.searchWeb;
-      WebView searchWeb = ViewBindings.findChildViewById(rootView, id);
-      if (searchWeb == null) {
+      id = R.id.editTextView;
+      EditText editTextView = ViewBindings.findChildViewById(rootView, id);
+      if (editTextView == null) {
+        break missingId;
+      }
+
+      id = R.id.locationRecyclerView;
+      RecyclerView locationRecyclerView = ViewBindings.findChildViewById(rootView, id);
+      if (locationRecyclerView == null) {
         break missingId;
       }
 
       return new ActivitySearchWebBinding((ConstraintLayout) rootView, createActionToolbar,
-          searchWeb);
+          editTextView, locationRecyclerView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

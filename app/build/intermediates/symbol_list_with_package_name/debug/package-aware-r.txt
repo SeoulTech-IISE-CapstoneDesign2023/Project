@@ -2564,6 +2564,7 @@ drawable baseline_edit_calendar_24
 drawable baseline_emoji_people_24
 drawable baseline_home_24
 drawable baseline_my_location_24
+drawable baseline_place_24
 drawable baseline_settings_24
 drawable baseline_table_chart_24
 drawable btn_checkbox_checked_mtrl
@@ -2798,6 +2799,8 @@ id anticipate
 id arc
 id arrivalAreaTextView
 id arrivalTextView
+id arrivalTime
+id arrivalTimeTextView
 id arrivalValueTextView
 id arriveDateTextView
 id arriveDateValueTextView
@@ -2891,6 +2894,8 @@ id decorated_disabled
 id default_activity_button
 id defaults
 id deltaRelative
+id departureTime
+id departureTimeTextView
 id dependency_ordering
 id design_bottom_sheet
 id design_menu_item_action_area
@@ -2923,6 +2928,7 @@ id editCheckPW
 id editEmail
 id editNickname
 id editPW
+id editTextView
 id editTodoText
 id edit_query
 id elastic
@@ -2974,6 +2980,7 @@ id friday2200
 id friday2300
 id friend_button
 id frost
+id fullAddressRoadTextView
 id ghost_view
 id ghost_view_holder
 id goMappingButton
@@ -3024,6 +3031,7 @@ id linear
 id linearLayout_timetable
 id listMode
 id list_item
+id locationRecyclerView
 id logo
 id mainFragment
 id main_button
@@ -3112,6 +3120,7 @@ id mtrl_picker_title_text
 id mtrl_view_tag_bottom_padding
 id multiply
 id myLocationButton
+id nameTextView
 id navermap
 id navermap_bar
 id navermap_compass
@@ -3233,7 +3242,6 @@ id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
 id scrollable
-id searchWeb
 id search_badge
 id search_bar
 id search_button
@@ -3334,6 +3342,8 @@ id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
+id taxiFare
+id taxiFareTextView
 id test_checkbox_android_button_tint
 id test_checkbox_app_button_tint
 id test_radiobutton_android_button_tint
@@ -3425,6 +3435,12 @@ id toggle
 id toolbar2
 id top
 id topPanel
+id totalDistanceText
+id totalDistanceTextView
+id totalFair
+id totalFairTextView
+id totalTime
+id totalTimeText
 id totalTimeTextView
 id touch_outside
 id trackingTimeSpinner
@@ -3479,6 +3495,7 @@ id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
+id waitingTimeTextView
 id walkingButton
 id wednesday
 id wednesday0000
@@ -3631,8 +3648,11 @@ layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
 layout fragment_time_table
+layout item_car
+layout item_location
 layout item_route
 layout item_todo
+layout item_walk
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
