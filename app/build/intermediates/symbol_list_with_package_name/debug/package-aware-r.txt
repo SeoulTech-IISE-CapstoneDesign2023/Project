@@ -3000,6 +3000,7 @@ id ifRoom
 id ignore
 id ignoreRequest
 id image
+id imageLoadingView
 id immediateStop
 id included
 id info

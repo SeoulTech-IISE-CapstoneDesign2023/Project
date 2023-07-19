@@ -32,6 +32,9 @@ public final class ActivityLoginBinding implements ViewBinding {
   public final TextView findPWBtn;
 
   @NonNull
+  public final ImageView imageLoadingView;
+
+  @NonNull
   public final EditText inputID;
 
   @NonNull
@@ -47,13 +50,14 @@ public final class ActivityLoginBinding implements ViewBinding {
   public final TextView textView2;
 
   private ActivityLoginBinding(@NonNull ConstraintLayout rootView, @NonNull Button SignInBtn,
-      @NonNull Button SignUpBtn, @NonNull TextView findPWBtn, @NonNull EditText inputID,
-      @NonNull EditText inputPW, @NonNull ImageView logo, @NonNull TextView textView,
-      @NonNull TextView textView2) {
+      @NonNull Button SignUpBtn, @NonNull TextView findPWBtn, @NonNull ImageView imageLoadingView,
+      @NonNull EditText inputID, @NonNull EditText inputPW, @NonNull ImageView logo,
+      @NonNull TextView textView, @NonNull TextView textView2) {
     this.rootView = rootView;
     this.SignInBtn = SignInBtn;
     this.SignUpBtn = SignUpBtn;
     this.findPWBtn = findPWBtn;
+    this.imageLoadingView = imageLoadingView;
     this.inputID = inputID;
     this.inputPW = inputPW;
     this.logo = logo;
@@ -106,6 +110,12 @@ public final class ActivityLoginBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.imageLoadingView;
+      ImageView imageLoadingView = ViewBindings.findChildViewById(rootView, id);
+      if (imageLoadingView == null) {
+        break missingId;
+      }
+
       id = R.id.inputID;
       EditText inputID = ViewBindings.findChildViewById(rootView, id);
       if (inputID == null) {
@@ -137,7 +147,7 @@ public final class ActivityLoginBinding implements ViewBinding {
       }
 
       return new ActivityLoginBinding((ConstraintLayout) rootView, SignInBtn, SignUpBtn, findPWBtn,
-          inputID, inputPW, logo, textView, textView2);
+          imageLoadingView, inputID, inputPW, logo, textView, textView2);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

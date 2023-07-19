@@ -85,6 +85,7 @@ id friend_button
 id goMappingButton
 id goTodoButton
 id gridlayout_timetable
+id imageLoadingView
 id inputID
 id inputPW
 id linearLayout_timetable
