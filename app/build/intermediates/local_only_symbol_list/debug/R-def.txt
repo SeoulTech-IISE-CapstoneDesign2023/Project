@@ -16,6 +16,7 @@ drawable baseline_edit_calendar_24
 drawable baseline_emoji_people_24
 drawable baseline_home_24
 drawable baseline_my_location_24
+drawable baseline_place_24
 drawable baseline_settings_24
 drawable baseline_table_chart_24
 drawable cell
@@ -28,6 +29,8 @@ id SignUpBtn
 id addtodo_button
 id arrivalAreaTextView
 id arrivalTextView
+id arrivalTime
+id arrivalTimeTextView
 id arrivalValueTextView
 id arriveDateTextView
 id arriveDateValueTextView
@@ -48,11 +51,14 @@ id checkPW
 id createActionToolbar
 id createPlan
 id createUserBtn
+id departureTime
+id departureTimeTextView
 id detailTypeTextView
 id editCheckPW
 id editEmail
 id editNickname
 id editPW
+id editTextView
 id editTodoText
 id findPWBtn
 id frameLayout
@@ -82,6 +88,7 @@ id friday2100
 id friday2200
 id friday2300
 id friend_button
+id fullAddressRoadTextView
 id goMappingButton
 id goTodoButton
 id gridlayout_timetable
@@ -89,6 +96,7 @@ id imageLoadingView
 id inputID
 id inputPW
 id linearLayout_timetable
+id locationRecyclerView
 id logo
 id mainFragment
 id main_button
@@ -118,6 +126,7 @@ id monday2100
 id monday2200
 id monday2300
 id myLocationButton
+id nameTextView
 id navermap
 id notice_button
 id okMenu
@@ -150,7 +159,6 @@ id saturday2000
 id saturday2100
 id saturday2200
 id saturday2300
-id searchWeb
 id search_button
 id searchlayer
 id sectionTimeTextView
@@ -186,6 +194,8 @@ id sunday2000
 id sunday2100
 id sunday2200
 id sunday2300
+id taxiFare
+id taxiFareTextView
 id textInputEditText
 id textNik
 id textTextInputLayout
@@ -250,6 +260,12 @@ id todoTextView
 id todoTime
 id todotitle
 id toolbar2
+id totalDistanceText
+id totalDistanceTextView
+id totalFair
+id totalFairTextView
+id totalTime
+id totalTimeText
 id totalTimeTextView
 id trackingTimeSpinner
 id trackingTimeTextView
@@ -280,6 +296,7 @@ id tuesday2100
 id tuesday2200
 id tuesday2300
 id txt_todaylist
+id waitingTimeTextView
 id walkingButton
 id wednesday
 id wednesday0000
@@ -317,8 +334,11 @@ layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
 layout fragment_time_table
+layout item_car
+layout item_location
 layout item_route
 layout item_todo
+layout item_walk
 menu create_menu
 menu menu_item
 mipmap ic_launcher

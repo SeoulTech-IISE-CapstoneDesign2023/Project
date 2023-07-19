@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.commit
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.EditFragment.EditTodoFragment
@@ -102,6 +103,14 @@ class CreateActivity : AppCompatActivity(),
         }
         binding.arriveTimeValueTextView.setOnClickListener {
             setTime(1)
+        }
+
+        binding.startDateValueTextView.addTextChangedListener {
+            saveDateData()
+        }
+
+        binding.startTimeValueTextView.addTextChangedListener{
+            saveDateData()
         }
     }
     private fun initializeEditMode(todo: Todo) {
@@ -322,6 +331,25 @@ class CreateActivity : AppCompatActivity(),
         return resultDate
     }
 
+    private fun saveDateData(){
+        with(getSharedPreferences("date",Context.MODE_PRIVATE).edit()){
+            putString("startDate1",binding.startDateValueTextView.text.toString())
+            putString("startTime1",binding.startTimeValueTextView.text.toString())
+            putString("arrivalDate1",binding.arriveDateValueTextView.text.toString())
+            putString("arrivalTime1",binding.arriveTimeValueTextView.text.toString())
+            apply()
+        }
+    }
+
+    private fun loadDate(){
+        with(getSharedPreferences("date",Context.MODE_PRIVATE)){
+            binding.startDateValueTextView.text = getString("startDate1",intent.getStringExtra("startDate") ?: "0000/00/00")
+            binding.startTimeValueTextView.text = getString("startTime1","오전 00:00" )
+            binding.arriveDateValueTextView.text = getString("arrivalDate1","0000/00/00")
+            binding.arriveTimeValueTextView.text = getString("arrivalTime1","오전 00:00")
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         binding.createActionToolbar.inflateMenu(R.menu.create_menu)
         return true
@@ -332,6 +360,7 @@ class CreateActivity : AppCompatActivity(),
         Log.d("DataPass","memo's lenght is :$data")
         editTextLength = data!!
     }
+
     //EditTodoFragment에서 메모장 텍스트 받아오기
     override fun onMemoPass(memo: String) {
         Log.d("DataPass","memo is :$memo")
@@ -352,5 +381,16 @@ class CreateActivity : AppCompatActivity(),
     override fun onArrivePass(arrivePlace: String) {
         Log.d("DataPass","arrivePlace is :$arrivePlace")
         editArrivePlace = arrivePlace
+    }
+
+    //액티비티 다시켜질대 데이터 로드
+    override fun onResume() {
+        loadDate()
+        super.onResume()
+    }
+    //액티비티 꺼질때 데이터 저장
+    override fun onDestroy() {
+        saveDateData()
+        super.onDestroy()
     }
 }

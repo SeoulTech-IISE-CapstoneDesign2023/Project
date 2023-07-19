@@ -38,10 +38,14 @@ public final class ItemRouteBinding implements ViewBinding {
   @NonNull
   public final TextView trafficTypeTextView;
 
+  @NonNull
+  public final TextView waitingTimeTextView;
+
   private ItemRouteBinding(@NonNull ConstraintLayout rootView,
       @NonNull TextView arrivalAreaTextView, @NonNull ImageView arrowImageView,
       @NonNull TextView detailTypeTextView, @NonNull TextView sectionTimeTextView,
-      @NonNull TextView startAreaTextView, @NonNull TextView trafficTypeTextView) {
+      @NonNull TextView startAreaTextView, @NonNull TextView trafficTypeTextView,
+      @NonNull TextView waitingTimeTextView) {
     this.rootView = rootView;
     this.arrivalAreaTextView = arrivalAreaTextView;
     this.arrowImageView = arrowImageView;
@@ -49,6 +53,7 @@ public final class ItemRouteBinding implements ViewBinding {
     this.sectionTimeTextView = sectionTimeTextView;
     this.startAreaTextView = startAreaTextView;
     this.trafficTypeTextView = trafficTypeTextView;
+    this.waitingTimeTextView = waitingTimeTextView;
   }
 
   @Override
@@ -114,8 +119,15 @@ public final class ItemRouteBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.waitingTimeTextView;
+      TextView waitingTimeTextView = ViewBindings.findChildViewById(rootView, id);
+      if (waitingTimeTextView == null) {
+        break missingId;
+      }
+
       return new ItemRouteBinding((ConstraintLayout) rootView, arrivalAreaTextView, arrowImageView,
-          detailTypeTextView, sectionTimeTextView, startAreaTextView, trafficTypeTextView);
+          detailTypeTextView, sectionTimeTextView, startAreaTextView, trafficTypeTextView,
+          waitingTimeTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

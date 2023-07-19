@@ -4,17 +4,7 @@
             "outputFile": "com.example.capston.app-mergeDebugResources-41:/values-v24/values-v24.xml",
             "map": [
                 {
-                    "source": "/Users/heogeonho/.gradle/caches/transforms-3/8452e95effe6d61789c31a13799d1968/transformed/appcompat-1.6.1/res/values-v24/values-v24.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,212",
-                        "endColumns": "156,134",
-                        "endOffsets": "207,342"
-                    }
-                },
-                {
-                    "source": "/Users/heogeonho/.gradle/caches/transforms-3/cd1f56d7ac963842dd114db97ba22fa4/transformed/media-1.0.0/res/values-v24/values-v24.xml",
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\cd1f56d7ac963842dd114db97ba22fa4\\transformed\\media-1.0.0\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
@@ -31,7 +21,17 @@
                     }
                 },
                 {
-                    "source": "/Users/heogeonho/.gradle/caches/transforms-3/58dcf7e9703610dee11a55335c5dd16f/transformed/material-1.5.0/res/values-v24/values-v24.xml",
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\8452e95effe6d61789c31a13799d1968\\transformed\\appcompat-1.6.1\\res\\values-v24\\values-v24.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,212",
+                        "endColumns": "156,134",
+                        "endOffsets": "207,342"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\58dcf7e9703610dee11a55335c5dd16f\\transformed\\material-1.5.0\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,9,12,15",
                         "startColumns": "4,4,4,4,4,4,4,4",

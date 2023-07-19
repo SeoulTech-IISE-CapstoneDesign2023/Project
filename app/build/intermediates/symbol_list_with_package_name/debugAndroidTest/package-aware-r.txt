@@ -1,3 +1,0 @@
-com.example.capston.test
-style WhiteBackgroundDialogTheme
-style WhiteBackgroundTheme

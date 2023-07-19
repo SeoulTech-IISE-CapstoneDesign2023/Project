@@ -4,7 +4,7 @@
             "outputFile": "com.example.capston.app-mergeDebugResources-41:/values-w600dp-land-v13/values-w600dp-land-v13.xml",
             "map": [
                 {
-                    "source": "/Users/heogeonho/.gradle/caches/transforms-3/58dcf7e9703610dee11a55335c5dd16f/transformed/material-1.5.0/res/values-w600dp-land-v13/values-w600dp-land-v13.xml",
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\58dcf7e9703610dee11a55335c5dd16f\\transformed\\material-1.5.0\\res\\values-w600dp-land-v13\\values-w600dp-land-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

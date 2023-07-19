@@ -1,7 +1,0 @@
-com.example.capston.test.app-jetified-annotation-experimental-1.3.0-0 C:\Users\samsung\.gradle\caches\transforms-3\79efb790201a15ae1e88c39d0555036c\transformed\jetified-annotation-experimental-1.3.0\res
-com.example.capston.test.app-jetified-core-1.5.0-1 C:\Users\samsung\.gradle\caches\transforms-3\cb0342c80ec29e54dacbe83effd1be0b\transformed\jetified-core-1.5.0\res
-com.example.capston.test.app-androidTest-2 C:\gitClone\Project\app\build\generated\res\resValues\androidTest\debug
-com.example.capston.test.app-androidTest-3 C:\gitClone\Project\app\build\generated\res\rs\androidTest\debug
-com.example.capston.test.app-mergeDebugAndroidTestResources-4 C:\gitClone\Project\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
-com.example.capston.test.app-mergeDebugAndroidTestResources-5 C:\gitClone\Project\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
-com.example.capston.test.app-merged_res-6 C:\gitClone\Project\app\build\intermediates\merged_res\debugAndroidTest
