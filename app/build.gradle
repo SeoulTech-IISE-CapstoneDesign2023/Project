@@ -71,4 +71,6 @@ dependencies {
     // Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    //lottie 애니메이션이미지
+    implementation 'com.airbnb.android:lottie:6.1.0'
 }

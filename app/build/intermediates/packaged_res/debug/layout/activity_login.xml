@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".Login.LoginActivity">
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/imageLoadingView"
+        android:layout_width="match_parent"
+        app:lottie_rawRes="@raw/loading_animation"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        android:layout_height="match_parent"/>
+
     <ImageView
         android:id="@+id/logo"
         android:layout_width="160dp"
@@ -89,16 +97,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SignUpBtn" />
 
-    <ImageView
-        android:id="@+id/imageLoadingView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#673AB7"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>

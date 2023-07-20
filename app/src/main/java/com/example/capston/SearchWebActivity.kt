@@ -1,6 +1,7 @@
 package com.example.capston
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.Menu
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -52,12 +55,21 @@ class SearchWebActivity : AppCompatActivity() {
             location(searchKeyWord)
         }
 
-        binding.editTextView.addTextChangedListener {
+        binding.searchEditText.addTextChangedListener {
             searchKeyWord = it.toString()
             handler.removeCallbacks(runnable)
             handler.postDelayed(runnable, 300)
         }
-
+        //키보드에서 검색버튼 누르면 키보드 내리기
+        binding.searchEditText.setOnEditorActionListener { textView, i, keyEvent ->
+            if(i == EditorInfo.IME_ACTION_SEARCH){
+                binding.searchEditText.clearFocus()
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(textView.windowToken,0)
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
     }
 
     private fun location(searchKeyword:String) {

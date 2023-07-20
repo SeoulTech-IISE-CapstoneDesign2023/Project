@@ -34,7 +34,7 @@ class CarAdapter : ListAdapter<Properties, CarAdapter.ViewHolder>(diffUtil) {
     private fun parseDateTime(dateTime: String): String {
         val zonedDateTime = ZonedDateTime.parse(dateTime, formatter)
             .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분"))
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("MM월 dd일 HH시 mm분"))
     }
 
     private fun formatTotalTime(totalTime: Int): String {

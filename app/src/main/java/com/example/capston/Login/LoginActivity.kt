@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.NonNull
+import androidx.core.view.isVisible
 import com.example.capston.MainActivity
 import com.example.capston.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -16,13 +16,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -161,6 +154,14 @@ class LoginActivity : AppCompatActivity() {
         Log.d("geon","showLoading()")
         val loading = binding.imageLoadingView
         loading.visibility = View.VISIBLE
+        binding.SignInBtn.isVisible = false
+        binding.logo.isVisible = false
+        binding.inputID.isVisible = false
+        binding.inputPW.isVisible = false
+        binding.textView.isVisible = false
+        binding.textView2.isVisible = false
+        binding.SignUpBtn.isVisible = false
+        binding.findPWBtn.isVisible = false
     }
 
     // 로딩 화면을 숨기는 함수
@@ -168,5 +169,13 @@ class LoginActivity : AppCompatActivity() {
         Log.d("geon","hideLoading()")
         val loading = binding.imageLoadingView
         loading.visibility = View.GONE
+        binding.SignInBtn.isVisible = true
+        binding.logo.isVisible = true
+        binding.inputID.isVisible = true
+        binding.inputPW.isVisible = true
+        binding.textView.isVisible = true
+        binding.textView2.isVisible = true
+        binding.SignUpBtn.isVisible = true
+        binding.findPWBtn.isVisible = true
     }
 }

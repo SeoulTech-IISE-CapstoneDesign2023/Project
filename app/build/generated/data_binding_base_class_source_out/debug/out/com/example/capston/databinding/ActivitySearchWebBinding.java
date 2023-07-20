@@ -4,7 +4,6 @@ package com.example.capston.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.capston.R;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
@@ -25,18 +26,22 @@ public final class ActivitySearchWebBinding implements ViewBinding {
   public final Toolbar createActionToolbar;
 
   @NonNull
-  public final EditText editTextView;
-
-  @NonNull
   public final RecyclerView locationRecyclerView;
 
+  @NonNull
+  public final TextInputEditText searchEditText;
+
+  @NonNull
+  public final TextInputLayout textInputLayout;
+
   private ActivitySearchWebBinding(@NonNull ConstraintLayout rootView,
-      @NonNull Toolbar createActionToolbar, @NonNull EditText editTextView,
-      @NonNull RecyclerView locationRecyclerView) {
+      @NonNull Toolbar createActionToolbar, @NonNull RecyclerView locationRecyclerView,
+      @NonNull TextInputEditText searchEditText, @NonNull TextInputLayout textInputLayout) {
     this.rootView = rootView;
     this.createActionToolbar = createActionToolbar;
-    this.editTextView = editTextView;
     this.locationRecyclerView = locationRecyclerView;
+    this.searchEditText = searchEditText;
+    this.textInputLayout = textInputLayout;
   }
 
   @Override
@@ -72,20 +77,26 @@ public final class ActivitySearchWebBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.editTextView;
-      EditText editTextView = ViewBindings.findChildViewById(rootView, id);
-      if (editTextView == null) {
-        break missingId;
-      }
-
       id = R.id.locationRecyclerView;
       RecyclerView locationRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (locationRecyclerView == null) {
         break missingId;
       }
 
+      id = R.id.searchEditText;
+      TextInputEditText searchEditText = ViewBindings.findChildViewById(rootView, id);
+      if (searchEditText == null) {
+        break missingId;
+      }
+
+      id = R.id.textInputLayout;
+      TextInputLayout textInputLayout = ViewBindings.findChildViewById(rootView, id);
+      if (textInputLayout == null) {
+        break missingId;
+      }
+
       return new ActivitySearchWebBinding((ConstraintLayout) rootView, createActionToolbar,
-          editTextView, locationRecyclerView);
+          locationRecyclerView, searchEditText, textInputLayout);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

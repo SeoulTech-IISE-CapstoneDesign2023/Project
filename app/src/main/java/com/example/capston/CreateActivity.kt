@@ -21,13 +21,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
 class CreateActivity : AppCompatActivity(),
     EditTodoFragment.OnDataPassListener,
-    EditMappingFragment.OnDataPassListener{
+    EditMappingFragment.OnDataPassListener {
     private lateinit var binding: ActivityCreateBinding
+    private val dateTimeFormat = SimpleDateFormat("yyyy/ M / dd HH:mm", Locale.KOREA)
     var todoKeys: java.util.ArrayList<String> = arrayListOf()   //일정 키 목록
     lateinit var user: String
     private var startAddress = ""
@@ -54,8 +57,8 @@ class CreateActivity : AppCompatActivity(),
         val todo = intent.getParcelableExtra<Todo>("todo")
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
-            Log.d("DataPass","time is :${todo.st_time}")
-            Log.d("DataPass","create place is :${todo.place}")
+            Log.d("DataPass", "time is :${todo.st_time}")
+            Log.d("DataPass", "create place is :${todo.place}")
             initializeEditMode(todo)
         } else {
             // 새로운 Todo를 생성하는 경우, 화면을 초기화
@@ -109,10 +112,11 @@ class CreateActivity : AppCompatActivity(),
             saveDateData()
         }
 
-        binding.startTimeValueTextView.addTextChangedListener{
+        binding.startTimeValueTextView.addTextChangedListener {
             saveDateData()
         }
     }
+
     private fun initializeEditMode(todo: Todo) {
         // 기존의 Todo를 수정하는 경우, 해당 Todo의 정보를 사용하여 화면을 초기화
         isEditMode = true  // 기존 Todo를 수정하는 편집 모드임을 나타냄
@@ -125,6 +129,7 @@ class CreateActivity : AppCompatActivity(),
         binding.arriveDateValueTextView.text = todo.end_date
         binding.arriveTimeValueTextView.text = todo.end_time
     }
+
     private fun initializeCreateMode() {
         // 화면을 초기화하는 작업 수행
         binding.editTodoText.setText("")
@@ -133,26 +138,84 @@ class CreateActivity : AppCompatActivity(),
         binding.arriveDateValueTextView.text = "0000/00/00"
         binding.arriveTimeValueTextView.text = "오전 00:00"
     }
+
+    private fun add12HoursToTimeString(timeString: String): String {
+        // 입력 문자열을 시간으로 파싱
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        val time = LocalTime.parse(timeString, formatter)
+
+        // 12시간을 더해줌
+        val updatedTime = time.plusHours(12)
+
+        // 변환된 시간을 문자열로 포맷팅
+        return updatedTime.format(formatter)
+    }
+
+    private fun convertToNumericInt(inputString: String): Long {
+        // 정규식으로 "/", ":", 공백을 제거하고 숫자만 남김
+        val numericString = inputString.replace("[/:\\s]".toRegex(), "")
+
+        return numericString.toLong()
+    }
+
+    //일정생성할때 날짜체크
+    private fun checkDate(): Boolean {
+        val changeStartTime = if (binding.startTimeValueTextView.text.toString().contains("오후")) {
+            val timeString =
+                binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
+            add12HoursToTimeString(timeString)
+        } else {
+            binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
+        }
+
+        val changeArrivalTime =
+            if (binding.arriveTimeValueTextView.text.toString().contains("오후")) {
+                val timeString =
+                    binding.arriveTimeValueTextView.text.toString().replace("오후", "")
+                        .replace("오전", "")
+                add12HoursToTimeString(timeString)
+            } else {
+                binding.arriveTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
+            }
+
+        val startTimeText =
+            binding.startDateValueTextView.text.toString() + changeStartTime
+        val arrivalTimeText =
+            binding.arriveDateValueTextView.text.toString() + changeArrivalTime
+
+        val startTimeToLong = convertToNumericInt(startTimeText)
+        val arrivalTimeToLong = convertToNumericInt(arrivalTimeText)
+        Log.e("날짜 확인", startTimeToLong.toString())
+        Log.e("날짜 확인", arrivalTimeToLong.toString())
+        return startTimeToLong < arrivalTimeToLong
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val todoKey = intent.getStringExtra("todoKey")
+        //만약 오전이면 없애고 오후면은 12를 더해줘야함
 
         return when (item.itemId) {
             R.id.okMenu -> {
-                if (editTextLength > 100){
-                    Toast.makeText(this,"메모 글자수가 100을 넘었습니다.",Toast.LENGTH_SHORT).show()
+                if (!checkDate()) {
+                    Toast.makeText(this, "시작시간은 도착시간보다 늦을 수 없습니다", Toast.LENGTH_SHORT).show()
                 }else{
-                    if (isEditMode) {
-                        // 기존의 Todo를 수정하는 경우
-                        updateTodo(todoKey!!)
+                    if (editTextLength > 100) {
+                        Toast.makeText(this, "메모 글자수가 100을 넘었습니다.", Toast.LENGTH_SHORT).show()
                     } else {
-                        // 새로운 Todo를 생성하는 경우
-                        createTodo()
+                        if (isEditMode) {
+                            // 기존의 Todo를 수정하는 경우
+                            updateTodo(todoKey!!)
+                        } else {
+                            // 새로운 Todo를 생성하는 경우
+                            createTodo()
+                        }
+                        finish()
                     }
-                    finish()
                 }
                 true
             }
-            R.id.cancelMenu ->{
+
+            R.id.cancelMenu -> {
                 showAlertDialog()
                 true
             }
@@ -160,6 +223,7 @@ class CreateActivity : AppCompatActivity(),
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     private fun createTodo() {
         val title = binding.editTodoText.text.toString()  //제목 입력창에 작성한 내용 문자열로 받아 title 변수에 저장
         val st_date = binding.startDateValueTextView.text.toString()
@@ -175,7 +239,8 @@ class CreateActivity : AppCompatActivity(),
         val clickedYear = check[0].trim()
         val clickedMonth = check[1].trim()
         val clickedDay = check[2].trim()
-        val todo = Todo(title, st_date, st_time, end_date, end_time, place, memo, startPlace, arrivePlace)
+        val todo =
+            Todo(title, st_date, st_time, end_date, end_time, place, memo, startPlace, arrivePlace)
         val TodoRef = FirebaseDatabase.getInstance().getReference("calendar")
             .child(user)
             .child("$clickedYear" + "년")
@@ -184,7 +249,7 @@ class CreateActivity : AppCompatActivity(),
             .push()
         todoKeys.add(TodoRef.key!!)
         TodoRef.setValue(todo).addOnSuccessListener {
-            Toast.makeText(applicationContext,"일정 생성 완료",Toast.LENGTH_SHORT).show();
+            Toast.makeText(applicationContext, "일정 생성 완료", Toast.LENGTH_SHORT).show()
             Log.i("FirebaseData", "${todoKeys}")
             Log.i("FirebaseData", "데이터 전송에 성공하였습니다.")
             Log.i("FirebaseData", "title:${todo.title}, time:${todo.st_time}")
@@ -192,6 +257,7 @@ class CreateActivity : AppCompatActivity(),
             Log.i("FirebaseData", "데이터 전송에 실패하였습니다")
         }
     }
+
     private fun updateTodo(todoKey: String) {
         val todoKey = intent.getStringExtra("todoKey")
 
@@ -243,19 +309,20 @@ class CreateActivity : AppCompatActivity(),
         }
 
     }
-    private fun showAlertDialog(){
+
+    private fun showAlertDialog() {
         AlertDialog.Builder(this).apply {
             setMessage("일정저장을 취소하시겠습니까?")
-            setPositiveButton("네"){dialog,id->
+            setPositiveButton("네") { dialog, id ->
                 val intent = Intent(this@CreateActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
-            setNegativeButton("아니오",null)
+            setNegativeButton("아니오", null)
         }.show()
     }
 
-    private fun setTime(separator:Int){
+    private fun setTime(separator: Int) {
         val calendar = Calendar.getInstance()
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
             timeString = "오전 ${hourOfDay}:${minute}"
@@ -264,25 +331,26 @@ class CreateActivity : AppCompatActivity(),
             if (separator == 0) {
                 binding.startTimeValueTextView.text = timeString
                 startTime = "$dateString ${hourOfDay}:${minute}"
+                Log.e("날짜확인", startTime)
             } else {
                 binding.arriveTimeValueTextView.text = timeString
                 arrivalTime = "$dateString ${hourOfDay}:${minute}"
             }
             // 출발시간이 도착시간보다 빨리 못하게 나중에 버튼누르면 안되게 해야함
-            val dateTimeFormat = SimpleDateFormat("yyyy/ M / dd HH:mm", Locale.KOREA)
-            try{
+
+            try {
                 val startDate = dateTimeFormat.parse(startTime)
                 val arrivalDate = dateTimeFormat.parse(arrivalTime)
-                Log.d("time","$startDate $arrivalDate")
+                Log.d("time", "$startDate $arrivalDate")
                 if (startDate != null) {
-                    if (startDate >= arrivalDate){
-                        Toast.makeText(this,"시작시간은 도착시간보다 늦을 수 없습니다",Toast.LENGTH_SHORT).show()
+                    if (startDate >= arrivalDate) {
+                        Toast.makeText(this, "시작시간은 도착시간보다 늦을 수 없습니다", Toast.LENGTH_SHORT).show()
                         binding.arriveDateValueTextView.text = "0000/00/00"
                         binding.arriveTimeValueTextView.text = "오전 00:00"
                         arrivalTime = ""
                     }
                 }
-            }catch (e: ParseException){
+            } catch (e: ParseException) {
                 e.printStackTrace()
             }
         }
@@ -322,31 +390,33 @@ class CreateActivity : AppCompatActivity(),
             arrivalAddress = getString("arrivalAddress", "").toString()
         }
     }
+
     private fun splitDate(date: String): Array<String> {
         val splitText = date.split("/")
-        val resultDate: Array<String> = Array(3){""}
+        val resultDate: Array<String> = Array(3) { "" }
         resultDate[0] = splitText[0]  //year
         resultDate[1] = splitText[1]  //month
         resultDate[2] = splitText[2]  //day
         return resultDate
     }
 
-    private fun saveDateData(){
-        with(getSharedPreferences("date",Context.MODE_PRIVATE).edit()){
-            putString("startDate1",binding.startDateValueTextView.text.toString())
-            putString("startTime1",binding.startTimeValueTextView.text.toString())
-            putString("arrivalDate1",binding.arriveDateValueTextView.text.toString())
-            putString("arrivalTime1",binding.arriveTimeValueTextView.text.toString())
+    private fun saveDateData() {
+        with(getSharedPreferences("date", Context.MODE_PRIVATE).edit()) {
+            putString("startDate1", binding.startDateValueTextView.text.toString())
+            putString("startTime1", binding.startTimeValueTextView.text.toString())
+            putString("arrivalDate1", binding.arriveDateValueTextView.text.toString())
+            putString("arrivalTime1", binding.arriveTimeValueTextView.text.toString())
             apply()
         }
     }
 
-    private fun loadDate(){
-        with(getSharedPreferences("date",Context.MODE_PRIVATE)){
-            binding.startDateValueTextView.text = getString("startDate1",intent.getStringExtra("startDate") ?: "0000/00/00")
-            binding.startTimeValueTextView.text = getString("startTime1","오전 00:00" )
-            binding.arriveDateValueTextView.text = getString("arrivalDate1","0000/00/00")
-            binding.arriveTimeValueTextView.text = getString("arrivalTime1","오전 00:00")
+    private fun loadDate() {
+        with(getSharedPreferences("date", Context.MODE_PRIVATE)) {
+            binding.startDateValueTextView.text =
+                getString("startDate1", intent.getStringExtra("startDate") ?: "0000/00/00")
+            binding.startTimeValueTextView.text = getString("startTime1", "오전 00:00")
+            binding.arriveDateValueTextView.text = getString("arrivalDate1", "0000/00/00")
+            binding.arriveTimeValueTextView.text = getString("arrivalTime1", "오전 00:00")
         }
     }
 
@@ -357,29 +427,32 @@ class CreateActivity : AppCompatActivity(),
 
     //EditTodoFragment에서 메모장 텍스트 길이 받아오기
     override fun onDataPass(data: Int?) {
-        Log.d("DataPass","memo's lenght is :$data")
+        Log.d("DataPass", "memo's lenght is :$data")
         editTextLength = data!!
     }
 
     //EditTodoFragment에서 메모장 텍스트 받아오기
     override fun onMemoPass(memo: String) {
-        Log.d("DataPass","memo is :$memo")
+        Log.d("DataPass", "memo is :$memo")
         editTextMemo = memo
     }
+
     //EditTodoFragment에서 장소 텍스트 받아오기
     override fun onPlacePass(place: String) {
-        Log.d("DataPass","place is :$place")
+        Log.d("DataPass", "place is :$place")
         editTextPlace = place
     }
+
     //EditMappingFragment에서 출발지 텍스트 받아오기
     override fun onStartPass(startPlace: String) {
-        Log.d("DataPass","startPlace is :$startPlace")
+        Log.d("DataPass", "startPlace is :$startPlace")
         editStartPlace = startPlace
 
     }
+
     //EditMappingFragment에서 도착지 텍스트 받아오기
     override fun onArrivePass(arrivePlace: String) {
-        Log.d("DataPass","arrivePlace is :$arrivePlace")
+        Log.d("DataPass", "arrivePlace is :$arrivePlace")
         editArrivePlace = arrivePlace
     }
 
@@ -388,6 +461,7 @@ class CreateActivity : AppCompatActivity(),
         loadDate()
         super.onResume()
     }
+
     //액티비티 꺼질때 데이터 저장
     override fun onDestroy() {
         saveDateData()

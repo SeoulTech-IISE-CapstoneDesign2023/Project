@@ -15,6 +15,7 @@ MERGED from [androidx.fragment:fragment-ktx:1.5.7] C:\Users\samsung\.gradle\cach
 MERGED from [com.google.android.material:material:1.5.0] C:\Users\samsung\.gradle\caches\transforms-3\58dcf7e9703610dee11a55335c5dd16f\transformed\material-1.5.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\samsung\.gradle\caches\transforms-3\48d7445547dd4978fc6597288961e42c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
 MERGED from [com.naver.maps:map-sdk:3.16.0] C:\Users\samsung\.gradle\caches\transforms-3\ded44bd9c08a0954ee5dd02220ed4201\transformed\jetified-map-sdk-3.16.0\AndroidManifest.xml:2:1-38:12
+MERGED from [com.airbnb.android:lottie:6.1.0] C:\Users\samsung\.gradle\caches\transforms-3\abfef860195a443b30e2c45569d85331\transformed\jetified-lottie-6.1.0\AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\samsung\.gradle\caches\transforms-3\a51a35a5525130e570865d026c202b27\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\samsung\.gradle\caches\transforms-3\8452e95effe6d61789c31a13799d1968\transformed\appcompat-1.6.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\samsung\.gradle\caches\transforms-3\c6bb2c16e0ef9941391df51a20ec5ec3\transformed\jetified-viewpager2-1.0.0\AndroidManifest.xml:17:1-24:12
@@ -160,6 +161,8 @@ MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\samsung\
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\samsung\.gradle\caches\transforms-3\48d7445547dd4978fc6597288961e42c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
 MERGED from [com.naver.maps:map-sdk:3.16.0] C:\Users\samsung\.gradle\caches\transforms-3\ded44bd9c08a0954ee5dd02220ed4201\transformed\jetified-map-sdk-3.16.0\AndroidManifest.xml:20:5-36:19
 MERGED from [com.naver.maps:map-sdk:3.16.0] C:\Users\samsung\.gradle\caches\transforms-3\ded44bd9c08a0954ee5dd02220ed4201\transformed\jetified-map-sdk-3.16.0\AndroidManifest.xml:20:5-36:19
+MERGED from [com.airbnb.android:lottie:6.1.0] C:\Users\samsung\.gradle\caches\transforms-3\abfef860195a443b30e2c45569d85331\transformed\jetified-lottie-6.1.0\AndroidManifest.xml:7:5-20
+MERGED from [com.airbnb.android:lottie:6.1.0] C:\Users\samsung\.gradle\caches\transforms-3\abfef860195a443b30e2c45569d85331\transformed\jetified-lottie-6.1.0\AndroidManifest.xml:7:5-20
 MERGED from [com.prolificinteractive:material-calendarview:1.4.3] C:\Users\samsung\.gradle\caches\transforms-3\678b353335bde8af720c3a40a9b70313\transformed\jetified-material-calendarview-1.4.3\AndroidManifest.xml:12:5-20
 MERGED from [com.prolificinteractive:material-calendarview:1.4.3] C:\Users\samsung\.gradle\caches\transforms-3\678b353335bde8af720c3a40a9b70313\transformed\jetified-material-calendarview-1.4.3\AndroidManifest.xml:12:5-20
 MERGED from [com.google.android.gms:play-services-location:18.0.0] C:\Users\samsung\.gradle\caches\transforms-3\0d7ccf7329cd89758dd5f5c08dd28ef8\transformed\jetified-play-services-location-18.0.0\AndroidManifest.xml:7:5-20
@@ -310,6 +313,8 @@ MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\samsung\
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\samsung\.gradle\caches\transforms-3\48d7445547dd4978fc6597288961e42c\transformed\constraintlayout-2.1.4\AndroidManifest.xml:5:5-7:41
 MERGED from [com.naver.maps:map-sdk:3.16.0] C:\Users\samsung\.gradle\caches\transforms-3\ded44bd9c08a0954ee5dd02220ed4201\transformed\jetified-map-sdk-3.16.0\AndroidManifest.xml:5:5-7:41
 MERGED from [com.naver.maps:map-sdk:3.16.0] C:\Users\samsung\.gradle\caches\transforms-3\ded44bd9c08a0954ee5dd02220ed4201\transformed\jetified-map-sdk-3.16.0\AndroidManifest.xml:5:5-7:41
+MERGED from [com.airbnb.android:lottie:6.1.0] C:\Users\samsung\.gradle\caches\transforms-3\abfef860195a443b30e2c45569d85331\transformed\jetified-lottie-6.1.0\AndroidManifest.xml:5:5-44
+MERGED from [com.airbnb.android:lottie:6.1.0] C:\Users\samsung\.gradle\caches\transforms-3\abfef860195a443b30e2c45569d85331\transformed\jetified-lottie-6.1.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\samsung\.gradle\caches\transforms-3\a51a35a5525130e570865d026c202b27\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\samsung\.gradle\caches\transforms-3\a51a35a5525130e570865d026c202b27\transformed\jetified-appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\samsung\.gradle\caches\transforms-3\8452e95effe6d61789c31a13799d1968\transformed\appcompat-1.6.1\AndroidManifest.xml:20:5-44

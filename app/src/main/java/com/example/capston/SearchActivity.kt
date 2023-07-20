@@ -144,8 +144,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             isChanged = true
             saveLocation()
         }
-        updateArrivalMap(arrivalLat, arrivalLng)
-        updateStartMap(startLat, startLng)
+
     }
 
     private fun updateStartMap(lat: Double, lng: Double) {
@@ -193,6 +192,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                         iconTintColor = Color.BLUE
                         map = naverMap
                     }
+
                 }
             }
         }
@@ -336,7 +336,10 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             myLocationlat = location.latitude
             myLocationlng = location.longitude
         }
+        updateArrivalMap(arrivalLat, arrivalLng)
+        updateStartMap(startLat, startLng)
     }
+    
 
     private fun checkPermission() {
         when {//permission이 되었을 때
