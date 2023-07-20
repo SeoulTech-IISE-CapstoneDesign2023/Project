@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.capston.app-mergeDebugResources-41:/values-zh-rTW/values-zh-rTW.xml",
+            "outputFile": "com.example.capston.app-mergeDebugResources-42:/values-zh-rTW/values-zh-rTW.xml",
             "map": [
                 {
                     "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\e474e7321d2dabd34c08e04f444265f9\\transformed\\jetified-play-services-basement-18.1.0\\res\\values-zh-rTW\\values.xml",

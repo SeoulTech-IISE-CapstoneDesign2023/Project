@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.capston.app-mergeDebugResources-41:/values-is/values-is.xml",
+            "outputFile": "com.example.capston.app-mergeDebugResources-42:/values-is/values-is.xml",
             "map": [
                 {
                     "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\303257000eeb63cc1aac00c0c5173864\\transformed\\browser-1.4.0\\res\\values-is\\values-is.xml",

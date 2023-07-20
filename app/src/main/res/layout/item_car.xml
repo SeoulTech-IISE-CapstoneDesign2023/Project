@@ -8,23 +8,19 @@
 
     <TextView
         android:id="@+id/totalTime"
+        style="@style/RouteText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="총 소요시간"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/totalFair"
+        style="@style/RouteText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="총 톨게이트비"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/totalFairTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/totalTime" />
@@ -32,105 +28,90 @@
 
     <TextView
         android:id="@+id/totalTimeTextView"
+        style="@style/RouteText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/totalFairTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/totalTime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/totalFair"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/totalTime"
+        app:layout_constraintTop_toTopOf="@+id/totalTime"
         tools:text="총소요시간" />
 
     <TextView
         android:id="@+id/totalFairTextView"
+        style="@style/RouteText"
         android:layout_width="0dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@id/taxiFareTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/totalFair"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/totalFair"
-        app:layout_constraintTop_toBottomOf="@id/totalTimeTextView"
+        app:layout_constraintTop_toTopOf="@+id/totalFair"
         tools:text="총톨게이트비" />
 
     <TextView
         android:id="@+id/taxiFareTextView"
+        style="@style/RouteText"
         android:layout_width="0dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@id/departureTimeTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/taxiFare"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/totalFair"
-        app:layout_constraintTop_toBottomOf="@id/totalFairTextView"
+        app:layout_constraintTop_toTopOf="@+id/taxiFare"
         tools:text="총택시비" />
 
     <TextView
         android:id="@+id/taxiFare"
+        style="@style/RouteText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="총 택시비"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/totalFair" />
 
     <TextView
         android:id="@+id/departureTimeTextView"
+        style="@style/RouteText"
         android:layout_width="0dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@id/arrivalTimeTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/departureTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/totalFair"
-        app:layout_constraintTop_toBottomOf="@id/taxiFareTextView"
+        app:layout_constraintTop_toTopOf="@+id/departureTime"
+        android:maxLines="1"
         tools:text="출발시간" />
 
     <TextView
         android:id="@+id/departureTime"
+        style="@style/RouteText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="출발시간"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/taxiFare" />
 
     <TextView
         android:id="@+id/arrivalTime"
+        style="@style/RouteText"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="도착시간"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/departureTime" />
 
     <TextView
         android:id="@+id/arrivalTimeTextView"
+        style="@style/RouteText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/arrivalTime"
+        app:layout_constraintBottom_toBottomOf="@+id/arrivalTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/totalFair"
-        app:layout_constraintTop_toBottomOf="@id/departureTimeTextView"
+        app:layout_constraintTop_toTopOf="@+id/arrivalTime"
         tools:text="도착시간" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

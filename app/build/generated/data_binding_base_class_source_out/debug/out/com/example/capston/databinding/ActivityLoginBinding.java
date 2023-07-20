@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.capston.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -32,7 +33,7 @@ public final class ActivityLoginBinding implements ViewBinding {
   public final TextView findPWBtn;
 
   @NonNull
-  public final ImageView imageLoadingView;
+  public final LottieAnimationView imageLoadingView;
 
   @NonNull
   public final EditText inputID;
@@ -50,9 +51,10 @@ public final class ActivityLoginBinding implements ViewBinding {
   public final TextView textView2;
 
   private ActivityLoginBinding(@NonNull ConstraintLayout rootView, @NonNull Button SignInBtn,
-      @NonNull Button SignUpBtn, @NonNull TextView findPWBtn, @NonNull ImageView imageLoadingView,
-      @NonNull EditText inputID, @NonNull EditText inputPW, @NonNull ImageView logo,
-      @NonNull TextView textView, @NonNull TextView textView2) {
+      @NonNull Button SignUpBtn, @NonNull TextView findPWBtn,
+      @NonNull LottieAnimationView imageLoadingView, @NonNull EditText inputID,
+      @NonNull EditText inputPW, @NonNull ImageView logo, @NonNull TextView textView,
+      @NonNull TextView textView2) {
     this.rootView = rootView;
     this.SignInBtn = SignInBtn;
     this.SignUpBtn = SignUpBtn;
@@ -111,7 +113,7 @@ public final class ActivityLoginBinding implements ViewBinding {
       }
 
       id = R.id.imageLoadingView;
-      ImageView imageLoadingView = ViewBindings.findChildViewById(rootView, id);
+      LottieAnimationView imageLoadingView = ViewBindings.findChildViewById(rootView, id);
       if (imageLoadingView == null) {
         break missingId;
       }

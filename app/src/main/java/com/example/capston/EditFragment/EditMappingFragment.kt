@@ -174,7 +174,7 @@ class EditMappingFragment : Fragment() {
 
                 1 -> {
                     //자동차
-                    val inputFormat = DateTimeFormatter.ofPattern("yyyy/ M/ d H:mm")
+                    val inputFormat = DateTimeFormatter.ofPattern("yyyy/ M / d H:mm")
                     val outputFormat = DateTimeFormatter.ISO_DATE_TIME
                     val pattern = Regex("\\d{1,2}:(\\d{1,2})")
                     val matchResult = pattern.find(startTime)
@@ -235,6 +235,7 @@ class EditMappingFragment : Fragment() {
                                             adapter = carAdapter
                                         }
                                         searchRoute(body)
+
                                     }
                                 }
                             }
@@ -365,6 +366,7 @@ class EditMappingFragment : Fragment() {
         service.getCarRoute(request = body).enqueue(object : Callback<Dto> {
             override fun onResponse(call: Call<Dto>, response: Response<Dto>) {
                 Log.e("MainActivity", "${response.body().toString()}")
+                binding.totalTimeTextView.isVisible = false
                 carAdapter.submitList(response.body()?.features?.map { it.properties })
             }
 
@@ -389,6 +391,7 @@ class EditMappingFragment : Fragment() {
                 ) {
                     Log.e("MainActivity", "${response.body().toString()}")
                     val good = response.body()?.features?.filter { it.properties.index == 0 }
+                    binding.totalTimeTextView.isVisible = false
                     walkAdapter.submitList(good?.map { it.properties })
                 }
 

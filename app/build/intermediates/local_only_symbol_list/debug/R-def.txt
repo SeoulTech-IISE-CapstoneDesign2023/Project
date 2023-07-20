@@ -58,7 +58,6 @@ id editCheckPW
 id editEmail
 id editNickname
 id editPW
-id editTextView
 id editTodoText
 id findPWBtn
 id frameLayout
@@ -159,6 +158,7 @@ id saturday2000
 id saturday2100
 id saturday2200
 id saturday2300
+id searchEditText
 id search_button
 id searchlayer
 id sectionTimeTextView
@@ -197,6 +197,7 @@ id sunday2300
 id taxiFare
 id taxiFareTextView
 id textInputEditText
+id textInputLayout
 id textNik
 id textTextInputLayout
 id textView
@@ -343,6 +344,7 @@ menu create_menu
 menu menu_item
 mipmap ic_launcher
 mipmap ic_launcher_round
+raw loading_animation
 string app_name
 string default_web_client_id
 string gcm_defaultSenderId
