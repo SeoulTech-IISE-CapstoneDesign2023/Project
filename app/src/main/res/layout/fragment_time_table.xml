@@ -27,7 +27,7 @@
 
                 <TextView
                     android:id="@+id/blank"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill_horizontal"
                     android:background="@drawable/cell"
@@ -36,7 +36,7 @@
 
                 <TextView
                     android:id="@+id/monday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
@@ -45,7 +45,7 @@
 
                 <TextView
                     android:id="@+id/tuesday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
@@ -54,7 +54,7 @@
 
                 <TextView
                     android:id="@+id/wednesday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
@@ -63,7 +63,7 @@
 
                 <TextView
                     android:id="@+id/thursday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
@@ -72,7 +72,7 @@
 
                 <TextView
                     android:id="@+id/friday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
@@ -81,7 +81,7 @@
 
                 <TextView
                     android:id="@+id/saturday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
@@ -90,7 +90,7 @@
 
                 <TextView
                     android:id="@+id/sunday"
-                    android:layout_rowWeight="2"
+                    android:layout_rowWeight="1"
                     android:layout_columnWeight="1"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"

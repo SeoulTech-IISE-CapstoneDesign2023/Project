@@ -1,4 +1,4 @@
-package com.example.capston
+package com.example.capston.Create
 
 import android.app.Activity
 import android.content.Context
@@ -8,12 +8,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.Menu
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.webkit.JavascriptInterface
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.capston.databinding.ActivitySearchWebBinding

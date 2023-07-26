@@ -1,24 +1,24 @@
-package com.example.capston
+package com.example.capston.Calendar
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.capston.Todo
 import com.example.capston.databinding.ItemTodoBinding
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 class TodoListAdapter(private val todoList: ArrayList<Todo>,
                       private val itemLongClicklistener: OnItemLongClickListener,
-                      private val itemShortClickListener: OnItemShortClickListener)
+                      private val itemShortClickListener: OnItemShortClickListener
+)
     : RecyclerView.Adapter<TodoListAdapter.ViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoListAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context))
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TodoListAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val todoEntity = todoList[position]
         holder.setTodoListUI(todoEntity,position)
 

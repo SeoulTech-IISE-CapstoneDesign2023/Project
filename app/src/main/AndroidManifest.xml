@@ -20,13 +20,13 @@
             android:name=".Login.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".SearchWebActivity"
+            android:name=".Create.SearchWebActivity"
             android:exported="false" />
         <activity
-            android:name=".SearchActivity"
+            android:name=".Create.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateActivity"
+            android:name=".Create.CreateActivity"
             android:exported="false" />
         <activity
             android:name=".Login.LoginActivity"

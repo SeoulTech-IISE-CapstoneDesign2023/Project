@@ -6,13 +6,15 @@ import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.capston.Calendar.*
+import com.example.capston.Create.CreateActivity
 import com.example.capston.databinding.FragmentCalendarBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -28,7 +30,6 @@ import java.util.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-
 class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListener {
     private lateinit var binding: FragmentCalendarBinding
     private var param1: String? = null
@@ -36,8 +37,8 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
     private var dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/ M/ dd"))
     lateinit var user: String
     val todoList = arrayListOf<Todo>()
-    var todoKeys: java.util.ArrayList<String> = arrayListOf()   //메시지 키 목록
-    val adapter = TodoListAdapter(todoList,this,this) // Firebase에서 일정 삭제
+    var todoKeys: ArrayList<String> = arrayListOf()   //메시지 키 목록
+    val adapter = TodoListAdapter(todoList, this, this) // Firebase에서 일정 삭제
 
     // 선택한 날짜
     lateinit var clickedYear: String
@@ -63,7 +64,11 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             SaturdayDecorator(),
             MySelectorDecorator(requireActivity()),
             OneDayDecorator(),
-            EventDecorator(Color.RED, Collections.singleton(CalendarDay.today())))
+            EventDecorator(
+                Color.RED,
+                Collections.singleton(CalendarDay.today())
+            )
+        )
 
         user = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
@@ -90,9 +95,9 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             val year = date.year
             val month = date.month+1
             val dayOfMonth = date.day
-            dateStr = "${year}/ ${month}/ $dayOfMonth"
+            dateStr = String.format("%04d/%d/%d", year,month,dayOfMonth)
             //오늘 날짜는 항상 Today's List
-            if (dateStr == LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/ M/ d"))){
+            if (dateStr == LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/M/d"))){
                 binding.txtTodaylist.text = "Today's List"
             }else{
                 binding.txtTodaylist.text = dateStr+" List"
@@ -100,12 +105,6 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             //날짜에 따른 todolist 불러오기
             clickedDate(dateStr)
         }
-        Log.d("TimetableFragment", "${todoList}")
-        // TimetableFragment 생성 및 데이터 전달
-        val bundle = Bundle()
-        var fragment = TimeTableFragment()
-        bundle.putParcelableArrayList("todoList", todoList)
-        fragment.arguments = bundle
         return binding.root
     }
     //캘린더에서 선택한 날짜 데이터 저장
@@ -113,6 +112,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         val intent = Intent(requireContext(), CreateActivity::class.java)
         intent.putExtra("startDate",dateStr)
         startActivity(intent)
+        Log.d("date", "${dateStr}")
     }
     //일정 Database 읽기
     private fun clickedDate(date: String) {
@@ -162,7 +162,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         intent.putExtra("todo", todo)
         intent.putExtra("todoKey",todoKey)
         startActivity(intent)
-        Log.d("FirebaseData","${todoKey}")
+        Log.d("FirebaseData", "${todoKey}")
     }
     override fun onLongClick(position: Int) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
@@ -190,9 +190,14 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
                     data.ref.removeValue()
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT)
+                                    .show()
                             } else {
-                                Toast.makeText(requireContext(), "일정 삭제에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "일정 삭제에 실패했습니다.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                 }
