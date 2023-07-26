@@ -42,8 +42,9 @@ id authCheckText2
 id authEmailBtn
 id authUserBtn
 id blank
+id bottomNavigationView
+id calendar
 id calendarView
-id calendar_button
 id cancelMenu
 id carWayButton
 id changeAddressButton
@@ -97,8 +98,8 @@ id inputPW
 id linearLayout_timetable
 id locationRecyclerView
 id logo
+id main
 id mainFragment
-id main_button
 id monday
 id monday0000
 id monday0100
@@ -254,7 +255,7 @@ id time20
 id time21
 id time22
 id time23
-id timeTable_button
+id timeTable
 id todoImage
 id todoRecyclerView
 id todoTextView
@@ -342,6 +343,7 @@ layout item_todo
 layout item_walk
 menu create_menu
 menu menu_item
+menu navigate_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 raw loading_animation

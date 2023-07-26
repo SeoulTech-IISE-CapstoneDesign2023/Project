@@ -2847,6 +2847,7 @@ id bestChoice
 id blank
 id blocking
 id bottom
+id bottomNavigationView
 id bounce
 id bounceBoth
 id bounceEnd
@@ -2858,8 +2859,8 @@ id browser_actions_menu_items
 id browser_actions_menu_view
 id buttonPanel
 id cache_measures
+id calendar
 id calendarView
-id calendar_button
 id callMeasure
 id cancelMenu
 id cancel_action
@@ -3058,8 +3059,8 @@ id list_item
 id locationRecyclerView
 id logo
 id lottie_layer_name
+id main
 id mainFragment
-id main_button
 id masked
 id match_constraint
 id match_parent
@@ -3452,7 +3453,7 @@ id time20
 id time21
 id time22
 id time23
-id timeTable_button
+id timeTable
 id title
 id titleDividerNoCustom
 id title_template
@@ -3776,6 +3777,7 @@ layout text_view_with_theme_line_height
 layout text_view_without_line_height
 menu create_menu
 menu menu_item
+menu navigate_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description

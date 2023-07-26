@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.example.capston.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -17,6 +18,9 @@ class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     private lateinit var backPressedCallback: OnBackPressedCallback
+    private val mainFragment = MainFragment()
+    private val calendarFragment = CalendarFragment()
+    private val timeTableFragment = TimeTableFragment()
 
     lateinit var auth: FirebaseAuth
     lateinit var myUid: String
@@ -48,36 +52,27 @@ class MainActivity : AppCompatActivity() {
         //익명으로 로그인
         //Anonymoulsy()
 
-        val fManager = supportFragmentManager
-        fManager.commit {
-            add(binding.mainFragment.id,MainFragment())
-        }
-        binding.mainButton.setOnClickListener{
-            val currentFragment = fManager.findFragmentById(binding.mainFragment.id)
-            if(currentFragment !is MainFragment){
-                fManager.commit {
-                    replace(binding.mainFragment.id,MainFragment())
+        //fragment 이동
+        binding.bottomNavigationView.setOnItemSelectedListener {
+            when(it.itemId){
+                R.id.main ->{
+                    replaceFragment(mainFragment)
+                    return@setOnItemSelectedListener true
+                }
+                R.id.calendar ->{
+                    replaceFragment(calendarFragment)
+                    return@setOnItemSelectedListener true
+                }
+                R.id.timeTable ->{
+                    replaceFragment(timeTableFragment)
+                    return@setOnItemSelectedListener true
+                }
+                else ->{
+                    return@setOnItemSelectedListener false
                 }
             }
         }
-
-        binding.calendarButton.setOnClickListener{
-            val currentFragment = fManager.findFragmentById(binding.mainFragment.id)
-            if(currentFragment !is CalendarFragment){
-                fManager.commit {
-                    replace(binding.mainFragment.id,CalendarFragment())
-                }
-            }
-        }
-
-        binding.timeTableButton.setOnClickListener{
-            val currentFragment = fManager.findFragmentById(binding.mainFragment.id)
-            if(currentFragment !is TimeTableFragment){
-                fManager.commit {
-                    replace(binding.mainFragment.id,TimeTableFragment())
-                }
-            }
-        }
+        replaceFragment(mainFragment)
         setSupportActionBar(binding.toolbar2)
 
     }
@@ -109,5 +104,13 @@ class MainActivity : AppCompatActivity() {
             FirebaseDatabase.getInstance().getReference("User").child("users")
                 .child(myUid).setValue(User(myUid))
         }
+    }
+
+    private fun replaceFragment(fragment : Fragment){
+        supportFragmentManager.beginTransaction()
+            .apply {
+                replace(R.id.mainFragment,fragment)
+                commit()
+            }
     }
 }
