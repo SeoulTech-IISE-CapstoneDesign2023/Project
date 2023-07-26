@@ -48,13 +48,13 @@
             android:name="com.example.capston.Login.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.capston.SearchWebActivity"
+            android:name="com.example.capston.Create.SearchWebActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.capston.SearchActivity"
+            android:name="com.example.capston.Create.SearchActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.capston.CreateActivity"
+            android:name="com.example.capston.Create.CreateActivity"
             android:exported="false" />
         <activity
             android:name="com.example.capston.Login.LoginActivity"

@@ -21,7 +21,7 @@ import com.example.capston.Bus.realtime.BusRealTimeAPIService
 import com.example.capston.Bus.realtime.BusRealTimeConnection
 import com.example.capston.Bus.realtime.RealTimeArrivalBus
 import com.example.capston.R
-import com.example.capston.SearchActivity
+import com.example.capston.Create.SearchActivity
 import com.example.capston.Todo
 import com.example.capston.car.CarAdapter
 import com.example.capston.car.CarRouteRequest
@@ -174,7 +174,7 @@ class EditMappingFragment : Fragment() {
 
                 1 -> {
                     //자동차
-                    val inputFormat = DateTimeFormatter.ofPattern("yyyy/ M / d H:mm")
+                    val inputFormat = DateTimeFormatter.ofPattern("yyyy/M/d HH:mm")
                     val outputFormat = DateTimeFormatter.ISO_DATE_TIME
                     val pattern = Regex("\\d{1,2}:(\\d{1,2})")
                     val matchResult = pattern.find(startTime)

@@ -1,4 +1,4 @@
-package com.example.capston;
+package com.example.capston.Calendar;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;

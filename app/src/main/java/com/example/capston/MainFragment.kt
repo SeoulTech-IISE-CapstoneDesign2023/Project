@@ -4,17 +4,17 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.capston.Calendar.OnItemLongClickListener
+import com.example.capston.Calendar.OnItemShortClickListener
+import com.example.capston.Calendar.TodoListAdapter
+import com.example.capston.Create.CreateActivity
 import com.example.capston.databinding.FragmentMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -26,7 +26,7 @@ import com.google.firebase.database.ktx.getValue
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class MainFragment : Fragment(), OnItemLongClickListener,OnItemShortClickListener {
+class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListener {
     lateinit var binding: FragmentMainBinding
     private var param1: String? = null
     private var param2: String? = null
@@ -70,13 +70,11 @@ class MainFragment : Fragment(), OnItemLongClickListener,OnItemShortClickListene
         // 오늘 todolist 불러오기
         todayDate(todayStr)
 
-
-        //일정 생성 버튼 플러스버튼누르면 오늘날짜 createActivity에 값 추가 및 이동
+        //일정 생성 버튼 플러스 버튼 누르면 오늘 날짜 createActivity에 값 추가 및 이동
         binding.addtodoButton.setOnClickListener {
             val intent = Intent(requireActivity(), CreateActivity::class.java)
             intent.putExtra("startDate", todayStr)
             requireActivity().startActivity(intent)
-
         }
         return binding.root
     }

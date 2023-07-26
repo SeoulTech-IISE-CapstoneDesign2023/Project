@@ -1,8 +1,9 @@
-package com.example.capston;
+package com.example.capston.Calendar;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
+import com.example.capston.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
