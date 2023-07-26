@@ -139,18 +139,6 @@ class CreateActivity : AppCompatActivity(),
         binding.arriveTimeValueTextView.text = "오전 00:00"
     }
 
-    private fun add12HoursToTimeString(timeString: String): String {
-        // 입력 문자열을 시간으로 파싱
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        val time = LocalTime.parse(timeString, formatter)
-
-        // 12시간을 더해줌
-        val updatedTime = time.plusHours(12)
-
-        // 변환된 시간을 문자열로 포맷팅
-        return updatedTime.format(formatter)
-    }
-
     private fun convertToNumericInt(inputString: String): Long {
         // 정규식으로 "/", ":", 공백을 제거하고 숫자만 남김
         val numericString = inputString.replace("[/:\\s]".toRegex(), "")
@@ -160,23 +148,9 @@ class CreateActivity : AppCompatActivity(),
 
     //일정생성할때 날짜체크
     private fun checkDate(): Boolean {
-        val changeStartTime = if (binding.startTimeValueTextView.text.toString().contains("오후")) {
-            val timeString =
-                binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
-            add12HoursToTimeString(timeString)
-        } else {
-            binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
-        }
+        val changeStartTime = binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
 
-        val changeArrivalTime =
-            if (binding.arriveTimeValueTextView.text.toString().contains("오후")) {
-                val timeString =
-                    binding.arriveTimeValueTextView.text.toString().replace("오후", "")
-                        .replace("오전", "")
-                add12HoursToTimeString(timeString)
-            } else {
-                binding.arriveTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
-            }
+        val changeArrivalTime =  binding.arriveTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
 
         val startTimeText =
             binding.startDateValueTextView.text.toString() + changeStartTime
@@ -325,16 +299,18 @@ class CreateActivity : AppCompatActivity(),
     private fun setTime(separator: Int) {
         val calendar = Calendar.getInstance()
         val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-            timeString = "오전 ${hourOfDay}:${minute}"
+            val formatHour = String.format("%02d",hourOfDay)
+            val formatMinute = String.format("%02d",minute)
+            timeString = "오전 ${formatHour}:${formatMinute}"
             val isAfternoon = hourOfDay >= 12
-            val timeString = "${if (isAfternoon) "오후" else "오전"} ${hourOfDay}:${minute}"
+            val timeString = "${if (isAfternoon) "오후" else "오전"} ${formatHour}:${formatMinute}"
             if (separator == 0) {
                 binding.startTimeValueTextView.text = timeString
-                startTime = "$dateString ${hourOfDay}:${minute}"
+                startTime = "$dateString ${formatHour}:${formatMinute}"
                 Log.e("날짜확인", startTime)
             } else {
                 binding.arriveTimeValueTextView.text = timeString
-                arrivalTime = "$dateString ${hourOfDay}:${minute}"
+                arrivalTime = "$dateString ${formatHour}:${formatMinute}"
             }
             // 출발시간이 도착시간보다 빨리 못하게 나중에 버튼누르면 안되게 해야함
 
