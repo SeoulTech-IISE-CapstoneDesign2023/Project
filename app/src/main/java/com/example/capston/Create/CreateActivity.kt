@@ -54,7 +54,8 @@ class CreateActivity : AppCompatActivity(),
 
         //list에서 일정 하나 선택했을 때 내용 수정
         val todo = intent.getParcelableExtra<Todo>("todo")
-        val startDate = intent.getStringExtra("startDate") // "yyyy/M/d" 형식으로 받음
+        var startDate = intent.getStringExtra("startDate") // "yyyy/M/d" 형식으로 받음
+        Log.e("createActivity",startDate.toString())
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
             Log.d("DataPass", "time is :${todo.st_time}")
@@ -62,6 +63,12 @@ class CreateActivity : AppCompatActivity(),
             initializeEditMode(todo)
         } else {
             // 새로운 Todo를 생성하는 경우, 화면을 초기화
+            //searActivity에서 다시 돌아올때 화면이 깨지는 에러 방지용
+            if (startDate == null) {
+                with(getSharedPreferences("date",Context.MODE_PRIVATE)){
+                    startDate = getString("startDate","").toString()
+                }
+            }
             initializeCreateMode(startDate!!)
         }
         getData()
@@ -372,6 +379,10 @@ class CreateActivity : AppCompatActivity(),
             putString("startTime1", binding.startTimeValueTextView.text.toString())
             putString("arrivalDate1", binding.arriveDateValueTextView.text.toString())
             putString("arrivalTime1", binding.arriveTimeValueTextView.text.toString())
+            putString(
+                "startDate",
+                binding.startDateValueTextView.text.toString()
+            ) // searchActivity에서 돌아올때 화면 깨짐 방지로 데이터 저장
             apply()
         }
     }

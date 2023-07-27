@@ -64,7 +64,7 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         var todayYear = today[Calendar.YEAR]
         var todayMonth = today[Calendar.MONTH]
         var todayDay = today[Calendar.DAY_OF_MONTH]
-        todayStr = "${todayYear}/ ${todayMonth + 1}/ $todayDay"
+        todayStr = "${todayYear}/${todayMonth + 1}/$todayDay"
 
 
         // 오늘 todolist 불러오기

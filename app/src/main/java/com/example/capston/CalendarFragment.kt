@@ -34,7 +34,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
     private lateinit var binding: FragmentCalendarBinding
     private var param1: String? = null
     private var param2: String? = null
-    private var dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/ M/ dd"))
+    private var dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/M/dd"))
     lateinit var user: String
     val todoList = arrayListOf<Todo>()
     var todoKeys: ArrayList<String> = arrayListOf()   //메시지 키 목록
@@ -85,7 +85,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         var todayYear = today[Calendar.YEAR]
         var todayMonth = today[Calendar.MONTH]
         var todayDay = today[Calendar.DAY_OF_MONTH]
-        val todayStr = "${todayYear}/ ${todayMonth + 1}/ $todayDay"
+        val todayStr = "${todayYear}/${todayMonth + 1}/$todayDay"
 
         // 시작 할 때 오늘 todolist 불러오기
         clickedDate(todayStr)
