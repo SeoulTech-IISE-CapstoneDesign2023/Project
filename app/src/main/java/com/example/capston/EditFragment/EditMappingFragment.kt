@@ -66,17 +66,9 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EditMappingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var param1: String? = null
     private var param2: String? = null
@@ -108,17 +100,16 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     var currentUserFcmToken: String = ""//fcmToken정보 fcm서비스로 보내는거임
     private val currentUserId = Firebase.auth.currentUser?.uid ?: ""
 
+    // data를 전달하는 listener
     interface OnDataPassListener {
-        //data를 전달하는 listener
-        fun onStartPass(startPlace: String)
-        fun onArrivePass(arrivePlace: String)
+        fun onStartPass(startPlace: String?)
+        fun onArrivePass(arrivePlace: String?)
     }
-
-    private lateinit var dataPassListener: EditTodoFragment.OnDataPassListener
+    private lateinit var dataPassListener : OnDataPassListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        dataPassListener = context as EditTodoFragment.OnDataPassListener
+        dataPassListener = context as OnDataPassListener
     }
 
 
@@ -146,7 +137,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
             currentUserFcmToken = currentUserItem?.fcmToken ?: ""
         }
 
-        //list에서 일정 하나 선택했을 때 내용 수정
+        //list에서 일정 하나 선택했을 때 내용 수정 !! 여기를 수정해야할듯
         val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
@@ -204,7 +195,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 1 -> {
                     //자동차
-                    val inputFormat = DateTimeFormatter.ofPattern("yyyy/M/d HH:mm")
+                    val inputFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
                     val outputFormat = DateTimeFormatter.ISO_DATE_TIME
                     val pattern = Regex("\\d{1,2}:(\\d{1,2})")
                     val matchResult = pattern.find(startTime)

@@ -51,9 +51,10 @@ class TimeTableFragment : Fragment() {
         user = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         // 오늘 날짜, 년, 월 받아오기
-        var today = Calendar.getInstance()
-        var todayYear = today[Calendar.YEAR]
-        var todayMonth = today[Calendar.MONTH]+1
+        val today = Calendar.getInstance()
+        val todayYear = String.format("%04d", today[Calendar.YEAR])
+        val todayMonth = String.format("%02d", today[Calendar.MONTH]+1)
+        Log.d("TimeTableFragment", "Today: $todayYear + $todayMonth")
 
         // 오늘 날짜 기준 해당 주차의 시작 날짜와 끝 날짜를 계산
         val startOfWeek = today.clone() as Calendar
@@ -62,22 +63,106 @@ class TimeTableFragment : Fragment() {
         endOfWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)    // 일요일 마지막
         endOfWeek.add(Calendar.DAY_OF_MONTH, 7)
 
-        val startOfWeekDay = startOfWeek.get(Calendar.DAY_OF_MONTH)
-        val endOfWeekDay = endOfWeek.get(Calendar.DAY_OF_MONTH)
+        // 요일이 바뀔 것을 계산
+        val startOfWeekYear = String.format("%04d", startOfWeek.get(Calendar.YEAR))
+        val startOfWeekMonth = String.format("%02d", startOfWeek.get(Calendar.MONTH) + 1)
+        val startOfWeekDay = String.format("%02d", startOfWeek.get(Calendar.DAY_OF_MONTH))
 
-        // Firebase 데이터 가져오기
-        FirebaseDatabase.getInstance().getReference("calendar")
-            .child(user)
-            .child("$todayYear"+"년")
-            .child("$todayMonth"+"월")
-            .orderByKey() // 날짜를 기준으로 정렬합니다.
-            .startAt(startOfWeekDay.toString()+"일")
-            .endAt(endOfWeekDay.toString()+"일")
-            .addValueEventListener(object : ValueEventListener {
+        val endOfWeekYear = String.format("%04d", endOfWeek.get(Calendar.YEAR))
+        val endOfWeekMonth = String.format("%02d", endOfWeek.get(Calendar.MONTH) + 1)
+        val endOfWeekDay = String.format("%02d", endOfWeek.get(Calendar.DAY_OF_MONTH))
+
+        // 월이 바뀌지 않는 경우
+        if (startOfWeekMonth == endOfWeekMonth) {
+            FirebaseDatabase.getInstance().getReference("calendar")
+                .child(user)
+                .child("$startOfWeekYear" + "년")
+                .child("$startOfWeekMonth" + "월")
+                .orderByKey() // 날짜를 기준으로 정렬합니다.
+                .startAt("$startOfWeekDay" + "일")
+                .endAt("$endOfWeekDay" + "일")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(databaseError: DatabaseError) {}
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        // 데이터 처리
+                        // 데이터가 존재하는 경우
+                        for (data in dataSnapshot.children) {
+                            Log.d("TimeTableFragment", "${data}")
+                            for (childData in data.children) {
+                                Log.i("TimeTableFragment", "${childData}")
+                                todoKeys.add(childData.key!!)                    //키를 todoKeys 목록에 추가
+                                todoList.add(childData.getValue<Todo>()!!)
+                                val todo = childData.getValue(Todo::class.java)
+                                // 가져온 데이터를 활용하여 처리
+                                if (todo != null) {
+                                    val day = todo.st_date  // 일정이 있는 날짜
+                                    val title = todo.title  // 일정의 제목
+                                    Log.d("TimeTableFragment", "Todo: $todo")
+                                    val dayOfWeek = getDayOfWeek(day) // 일정 요일 구하기
+                                    // 요일과 시간에 맞는 Block 찾아 데이터 설정
+                                    val timeRanges = 0..23 // 0부터 23까지의 범위
+                                    for (hour in timeRanges) {
+                                        val key =
+                                            "${dayOfWeek}${hour.toString().padStart(2, '0')}00"
+                                        val viewId = context.resources.getIdentifier(
+                                            key,
+                                            "id",
+                                            context.packageName
+                                        )
+                                        val view = binding.root.findViewById<TextView>(viewId)
+                                        timeBlocks[key] = view
+                                        // 일정의 title로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
+                                        val color = if (titleColorMap.containsKey(title)) {
+                                            titleColorMap[title]!!
+                                        } else {
+                                            val randomColor = getRandomColor()
+                                            titleColorMap[title] = randomColor
+                                            randomColor
+                                        }
+                                        // 일정이 있다면 배경색 : 랜덤 / 글씨색 : 하얀색
+                                        val hasSchedule =
+                                            checkScheduleForTime(todoList, dayOfWeek, hour)
+                                        if (hasSchedule) {
+                                            view.setBackgroundColor(color)
+                                            view.text = todo.title
+                                            view.setTextColor(Color.WHITE)
+
+                                            // 일정을 클릭하면 해당 일정으로 이동
+                                            view.setOnClickListener {
+                                                val intent =
+                                                    Intent(context, CreateActivity::class.java)
+                                                intent.putExtra("todo", todo)
+                                                startActivity(intent)
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Log.d("TimeTableFragment", "시간표 데이터가 없어요.")
+                                }
+                            }
+                        }
+                    }
+                }
+                )
+        } else {
+            // 월이 바뀌는 경우, 두 개의 데이터를 가져와서 합칩니다.
+            val ref1 = FirebaseDatabase.getInstance().getReference("calendar")
+                .child(user)
+                .child("$startOfWeekYear" + "년")
+                .child("$startOfWeekMonth" + "월")
+                .orderByKey() // 날짜를 기준으로 정렬합니다.
+                .startAt("$startOfWeekDay" + "일")
+            val ref2 = FirebaseDatabase.getInstance().getReference("calendar")
+                .child(user)
+                .child("$endOfWeekYear" + "년")
+                .child("$endOfWeekMonth" + "월")
+                .orderByKey() // 날짜를 기준으로 정렬합니다.
+                .endAt("$endOfWeekDay" + "일")
+
+            // 두 개의 데이터를 가져와서 합칩니다.
+            ref1.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(databaseError: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    Log.d("TimeTableFragment", "DataSnapshot: $dataSnapshot")
-                    // 데이터가 존재하는 경우
                     for (data in dataSnapshot.children) {
                         Log.d("TimeTableFragment", "${data}")
                         for (childData in data.children) {
@@ -95,7 +180,11 @@ class TimeTableFragment : Fragment() {
                                 val timeRanges = 0..23 // 0부터 23까지의 범위
                                 for (hour in timeRanges) {
                                     val key = "${dayOfWeek}${hour.toString().padStart(2, '0')}00"
-                                    val viewId = context.resources.getIdentifier(key, "id", context.packageName)
+                                    val viewId = context.resources.getIdentifier(
+                                        key,
+                                        "id",
+                                        context.packageName
+                                    )
                                     val view = binding.root.findViewById<TextView>(viewId)
                                     timeBlocks[key] = view
                                     // 일정의 title로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
@@ -107,7 +196,8 @@ class TimeTableFragment : Fragment() {
                                         randomColor
                                     }
                                     // 일정이 있다면 배경색 : 랜덤 / 글씨색 : 하얀색
-                                    val hasSchedule = checkScheduleForTime(todoList, dayOfWeek, hour)
+                                    val hasSchedule =
+                                        checkScheduleForTime(todoList, dayOfWeek, hour)
                                     if (hasSchedule) {
                                         view.setBackgroundColor(color)
                                         view.text = todo.title
@@ -128,10 +218,73 @@ class TimeTableFragment : Fragment() {
                     }
                 }
             })
+            // 첫 번째 데이터 처리
+            ref2.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(databaseError: DatabaseError) {}
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    // 두 번째 데이터 처리
+                    // 두 개의 데이터를 합쳐서 원하는 결과를 얻을 수 있습니다.
+                    for (data in dataSnapshot.children) {
+                        Log.d("TimeTableFragment", "${data}")
+                        for (childData in data.children) {
+                            Log.i("TimeTableFragment", "${childData}")
+                            todoKeys.add(childData.key!!)                    //키를 todoKeys 목록에 추가
+                            todoList.add(childData.getValue<Todo>()!!)
+                            val todo = childData.getValue(Todo::class.java)
+                            // 가져온 데이터를 활용하여 처리
+                            if (todo != null) {
+                                val day = todo.st_date  // 일정이 있는 날짜
+                                val title = todo.title  // 일정의 제목
+                                Log.d("TimeTableFragment", "Todo: $todo")
+                                val dayOfWeek = getDayOfWeek(day) // 일정 요일 구하기
+                                // 요일과 시간에 맞는 Block 찾아 데이터 설정
+                                val timeRanges = 0..23 // 0부터 23까지의 범위
+                                for (hour in timeRanges) {
+                                    val key = "${dayOfWeek}${hour.toString().padStart(2, '0')}00"
+                                    val viewId = context.resources.getIdentifier(
+                                        key,
+                                        "id",
+                                        context.packageName
+                                    )
+                                    val view = binding.root.findViewById<TextView>(viewId)
+                                    timeBlocks[key] = view
+                                    // 일정의 title로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
+                                    val color = if (titleColorMap.containsKey(title)) {
+                                        titleColorMap[title]!!
+                                    } else {
+                                        val randomColor = getRandomColor()
+                                        titleColorMap[title] = randomColor
+                                        randomColor
+                                    }
+                                    // 일정이 있다면 배경색 : 랜덤 / 글씨색 : 하얀색
+                                    val hasSchedule =
+                                        checkScheduleForTime(todoList, dayOfWeek, hour)
+                                    if (hasSchedule) {
+                                        view.setBackgroundColor(color)
+                                        view.text = todo.title
+                                        view.setTextColor(Color.WHITE)
+
+                                        // 일정을 클릭하면 해당 일정으로 이동
+                                        view.setOnClickListener {
+                                            val intent = Intent(context, CreateActivity::class.java)
+                                            intent.putExtra("todo", todo)
+                                            startActivity(intent)
+                                        }
+                                    }
+                                }
+                            } else {
+                                Log.d("TimeTableFragment", "시간표 데이터가 없어요.")
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
         return binding.root
     }
 
-    // 날짜로 요일 구하는 함수
+    //    // 날짜로 요일 구하는 함수
     private fun getDayOfWeek(date: String): String {
         val splitText = date.split("/")
         val year = splitText[0].toInt()

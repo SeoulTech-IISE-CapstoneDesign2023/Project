@@ -83,9 +83,9 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         // 오늘 날짜 받아오기
         val today = Calendar.getInstance()
         val todayYear = today[Calendar.YEAR]
-        val todayMonth = today[Calendar.MONTH]
+        val todayMonth = today[Calendar.MONTH]+1
         val todayDay = today[Calendar.DAY_OF_MONTH]
-        val todayStr = "${todayYear}/${todayMonth + 1}/$todayDay"
+        val todayStr = String.format("%04d/%02d/%02d", todayYear,todayMonth,todayDay)
 
         // 시작 할 때 오늘 todolist 불러오기
         clickedDate(todayStr)
@@ -134,10 +134,10 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
                     }
                     todoList.sortBy{ it.st_time }
                     adapter.notifyDataSetChanged()          //화면 업데이트
-                    Log.d("FirebaseData", "checkYear: ${clickedYear}")
-                    Log.d("FirebaseData", "checkMonth: ${clickedMonth}")
-                    Log.d("FirebaseData", "checkDay: ${clickedDay}")
-                    Log.d("FirebaseData", "${todoKeys}")
+                    Log.d("FirebaseData", "checkYear: $clickedYear")
+                    Log.d("FirebaseData", "checkMonth: $clickedMonth")
+                    Log.d("FirebaseData", "checkDay: $clickedDay")
+                    Log.d("FirebaseData", "$todoKeys")
                 }
             })
     }
@@ -162,7 +162,6 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         intent.putExtra("todo", todo)
         intent.putExtra("todoKey",todoKey)
         startActivity(intent)
-        Log.d("FirebaseData", todoKey)
     }
     override fun onLongClick(position: Int) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())

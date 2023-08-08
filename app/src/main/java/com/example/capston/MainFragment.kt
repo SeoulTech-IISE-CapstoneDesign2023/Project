@@ -83,15 +83,12 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
             adapter = alarmAdapter
         }
 
-        // 오늘 날짜 가져오기
-        var today = Calendar.getInstance()
-        var todayYear = today[Calendar.YEAR]
-        var todayMonth = today[Calendar.MONTH]
-        var todayDay = today[Calendar.DAY_OF_MONTH]
-//        todayStr = "${todayYear}/${todayMonth + 1}/$todayDay"
-        todayStr = String.format("%04d/%02d/%02d",todayYear,todayMonth+1,todayDay)
-        Log.e("todayStr",todayStr)
-
+        // 오늘 날짜 받아오기
+        val today = Calendar.getInstance()
+        val todayYear = today[Calendar.YEAR]
+        val todayMonth = today[Calendar.MONTH]+1
+        val todayDay = today[Calendar.DAY_OF_MONTH]
+        val todayStr = String.format("%04d/%02d/%02d", todayYear,todayMonth,todayDay)
 
         // 오늘 todolist 불러오기
         todayDate(todayStr)
