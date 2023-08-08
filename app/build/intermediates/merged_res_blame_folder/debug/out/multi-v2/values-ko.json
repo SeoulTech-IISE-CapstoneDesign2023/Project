@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.capston.app-mergeDebugResources-42:/values-ko/values-ko.xml",
+            "outputFile": "com.example.capston.app-mergeDebugResources-47:/values-ko/values-ko.xml",
             "map": [
                 {
                     "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\ca98aa1355f374f7969d1c544fe1c1d8\\transformed\\core-1.9.0\\res\\values-ko\\values-ko.xml",
@@ -55,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\ded44bd9c08a0954ee5dd02220ed4201\\transformed\\jetified-map-sdk-3.16.0\\res\\values-ko\\values-ko.xml",
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\d37aa6de3c14acd0fe7b35412ff1e3f1\\transformed\\jetified-map-sdk-3.17.0\\res\\values-ko\\values-ko.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

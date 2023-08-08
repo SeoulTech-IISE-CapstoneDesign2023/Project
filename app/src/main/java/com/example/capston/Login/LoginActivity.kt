@@ -7,6 +7,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
+import com.example.capston.Key.Companion.DB_URL
+import com.example.capston.Key.Companion.DB_USERS
+import com.example.capston.Key.Companion.DB_USER_INFO
 import com.example.capston.MainActivity
 import com.example.capston.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -15,7 +18,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 
 class LoginActivity : AppCompatActivity() {
 
@@ -95,14 +100,22 @@ class LoginActivity : AppCompatActivity() {
                             Log.d("geon_test_login", "signInWithEmail:success")
 
                             val currentUser = auth.currentUser
+                            val userId = currentUser?.uid ?: ""
                             Toast.makeText(baseContext, "지금 로그인된 유저 이메일 ${currentUser?.email}",
                                 Toast.LENGTH_SHORT,).show()
+                            //로그인이 된후에 fcm토큰 생성 한후 realTimeDataBase에 업데이트
+                            Firebase.messaging.token.addOnCompleteListener {
+                                val token = it.result
+                                val user = mutableMapOf<String,Any>()
+                                user["userId"] = userId
+                                user["fcmToken"] = token
 
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
+                                Firebase.database(DB_URL).reference.child(DB_USERS).child(userId).child(DB_USER_INFO).updateChildren(user)
 
-
-
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.d("geon_test_login", "signInWithEmail:failure")
@@ -119,6 +132,7 @@ class LoginActivity : AppCompatActivity() {
         binding.SignUpBtn.setOnClickListener{
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.findPWBtn.setOnClickListener{

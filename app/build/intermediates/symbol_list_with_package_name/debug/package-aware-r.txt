@@ -1067,6 +1067,7 @@ attr suffixText
 attr suffixTextAppearance
 attr suffixTextColor
 attr suggestionRowLayout
+attr swipeRefreshLayoutProgressSpinnerBackgroundColor
 attr switchMinWidth
 attr switchPadding
 attr switchStyle
@@ -1393,6 +1394,7 @@ color error_color_material_light
 color foreground_material_dark
 color foreground_material_light
 color green
+color grey
 color highlighted_text_material_dark
 color highlighted_text_material_light
 color m3_appbar_overlay_color
@@ -2574,9 +2576,11 @@ drawable abc_textfield_search_material
 drawable abc_vector_test
 drawable avd_hide_password
 drawable avd_show_password
+drawable baseline_access_alarm_24
 drawable baseline_add_circle_24
 drawable baseline_arrow_forward_24
 drawable baseline_calendar_month_24
+drawable baseline_cancel_24
 drawable baseline_change_circle_24
 drawable baseline_directions_bus_24
 drawable baseline_directions_car_24
@@ -2588,6 +2592,7 @@ drawable baseline_my_location_24
 drawable baseline_place_24
 drawable baseline_settings_24
 drawable baseline_table_chart_24
+drawable bottom_sheet_background
 drawable btn_checkbox_checked_mtrl
 drawable btn_checkbox_checked_to_unchecked_mtrl_animation
 drawable btn_checkbox_unchecked_mtrl
@@ -2808,6 +2813,7 @@ id add
 id addtodo_button
 id adjust_height
 id adjust_width
+id alarmListRecyclerView
 id alertTitle
 id aligned
 id all
@@ -2848,6 +2854,8 @@ id blank
 id blocking
 id bottom
 id bottomNavigationView
+id bottomSheetLayout
+id bottomSheetTitleTextView
 id bounce
 id bounceBoth
 id bounceEnd
@@ -2862,6 +2870,7 @@ id cache_measures
 id calendar
 id calendarView
 id callMeasure
+id cancelButton
 id cancelMenu
 id cancel_action
 id cancel_button
@@ -2893,6 +2902,7 @@ id collapseActionView
 id compress
 id confirm_button
 id constraint
+id constraintLayout
 id container
 id content
 id contentPanel
@@ -2909,6 +2919,7 @@ id custom
 id customPanel
 id cut
 id dark
+id dateTimeTextView
 id date_picker_actions
 id decelerate
 id decelerateAndComplete
@@ -3086,6 +3097,7 @@ id material_value_index
 id mcv_pager
 id media_actions
 id message
+id messageTextView
 id middle
 id mini
 id monday
@@ -3185,6 +3197,7 @@ id navigation_header_container
 id never
 id neverCompleteToEnd
 id neverCompleteToStart
+id noItemTextView
 id noScroll
 id noState
 id none
@@ -3293,6 +3306,7 @@ id shortcut
 id showCustom
 id showHome
 id showTitle
+id signOutButton
 id sin
 id skipCollapsed
 id skipped
@@ -3656,6 +3670,7 @@ layout activity_main
 layout activity_search
 layout activity_search_web
 layout activity_sign_up
+layout bottom_sheet
 layout browser_actions_context_menu_page
 layout browser_actions_context_menu_row
 layout custom_dialog
@@ -3679,6 +3694,7 @@ layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
 layout fragment_time_table
+layout item_alarm
 layout item_car
 layout item_location
 layout item_route
@@ -3781,6 +3797,7 @@ menu navigate_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description
+raw alarm
 raw firebase_common_keep
 raw loading_animation
 string abc_action_bar_home_description
@@ -3840,6 +3857,7 @@ string common_open_on_phone
 string common_signin_button_text
 string common_signin_button_text_long
 string copy_toast_msg
+string default_notification_channel_id
 string default_web_client_id
 string error_icon_content_description
 string exposed_dropdown_menu_content_description
@@ -3848,6 +3866,8 @@ string fab_transformation_sheet_behavior
 string fallback_menu_item_copy_link
 string fallback_menu_item_open_in_browser
 string fallback_menu_item_share_link
+string fcm_fallback_notification_channel_label
+string fcm_server_key
 string gcm_defaultSenderId
 string google_api_key
 string google_app_id
@@ -5130,6 +5150,7 @@ styleable State android_id constraints
 styleable StateListDrawable android_dither android_visible android_variablePadding android_constantSize android_enterFadeDuration android_exitFadeDuration
 styleable StateListDrawableItem android_drawable
 styleable StateSet defaultState
+styleable SwipeRefreshLayout swipeRefreshLayoutProgressSpinnerBackgroundColor
 styleable SwitchCompat android_textOn android_textOff android_thumb showText splitTrack switchMinWidth switchPadding switchTextAppearance thumbTextPadding thumbTint thumbTintMode track trackTint trackTintMode
 styleable SwitchMaterial useMaterialThemeColors
 styleable TabItem android_icon android_layout android_text

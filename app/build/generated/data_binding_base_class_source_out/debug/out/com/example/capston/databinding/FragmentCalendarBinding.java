@@ -29,6 +29,9 @@ public final class FragmentCalendarBinding implements ViewBinding {
   public final MaterialCalendarView calendarView;
 
   @NonNull
+  public final ConstraintLayout constraintLayout;
+
+  @NonNull
   public final RecyclerView todoRecyclerView;
 
   @NonNull
@@ -36,10 +39,12 @@ public final class FragmentCalendarBinding implements ViewBinding {
 
   private FragmentCalendarBinding(@NonNull ConstraintLayout rootView,
       @NonNull ImageView addtodoButton, @NonNull MaterialCalendarView calendarView,
-      @NonNull RecyclerView todoRecyclerView, @NonNull TextView txtTodaylist) {
+      @NonNull ConstraintLayout constraintLayout, @NonNull RecyclerView todoRecyclerView,
+      @NonNull TextView txtTodaylist) {
     this.rootView = rootView;
     this.addtodoButton = addtodoButton;
     this.calendarView = calendarView;
+    this.constraintLayout = constraintLayout;
     this.todoRecyclerView = todoRecyclerView;
     this.txtTodaylist = txtTodaylist;
   }
@@ -83,6 +88,12 @@ public final class FragmentCalendarBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.constraintLayout;
+      ConstraintLayout constraintLayout = ViewBindings.findChildViewById(rootView, id);
+      if (constraintLayout == null) {
+        break missingId;
+      }
+
       id = R.id.todoRecyclerView;
       RecyclerView todoRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (todoRecyclerView == null) {
@@ -96,7 +107,7 @@ public final class FragmentCalendarBinding implements ViewBinding {
       }
 
       return new FragmentCalendarBinding((ConstraintLayout) rootView, addtodoButton, calendarView,
-          todoRecyclerView, txtTodaylist);
+          constraintLayout, todoRecyclerView, txtTodaylist);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

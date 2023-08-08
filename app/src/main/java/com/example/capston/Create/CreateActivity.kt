@@ -1,42 +1,78 @@
 package com.example.capston.Create
 
+import android.Manifest
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.commit
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.EditFragment.EditTodoFragment
+import com.example.capston.Key.Companion.ALARMTIME
+import com.example.capston.Key.Companion.DATETIME
+import com.example.capston.Key.Companion.DB_ALARMS
+import com.example.capston.Key.Companion.DB_CALENDAR
+import com.example.capston.Key.Companion.DB_URL
+import com.example.capston.Key.Companion.DB_USERS
+import com.example.capston.Key.Companion.DB_USER_INFO
+import com.example.capston.Key.Companion.KEY_ALARMTIME
+import com.example.capston.Key.Companion.KEY_DATETIME
+import com.example.capston.Key.Companion.PLUS_TIME
+import com.example.capston.Key.Companion.TYPE
 import com.example.capston.MainActivity
 import com.example.capston.R
 import com.example.capston.Todo
+import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.ActivityCreateBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class CreateActivity : AppCompatActivity(),
     EditTodoFragment.OnDataPassListener,
     EditMappingFragment.OnDataPassListener {
     private lateinit var binding: ActivityCreateBinding
-    var todoKeys: java.util.ArrayList<String> = arrayListOf()   //일정 키 목록
-    lateinit var user: String
+    private var todoKeys: java.util.ArrayList<String> = arrayListOf()   //일정 키 목록
+    private lateinit var user: String
     private var startAddress = ""
     private var arrivalAddress = ""
     private var dateString = ""
     private var timeString = ""
     private var startTime = ""
+    private var arrivalDate = ""
     private var arrivalTime = ""
     private var editTextLength = 0
     private var editTextPlace = ""
@@ -44,17 +80,47 @@ class CreateActivity : AppCompatActivity(),
     private var editStartPlace = ""
     private var editArrivePlace = ""
     private var isEditMode = false  // 추가: 편집 모드 여부를 나타내는 변수
+    private var currentUserFcmToken = ""
+    private var nickname = ""
+    private var notificationId = ""
+    private var plusTime = ""
+    private val calendarForAlarm = Calendar.getInstance()
+    //권한요청할때 필요함
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+        } else {
+            //알림권한 없음 -> 설정창으로 한번더 보내서 알림 권한 하라고 요청
+            Toast.makeText(this,"알림권한이 필요합니다.",Toast.LENGTH_SHORT).show()
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package",packageName,null)
+            }
+            startActivity(intent)
+            finish()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.createActionToolbar)
-        user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        user = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        //알림을 설정할건지 permission창
+        askNotificationPermission()
 
+        //fcmToken정보 받기
+        val userDB =Firebase.database.reference.child(DB_USERS).child(user).child(DB_USER_INFO)
+        userDB.get().addOnSuccessListener {
+            val userInfo = it.getValue(UserInfo::class.java)
+            currentUserFcmToken = userInfo?.fcmToken ?: ""
+            nickname = userInfo?.nickname ?: ""
+        }
         //list에서 일정 하나 선택했을 때 내용 수정
         val todo = intent.getParcelableExtra<Todo>("todo")
-        var startDate = intent.getStringExtra("startDate") // "yyyy/M/d" 형식으로 받음
+        var startDate = intent.getStringExtra("startDate") // "yyyy/MM/dd" 형식으로 받음
         Log.e("createActivity",startDate.toString())
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
@@ -66,12 +132,16 @@ class CreateActivity : AppCompatActivity(),
             //searActivity에서 다시 돌아올때 화면이 깨지는 에러 방지용
             if (startDate == null) {
                 with(getSharedPreferences("date",Context.MODE_PRIVATE)){
-                    startDate = getString("startDate","").toString()
+                    startDate = getString("startDate1","").toString()
+                    startTime = getString("startTime1","").toString()
+                    arrivalTime = getString("arrivalTime1","").toString()
+                    arrivalDate = getString("arrivalDate1","").toString()
+                    //todo 제목을 가져오야함
                 }
             }
             initializeCreateMode(startDate!!)
         }
-        getData()
+        getData() //todo 임시로 저장해놓으거임 firebase로 넣어줘야함
         val fManager = supportFragmentManager
         val mappingFragment = EditMappingFragment.newInstance(startAddress, arrivalAddress)
         fManager.commit {
@@ -114,6 +184,13 @@ class CreateActivity : AppCompatActivity(),
         binding.arriveTimeValueTextView.setOnClickListener {
             setTime(1)
         }
+        whenDateTimeValueChangedSaveDateData()
+
+        saveNotificationIdWhenEditModeForEditAlarm()
+        saveDateData()
+    }
+
+    private fun whenDateTimeValueChangedSaveDateData() {
         binding.startDateValueTextView.addTextChangedListener {
             saveDateData()
         }
@@ -121,6 +198,26 @@ class CreateActivity : AppCompatActivity(),
         binding.startTimeValueTextView.addTextChangedListener {
             saveDateData()
         }
+        binding.arriveDateValueTextView.addTextChangedListener {
+            saveDateData()
+        }
+
+        binding.arriveTimeValueTextView.addTextChangedListener {
+            saveDateData()
+        }
+    }
+
+    private fun saveNotificationIdWhenEditModeForEditAlarm() {
+        //notifiactionId 저장 -> editMode일때 알람을 수정하기 위해서
+        val changeStartTime =
+            binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
+                .replace(":", "").replace(" ", "")
+        val split = splitDate(binding.startDateValueTextView.text.toString())
+        val year = split[0].trim().toInt()
+        val month = split[1].trim().toInt()
+        val day = split[2].trim().toInt()
+        val date = String.format("%04d%02d%02d", year, month, day)
+        notificationId = "$date$changeStartTime".substring(3)
     }
 
     private fun initializeEditMode(todo: Todo) {
@@ -140,9 +237,10 @@ class CreateActivity : AppCompatActivity(),
         // 화면을 초기화하는 작업 수행
         binding.editTodoText.setText("")
         binding.startDateValueTextView.text = startDate
-        binding.startTimeValueTextView.text = "오전 00:00"
-        binding.arriveDateValueTextView.text = "0000/00/00"
-        binding.arriveTimeValueTextView.text = "오전 00:00"
+        binding.startTimeValueTextView.text = if(startTime != "") startTime else "오전 00:00"
+        binding.arriveDateValueTextView.text = if(arrivalDate != "") arrivalDate else "0000/00/00"
+        binding.arriveTimeValueTextView.text = if(arrivalTime != "") arrivalTime else "오전 00:00"
+        //todo 투두 제목을 가져오는 작업을 하면됨
         Log.i("date","${startDate}")
     }
 
@@ -186,9 +284,16 @@ class CreateActivity : AppCompatActivity(),
                         if (isEditMode) {
                             // 기존의 Todo를 수정하는 경우
                             updateTodo(todoKey!!)
+                            deleteAlarmWhenEdit()
+                            //편집 모드
+                            //알람을 생성 이때 기존의 알람을 수정하는 경우 기존 알람을 삭제해야하고 새로운 알람을 생성해야함
+                            createAlarm()
+
+
                         } else {
                             // 새로운 Todo를 생성하는 경우
                             createTodo()
+                            createAlarm()
                         }
                         finish()
                     }
@@ -205,6 +310,184 @@ class CreateActivity : AppCompatActivity(),
         }
     }
 
+    private fun deleteAlarmWhenEdit(){
+        Log.e("deletAlarmWhenEdit","uid : $user notificationId : $notificationId")
+        Firebase.database.reference.child(DB_ALARMS).child(user).child(notificationId).removeValue()
+        val notificationIntent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            notificationId.toInt(),
+            notificationIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+    }
+
+    private fun createAlarm(){
+        //mapping에서 시간가져오기
+        var alarmTime = ""
+        var type = ""
+        with(getSharedPreferences(KEY_ALARMTIME,Context.MODE_PRIVATE)){
+            alarmTime = getString(ALARMTIME,"").toString()
+            type = getString(TYPE,"").toString()
+            plusTime = getString(PLUS_TIME,"").toString()
+        }
+        Log.e("alarmTimeinCreateAlarm","$alarmTime $type $plusTime")
+        //잘 가져온것을 파악
+        val todo = binding.editTodoText.text.toString()
+        val alarm = mutableMapOf<String,Any>()
+        //1번 자동차일 경우 받아온 시간을 그대로 변경해주면 됨 2,3번일 경우 받아온 시간만큼 빼주면 됨 우선은 자동차같은 경우는 2023/08/23 16:35 이런식으로 되어있고 나머지는 12:45이런식으로 되어있음
+        when(type){
+            "car" ->{
+                makeCarAlarm(alarmTime, alarm, todo)
+            }
+            "walk" -> {
+                makeWalkAlarm(alarmTime, alarm, todo)
+            }
+            "subway" ->{
+                makeWalkAlarm(alarmTime, alarm, todo) //todo subway같은 경우는 주기적으로 업데이트하는 방식을 생각해야함
+            }
+        }
+    }
+
+    //도보 알람만들기
+    private fun makeWalkAlarm(
+        alarmTime: String,
+        alarm: MutableMap<String, Any>,
+        todo: String
+    ) {
+        //받은 시간은 00:00 이런 형태임 그러면은 시작시간에서 그만큼 빼주면 됨
+        val changeStartTime =
+            binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
+                .replace(":", "").replace(" ", "")
+        val split = splitDate(binding.startDateValueTextView.text.toString())
+        val year = split[0].trim().toInt()
+        val month = split[1].trim().toInt()
+        val day = split[2].trim().toInt()
+        val date = String.format("%04d%02d%02d", year, month, day)
+        val time = "$date$changeStartTime"
+        val dateFormat = SimpleDateFormat("yyyyMMddHHmm")
+        try {
+            val targetTime: Date = dateFormat.parse(time)
+            calendarForAlarm.time = targetTime
+            Log.e("aa","${calendarForAlarm.time}")
+            val timeFormat = SimpleDateFormat("HH:mm")
+            val minusTime = timeFormat.parse(alarmTime)
+            val minuteFormat = SimpleDateFormat("mm")
+            val addTime = minuteFormat.parse(plusTime)
+            calendarForAlarm.set(Calendar.HOUR_OF_DAY, calendarForAlarm.get(Calendar.HOUR_OF_DAY) - minusTime.hours)
+            Log.e("aa","${calendarForAlarm.time}")
+            calendarForAlarm.set(Calendar.MINUTE, calendarForAlarm.get(Calendar.MINUTE) - minusTime.minutes - addTime.minutes)
+            Log.e("aa","${calendarForAlarm.time}")
+
+            val modifiedDate = calendarForAlarm.time
+            Log.e("modifiedDate", "$modifiedDate")
+            val outputDate = dateFormat.format(modifiedDate)
+            Log.e("modifiedDate", "$outputDate")
+            //현재 시간과 알람 시간을 비교해서 알람 시간이 과거면은 알람 설정
+            Log.e("시간 체크","알람시간 : ${calendarForAlarm.timeInMillis} 현재시간 : ${System.currentTimeMillis()}")
+            if (calendarForAlarm.timeInMillis <= System.currentTimeMillis()) {
+                Log.e("createActivity에서 알람 체크 확인","현재시간보다 늦게 알람 설정은 안됨")
+                return
+            }
+
+            alarm["todo"] = todo
+            alarm["time"] = outputDate //알람이 울리는 시간
+            alarm["timeFormat"] = "${outputDate.substring(0,4)}년 ${outputDate.substring(4,6)}월 ${outputDate.substring(6,8)}일 ${outputDate.substring(8,10)}:${outputDate.substring(10,12)}"//2023년 08월 15일 15:49
+            alarm["userId"] = user
+            val notificationId = outputDate.substring(3)
+            alarm["notificationId"] = notificationId
+            //알람 데이터 업데이트 기기에 저장을 하고 서비스에서 받음
+            with(getSharedPreferences(KEY_DATETIME, MODE_PRIVATE).edit()) {
+                putString(DATETIME, outputDate)
+                apply()
+            }
+            Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user).child(notificationId)
+                .updateChildren(alarm)
+            //알람 생성
+            val body = "${nickname}님 이제 ${todo}할 시간이에요~!"
+            Toast.makeText(this, "알람을 생성하였습니다", Toast.LENGTH_SHORT).show()
+            sendFcm(body)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("걷기시간 변형", "시간변형에 실패")
+        }
+    }
+
+    //자동차 알람만들기
+    private fun makeCarAlarm(
+        alarmTime: String,
+        alarm: MutableMap<String, Any>,
+        todo: String
+    ) {
+        val dateFormat = SimpleDateFormat("yyyyMMddHHmm")
+        val timeForamt = SimpleDateFormat("mm")
+        val time =
+            alarmTime.replace("/", "").replace(" ", "").replace(":", "") //202308231635 이런식으로 바꿔줌
+        val date : Date = dateFormat.parse(time)
+        calendarForAlarm.time = date
+        val addTime = timeForamt.parse(plusTime)
+        calendarForAlarm.set(Calendar.MINUTE,calendarForAlarm.get(Calendar.MINUTE) - addTime.minutes)
+        val modifiedDate = calendarForAlarm.time
+        val resultTime = dateFormat.format(modifiedDate)
+
+        //현재 시간과 알람 시간을 비교해서 알람 시간이 과거면은 알람 설정
+        Log.e("시간 체크","알람시간 : ${calendarForAlarm.timeInMillis} 현재시간 : ${System.currentTimeMillis()}")
+        if (calendarForAlarm.timeInMillis <= System.currentTimeMillis()) {
+            Log.e("createActivity에서 알람 체크 확인","현재시간보다 늦게 알람 설정은 안됨")
+            return
+        }
+        alarm["todo"] = todo
+        alarm["time"] = resultTime
+        alarm["userId"] = user
+        val notificationId = resultTime.substring(3)
+        alarm["notificationId"] = notificationId
+        //알람 데이터 업데이트 기기에 저장을 하고 서비스에서 받음
+        with(getSharedPreferences(KEY_DATETIME, MODE_PRIVATE).edit()) {
+            putString(DATETIME, resultTime)
+            apply()
+        }
+        Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user).child(notificationId)
+            .updateChildren(alarm)
+        //알람 생성
+        val body = "${nickname}님 이제 ${todo}할 시간이에요~!"
+        Toast.makeText(this, "알람을 생성하였습니다", Toast.LENGTH_SHORT).show()
+        sendFcm(body)
+    }
+
+    //fcm을 보내는 기능
+    private fun sendFcm(body: String) {
+        if (currentUserFcmToken.isNotEmpty()) {
+            val client = OkHttpClient()
+            val root = JSONObject()
+            val notification = JSONObject()
+            notification.put("title", "MapMyDay")
+            notification.put("body", body)
+            root.put("to", currentUserFcmToken)
+            root.put("priority", "high")
+            root.put("notification", notification)
+
+            val requestBody =
+                root.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+            val key = getString(R.string.fcm_server_key)
+            val request =
+                Request.Builder().post(requestBody).url("https://fcm.googleapis.com/fcm/send")
+                    .header("Authorization", "key=${key}").build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    Log.e("CreateActivityFcm", response.toString())
+
+                }
+            })
+        }
+    }
+
     private fun createTodo() {
         val title = binding.editTodoText.text.toString()  //제목 입력창에 작성한 내용 문자열로 받아 title 변수에 저장
         val st_date = binding.startDateValueTextView.text.toString()
@@ -215,7 +498,6 @@ class CreateActivity : AppCompatActivity(),
         val memo = editTextMemo
         val startPlace = editStartPlace
         val arrivePlace = editArrivePlace
-
         val check = splitDate(st_date)
         val clickedYear = check[0].trim()
         val clickedMonth = check[1].trim()
@@ -295,6 +577,12 @@ class CreateActivity : AppCompatActivity(),
         AlertDialog.Builder(this).apply {
             setMessage("일정저장을 취소하시겠습니까?")
             setPositiveButton("네") { dialog, id ->
+                //알람이 존재한다면 알람을 삭제해야함
+                Log.e("isEditMode",isEditMode.toString())
+                if(isEditMode){
+                    //편집 모드
+                    deleteAlarmWhenEdit()
+                }
                 val intent = Intent(this@CreateActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -314,19 +602,19 @@ class CreateActivity : AppCompatActivity(),
             if (separator == 0) {
                 binding.startTimeValueTextView.text = timeString
                 startTime = "$dateString ${formatHour}:${formatMinute}"
-                Log.e("날짜확인", startTime)
             } else {
                 binding.arriveTimeValueTextView.text = timeString
                 arrivalTime = "$dateString ${formatHour}:${formatMinute}"
             }
             // 출발시간이 도착시간보다 빨리 못하게 나중에 버튼누르면 안되게 해야함
-            val dateTimeFormat = SimpleDateFormat("yyyy/M/d HH:mm", Locale.KOREA)
+            val dateTimeFormat = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.KOREA)
             try {
                 val startDate = dateTimeFormat.parse(startTime)
                 val arrivalDate = dateTimeFormat.parse(arrivalTime)
                 Log.d("time", "$startDate $arrivalDate")
                 if (startDate != null) {
                     if (startDate >= arrivalDate) {
+                        Log.e("setTime", "$startDate $arrivalDate")
                         Toast.makeText(this, "시작시간은 도착시간보다 늦을 수 없습니다", Toast.LENGTH_SHORT).show()
                         binding.arriveDateValueTextView.text = "0000/00/00"
                         binding.arriveTimeValueTextView.text = "오전 00:00"
@@ -349,7 +637,7 @@ class CreateActivity : AppCompatActivity(),
     private fun setDate(separator: Int) {
         val calendar = Calendar.getInstance()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            dateString = String.format("%04d/%d/%d", year, month + 1, dayOfMonth) // yyyy/M/d 형식으로 변경
+            dateString = String.format("%04d/%02d/%02d", year, month + 1, dayOfMonth) // yyyy/MM/dd 형식으로 변경
             if (separator == 0) {
                 binding.startDateValueTextView.text = "$dateString"
                 startTime = "$dateString $timeString"
@@ -388,12 +676,39 @@ class CreateActivity : AppCompatActivity(),
     }
 
     private fun splitDate(date: String): Array<String> {
+        Log.e("splitDate",date)
         val splitText = date.split("/")
         val resultDate: Array<String> = Array(3) { "" }
         resultDate[0] = splitText[0]  //year
         resultDate[1] = splitText[1]  //month
         resultDate[2] = splitText[2]  //day
         return resultDate
+    }
+
+    private fun askNotificationPermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if(ContextCompat.checkSelfPermission(this,Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+                //허용된거임 그러면 그냥 ㅇㅋ
+            }else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)){
+                //여기는 거절하고 한번더 알려주는거
+                showPermissionRationalDialog()
+            }else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun showPermissionRationalDialog(){
+        AlertDialog.Builder(this)
+            .setMessage("알림 권한이 없으면 알림을 받을 수 없습니다.")
+            .setPositiveButton("권한 허용하기") {_,_ ->
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+            .setNegativeButton("취소"){dialogInterface,_ ->
+                dialogInterface.cancel()
+            }
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -430,6 +745,11 @@ class CreateActivity : AppCompatActivity(),
     override fun onArrivePass(arrivePlace: String) {
         Log.d("DataPass", "arrivePlace is :$arrivePlace")
         editArrivePlace = arrivePlace
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        saveDateData()
     }
 
 }

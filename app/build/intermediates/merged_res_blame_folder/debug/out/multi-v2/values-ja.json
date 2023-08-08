@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.capston.app-mergeDebugResources-42:/values-ja/values-ja.xml",
+            "outputFile": "com.example.capston.app-mergeDebugResources-47:/values-ja/values-ja.xml",
             "map": [
                 {
                     "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\58dcf7e9703610dee11a55335c5dd16f\\transformed\\material-1.5.0\\res\\values-ja\\values-ja.xml",
@@ -40,6 +40,23 @@
                     }
                 },
                 {
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\d37aa6de3c14acd0fe7b35412ff1e3f1\\transformed\\jetified-map-sdk-3.17.0\\res\\values-ja\\values-ja.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,105,163,227,274,318,388,438,486",
+                        "endColumns": "49,57,63,46,43,69,49,47,48",
+                        "endOffsets": "100,158,222,269,313,383,433,481,530"
+                    },
+                    "to": {
+                        "startLines": "108,109,110,111,112,113,114,115,116",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "8962,9012,9070,9134,9181,9225,9295,9345,9393",
+                        "endColumns": "49,57,63,46,43,69,49,47,48",
+                        "endOffsets": "9007,9065,9129,9176,9220,9290,9340,9388,9437"
+                    }
+                },
+                {
                     "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\e474e7321d2dabd34c08e04f444265f9\\transformed\\jetified-play-services-basement-18.1.0\\res\\values-ja\\values.xml",
                     "from": {
                         "startLines": "4",
@@ -54,23 +71,6 @@
                         "startOffsets": "4098",
                         "endColumns": "121",
                         "endOffsets": "4215"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\ded44bd9c08a0954ee5dd02220ed4201\\transformed\\jetified-map-sdk-3.16.0\\res\\values-ja\\values-ja.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10",
-                        "startColumns": "4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,105,163,227,274,318,388,438,486",
-                        "endColumns": "49,57,63,46,43,69,49,47,48",
-                        "endOffsets": "100,158,222,269,313,383,433,481,530"
-                    },
-                    "to": {
-                        "startLines": "108,109,110,111,112,113,114,115,116",
-                        "startColumns": "4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "8962,9012,9070,9134,9181,9225,9295,9345,9393",
-                        "endColumns": "49,57,63,46,43,69,49,47,48",
-                        "endOffsets": "9007,9065,9129,9176,9220,9290,9340,9388,9437"
                     }
                 },
                 {

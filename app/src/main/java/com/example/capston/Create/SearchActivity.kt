@@ -115,7 +115,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.arrivalTextView.setOnClickListener {
             updateArrivalMap(arrivalLat, arrivalLng)
         }
-
+        binding.navermap.onCreate(savedInstanceState)
         binding.navermap.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
@@ -139,6 +139,43 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        binding.navermap.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.navermap.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.navermap.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.navermap.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.navermap.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.navermap.onDestroy()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.navermap.onLowMemory()
+    }
+
+
 
     private fun updateStartMap(lat: Double, lng: Double) {
         Log.e("출발", "$lat $lng")
@@ -301,6 +338,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             setNegativeButton("아니오", null)
             setPositiveButton("네") { _, _ ->
                 deletData()
+                initLocation()
                 val intent = Intent(context, CreateActivity::class.java)
                 intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
                 startActivity(intent)
@@ -329,10 +367,19 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             myLocationlat = location.latitude
             myLocationlng = location.longitude
         }
-        updateArrivalMap(arrivalLat, arrivalLng)
-        updateStartMap(startLat, startLng)
+
+        if (arrivalLat != 0.0) {
+            updateArrivalMap(arrivalLat, arrivalLng)
+            updateStartMap(startLat, startLng)
+        } else {
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
+                .animate(CameraAnimation.Easing)
+            naverMap.moveCamera(cameraUpdate)
+        }
+
+
     }
-    
+
 
     private fun checkPermission() {
         when {//permission이 되었을 때
@@ -404,6 +451,17 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             putString("startLng", startLng.toString())
             putString("arrivalLat", arrivalLat.toString())
             putString("arrivalLng", arrivalLng.toString())
+            apply()
+        }
+    }
+
+    //맵 저장취소버튼을 눌렀을때 데이터 초기화해주기
+    private fun initLocation() {
+        with(getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
+            putString("startLat", "0.0")
+            putString("startLng", "0.0")
+            putString("arrivalLat", "0.0")
+            putString("arrivalLng", "0.0")
             apply()
         }
     }
