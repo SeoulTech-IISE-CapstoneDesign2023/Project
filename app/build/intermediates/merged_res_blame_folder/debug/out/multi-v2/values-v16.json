@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.capston.app-mergeDebugResources-42:/values-v16/values-v16.xml",
+            "outputFile": "com.example.capston.app-mergeDebugResources-47:/values-v16/values-v16.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\SAMSUNG\\.gradle\\caches\\transforms-3\\ca98aa1355f374f7969d1c544fe1c1d8\\transformed\\core-1.9.0\\res\\values-v16\\values-v16.xml",
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\ca98aa1355f374f7969d1c544fe1c1d8\\transformed\\core-1.9.0\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\SAMSUNG\\.gradle\\caches\\transforms-3\\8452e95effe6d61789c31a13799d1968\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
+                    "source": "C:\\Users\\samsung\\.gradle\\caches\\transforms-3\\8452e95effe6d61789c31a13799d1968\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

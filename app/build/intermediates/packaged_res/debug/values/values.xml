@@ -9,10 +9,13 @@
     </string-array>
     <color name="black">#FF000000</color>
     <color name="green">#00A300</color>
+    <color name="grey">#EBEBEB</color>
     <color name="red">#FF0000</color>
     <color name="white">#FFFFFFFF</color>
-    <string name="app_name">capston</string>
+    <string name="app_name">MapMyDay</string>
+    <string name="default_notification_channel_id">default_notification_channel_id</string>
     <string name="default_web_client_id" translatable="false">1048483115379-uhrngn00oavmv6ifa8qa6uidoou3r3pf.apps.googleusercontent.com</string>
+    <string name="fcm_server_key">AAAA9B52sXM:APA91bH_UFbsYol2HTp-CUH8meIYwTJXw8U4Z54p70HCN4IOG550qb5cWg6lTITob74pKaM4NZvnXh1QqVlYGfMVFJrHG4kiWfad8V2bRlC7kG1QA1T_0Qj4uvihVQyCnjE3QbzJ9kdj</string>
     <string name="gcm_defaultSenderId" translatable="false">1048483115379</string>
     <string name="google_api_key" translatable="false">AIzaSyAaZy13q7QwVgriVeki8WIoVdSyRb3Xs_0</string>
     <string name="google_app_id" translatable="false">1:1048483115379:android:fd5bbc4986fd51fd3e1506</string>

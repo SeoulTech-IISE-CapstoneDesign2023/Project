@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -22,6 +23,12 @@ import com.example.capston.Bus.realtime.BusRealTimeConnection
 import com.example.capston.Bus.realtime.RealTimeArrivalBus
 import com.example.capston.R
 import com.example.capston.Create.SearchActivity
+import com.example.capston.Create.UserInfo
+import com.example.capston.Key
+import com.example.capston.Key.Companion.ALARMTIME
+import com.example.capston.Key.Companion.KEY_ALARMTIME
+import com.example.capston.Key.Companion.PLUS_TIME
+import com.example.capston.Key.Companion.TYPE
 import com.example.capston.Todo
 import com.example.capston.car.CarAdapter
 import com.example.capston.car.CarRouteRequest
@@ -42,6 +49,9 @@ import com.example.capston.walk.RouteData
 import com.example.capston.walk.WalkAdapter
 import com.example.capston.walk.WalkService
 import com.example.retrofit_example.retrofit2.stationTimeTableDTO
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,6 +59,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -65,11 +77,12 @@ private const val ARG_PARAM2 = "param2"
  * Use the [EditMappingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EditMappingFragment : Fragment() {
+class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentEditMappingBinding
     private var minTotalTime: Int? = null
+    private var plusTime  = ""
     private var info = mutableListOf<Info>()
     private val g by lazy { android.location.Geocoder(requireContext(), Locale.KOREAN) } //geocoder
     private var locationList = Array(4) { 0.0 }
@@ -92,12 +105,16 @@ class EditMappingFragment : Fragment() {
     private var startLat = 0.0
     private var arrivalLng = 0.0
     private var arrivalLat = 0.0
+    var currentUserFcmToken: String = ""//fcmToken정보 fcm서비스로 보내는거임
+    private val currentUserId = Firebase.auth.currentUser?.uid ?: ""
 
-    interface OnDataPassListener {//data를 전달하는 listener
-    fun onStartPass(startPlace: String)
+    interface OnDataPassListener {
+        //data를 전달하는 listener
+        fun onStartPass(startPlace: String)
         fun onArrivePass(arrivePlace: String)
     }
-    private lateinit var dataPassListener : EditTodoFragment.OnDataPassListener
+
+    private lateinit var dataPassListener: EditTodoFragment.OnDataPassListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -119,6 +136,16 @@ class EditMappingFragment : Fragment() {
     ): View {
         binding = FragmentEditMappingBinding.inflate(inflater, container, false)
 
+        //fcmapiKey
+        val fcmServerKey = getString(R.string.fcm_server_key)
+        //fcmToken 가져오기
+        val currentUserDB = Firebase.database.reference.child(Key.DB_USERS).child(currentUserId)
+            .child(Key.DB_USER_INFO)
+        currentUserDB.get().addOnSuccessListener {
+            val currentUserItem = it.getValue(UserInfo::class.java)
+            currentUserFcmToken = currentUserItem?.fcmToken ?: ""
+        }
+
         //list에서 일정 하나 선택했을 때 내용 수정
         val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
         if (todo != null) {
@@ -136,11 +163,14 @@ class EditMappingFragment : Fragment() {
             R.array.trackingTimes,
             android.R.layout.simple_list_item_1
         )
+        //아이템 선택되었을때 콜백 되도록 허락
+        binding.trackingTimeSpinner.onItemSelectedListener = this
         binding.searchlayer.setOnClickListener {
             val intent = Intent(requireContext(), SearchActivity::class.java)
             intent.putExtra("startAddress", binding.startValueTextView.text.toString())
             intent.putExtra("arrivalAddress", binding.arrivalValueTextView.text.toString())
             startActivity(intent)
+            requireActivity().finish()
         }
 
         // searchActivity에서 출발도착장소 업데이트
@@ -166,7 +196,7 @@ class EditMappingFragment : Fragment() {
             val startAdress = binding.startValueTextView.text.toString()
             val arrivalAdress = binding.arrivalValueTextView.text.toString()
             getDate()
-            Log.d("hihi", "$startTime $startDate")
+            Log.d("getDate를통해 얻은 startTime과 startDate", "$startTime $startDate")
             when (transportation) {
                 0 -> {
                     Toast.makeText(context, "교통수단을 설정해주세요.", Toast.LENGTH_SHORT).show()
@@ -179,7 +209,7 @@ class EditMappingFragment : Fragment() {
                     val pattern = Regex("\\d{1,2}:(\\d{1,2})")
                     val matchResult = pattern.find(startTime)
                     startTime = matchResult?.value ?: ""
-                    Log.d("hihi", startTime)
+                    Log.d("자동차 길찾기를 위한 startTime변환", startTime)
                     val inputDateTime = "$startDate $startTime"
                     val dateTime = LocalDateTime.parse(inputDateTime, inputFormat)
                     val isoDateTime = dateTime.format(outputFormat)
@@ -274,6 +304,10 @@ class EditMappingFragment : Fragment() {
                                             binding.totalTimeTextView.apply {
                                                 if (minTotalTime != null) {
                                                     text = "총 소요시간 : ${minTotalTime}분"
+                                                    val hours = minTotalTime!! / 60
+                                                    val minutes = minTotalTime!! % 60
+                                                    val alarmTime = String.format("%02d:%02d", hours, minutes)
+                                                    saveAlarmTime(alarmTime,"subway")
                                                     isVisible = true
                                                 }
                                             }
@@ -368,6 +402,17 @@ class EditMappingFragment : Fragment() {
                 Log.e("MainActivity", "${response.body().toString()}")
                 binding.totalTimeTextView.isVisible = false
                 carAdapter.submitList(response.body()?.features?.map { it.properties })
+                //알람 시간을 저장
+                val rawAlarmTime =
+                    response.body()?.features?.map { it.properties.departureTime }?.firstOrNull()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+                val zonedDateTime = ZonedDateTime.parse(rawAlarmTime, formatter)
+                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                val alarmTime =
+                    zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"))
+                Log.e("alarmTime", alarmTime)
+                saveAlarmTime(alarmTime,"car")
+
             }
 
             override fun onFailure(call: Call<Dto>, t: Throwable) {
@@ -375,6 +420,17 @@ class EditMappingFragment : Fragment() {
                 t.printStackTrace()
             }
         })
+    }
+
+    //길찾기를 통한 알람시간을 저장 자동차는 yyyy/MM/dd HH:mm으로 저장 대중교통,걷기는 HH:mm으로 저장 이거를 CreatActivity에 보내서 받아야함
+    private fun saveAlarmTime(time: String,type:String) {
+        with(requireActivity().getSharedPreferences(KEY_ALARMTIME, Context.MODE_PRIVATE).edit()) {
+            Log.e("saveAlarmTime", "alarmTime : $time type : $type")
+            putString(ALARMTIME, time)
+            putString(PLUS_TIME,plusTime)
+            putString(TYPE,type)
+            apply()
+        }
     }
 
     //도보 이동 소요시간 함수
@@ -393,6 +449,12 @@ class EditMappingFragment : Fragment() {
                     val good = response.body()?.features?.filter { it.properties.index == 0 }
                     binding.totalTimeTextView.isVisible = false
                     walkAdapter.submitList(good?.map { it.properties })
+                    val time = good?.map { it.properties.totalTime }?.firstOrNull() ?: 0
+                    val hours = (time / 60) / 60
+                    val minutes = (time / 60) % 60
+                    val alarmTime = String.format("%02d:%02d", hours, minutes)
+                    Log.e("alarmTime", alarmTime) //저장되는 형태는 HH:mm
+                    saveAlarmTime(alarmTime,"walk")
                 }
 
                 override fun onFailure(call: Call<com.example.capston.walk.Dto>, t: Throwable) {
@@ -569,11 +631,17 @@ class EditMappingFragment : Fragment() {
                                 )
                             addItemDecoration(dividerItemDecoration)
                         }
+
                         Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
                         binding.totalTimeTextView.apply {
                             if (minTotalTime != null) {
                                 text = "총 소요시간 : ${minTotalTime}분"
                                 isVisible = true
+                                Log.e("mintotalTimeinrecyclerView", minTotalTime.toString())
+                                val hours = minTotalTime!! / 60
+                                val minutes = minTotalTime!! % 60
+                                val alarmTime = String.format("%02d:%02d", hours, minutes)
+                                saveAlarmTime(alarmTime,"subway")
                             }
                         }
                     }
@@ -749,6 +817,9 @@ class EditMappingFragment : Fragment() {
                                         plusTime
                                     ) { time ->
                                         data.waitTime = time
+                                        //최단시간에 버스및 지하철대기시간 추가해주기
+                                        minTotalTime = time?.let { minTotalTime?.plus(it) }
+
                                     }
                                 }
                                 countDownLatch2.countDown()
@@ -927,5 +998,19 @@ class EditMappingFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+    //spiner item 골랏을 때 콜백
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, p2: Int, p3: Long) {
+        plusTime = parent?.getItemAtPosition(p2).toString().replace("분","")
+        Log.e("plusTime","$plusTime")
+        with(requireActivity().getSharedPreferences(KEY_ALARMTIME, Context.MODE_PRIVATE).edit()) {
+            putString(PLUS_TIME,plusTime)
+            apply()
+        }
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+        plusTime = ""
+        Log.e("plusTime","$plusTime")
     }
 }

@@ -34,7 +34,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
     private lateinit var binding: FragmentCalendarBinding
     private var param1: String? = null
     private var param2: String? = null
-    private var dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/ M/ dd"))
+    private var dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))
     lateinit var user: String
     val todoList = arrayListOf<Todo>()
     var todoKeys: ArrayList<String> = arrayListOf()   //메시지 키 목록
@@ -56,7 +56,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCalendarBinding.inflate(inflater, container, false)
         //calendar view custom
         binding.calendarView.addDecorators(
@@ -81,11 +81,11 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             saveDate()
         }
         // 오늘 날짜 받아오기
-        var today = Calendar.getInstance()
-        var todayYear = today[Calendar.YEAR]
-        var todayMonth = today[Calendar.MONTH]
-        var todayDay = today[Calendar.DAY_OF_MONTH]
-        val todayStr = "${todayYear}/ ${todayMonth + 1}/ $todayDay"
+        val today = Calendar.getInstance()
+        val todayYear = today[Calendar.YEAR]
+        val todayMonth = today[Calendar.MONTH]
+        val todayDay = today[Calendar.DAY_OF_MONTH]
+        val todayStr = "${todayYear}/${todayMonth + 1}/$todayDay"
 
         // 시작 할 때 오늘 todolist 불러오기
         clickedDate(todayStr)
@@ -95,12 +95,12 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
             val year = date.year
             val month = date.month+1
             val dayOfMonth = date.day
-            dateStr = String.format("%04d/%d/%d", year,month,dayOfMonth)
+            dateStr = String.format("%04d/%02d/%02d", year,month,dayOfMonth)
             //오늘 날짜는 항상 Today's List
-            if (dateStr == LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/M/d"))){
+            if (dateStr == LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))){
                 binding.txtTodaylist.text = "Today's List"
             }else{
-                binding.txtTodaylist.text = dateStr+" List"
+                binding.txtTodaylist.text = "$dateStr List"
             }
             //날짜에 따른 todolist 불러오기
             clickedDate(dateStr)
@@ -112,7 +112,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         val intent = Intent(requireContext(), CreateActivity::class.java)
         intent.putExtra("startDate",dateStr)
         startActivity(intent)
-        Log.d("date", "${dateStr}")
+        Log.d("date", dateStr)
     }
     //일정 Database 읽기
     private fun clickedDate(date: String) {
@@ -121,7 +121,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         clickedMonth = clicked[1].trim()
         clickedDay = clicked[2].trim()
         FirebaseDatabase.getInstance().getReference("calendar").child(user)
-            .child("$clickedYear"+"년").child("$clickedMonth"+"월").child("$clickedDay"+"일")
+            .child(clickedYear +"년").child(clickedMonth +"월").child(clickedDay +"일")
             .addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -162,7 +162,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         intent.putExtra("todo", todo)
         intent.putExtra("todoKey",todoKey)
         startActivity(intent)
-        Log.d("FirebaseData", "${todoKey}")
+        Log.d("FirebaseData", todoKey)
     }
     override fun onLongClick(position: Int) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
@@ -181,7 +181,7 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
         val value = todoList[position].title
         todoList.removeAt(position) // todoList에서 삭제
         val databaseReference = FirebaseDatabase.getInstance().getReference("calendar").child(user)
-            .child("$clickedYear" + "년").child("$clickedMonth" + "월").child("$clickedDay" + "일")
+            .child(clickedYear + "년").child(clickedMonth + "월").child(clickedDay + "일")
         val query = databaseReference.orderByChild("title").equalTo(value)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}

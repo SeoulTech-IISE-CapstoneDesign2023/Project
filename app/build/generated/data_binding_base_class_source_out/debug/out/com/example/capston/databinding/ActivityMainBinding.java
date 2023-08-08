@@ -4,6 +4,7 @@ package com.example.capston.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
@@ -35,17 +36,21 @@ public final class ActivityMainBinding implements ViewBinding {
   public final ImageView settingButton;
 
   @NonNull
+  public final Button signOutButton;
+
+  @NonNull
   public final Toolbar toolbar2;
 
   private ActivityMainBinding(@NonNull ConstraintLayout rootView,
       @NonNull BottomNavigationView bottomNavigationView, @NonNull ImageView friendButton,
       @NonNull FrameLayout mainFragment, @NonNull ImageView settingButton,
-      @NonNull Toolbar toolbar2) {
+      @NonNull Button signOutButton, @NonNull Toolbar toolbar2) {
     this.rootView = rootView;
     this.bottomNavigationView = bottomNavigationView;
     this.friendButton = friendButton;
     this.mainFragment = mainFragment;
     this.settingButton = settingButton;
+    this.signOutButton = signOutButton;
     this.toolbar2 = toolbar2;
   }
 
@@ -100,6 +105,12 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.signOutButton;
+      Button signOutButton = ViewBindings.findChildViewById(rootView, id);
+      if (signOutButton == null) {
+        break missingId;
+      }
+
       id = R.id.toolbar2;
       Toolbar toolbar2 = ViewBindings.findChildViewById(rootView, id);
       if (toolbar2 == null) {
@@ -107,7 +118,7 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       return new ActivityMainBinding((ConstraintLayout) rootView, bottomNavigationView,
-          friendButton, mainFragment, settingButton, toolbar2);
+          friendButton, mainFragment, settingButton, signOutButton, toolbar2);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

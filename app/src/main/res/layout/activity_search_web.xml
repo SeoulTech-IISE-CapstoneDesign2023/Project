@@ -35,7 +35,7 @@
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
-            tools:text="테스트" />
+            android:hint="주소를 입력해주세요" />
 
 
     </com.google.android.material.textfield.TextInputLayout>

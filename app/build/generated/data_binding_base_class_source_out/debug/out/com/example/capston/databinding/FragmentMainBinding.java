@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
@@ -19,10 +19,13 @@ import java.lang.String;
 
 public final class FragmentMainBinding implements ViewBinding {
   @NonNull
-  private final ConstraintLayout rootView;
+  private final CoordinatorLayout rootView;
 
   @NonNull
   public final ImageView addtodoButton;
+
+  @NonNull
+  public final BottomSheetBinding bottomSheetLayout;
 
   @NonNull
   public final TextView noticeButton;
@@ -33,11 +36,12 @@ public final class FragmentMainBinding implements ViewBinding {
   @NonNull
   public final TextView txtTodaylist;
 
-  private FragmentMainBinding(@NonNull ConstraintLayout rootView, @NonNull ImageView addtodoButton,
-      @NonNull TextView noticeButton, @NonNull RecyclerView todoRecyclerView,
-      @NonNull TextView txtTodaylist) {
+  private FragmentMainBinding(@NonNull CoordinatorLayout rootView, @NonNull ImageView addtodoButton,
+      @NonNull BottomSheetBinding bottomSheetLayout, @NonNull TextView noticeButton,
+      @NonNull RecyclerView todoRecyclerView, @NonNull TextView txtTodaylist) {
     this.rootView = rootView;
     this.addtodoButton = addtodoButton;
+    this.bottomSheetLayout = bottomSheetLayout;
     this.noticeButton = noticeButton;
     this.todoRecyclerView = todoRecyclerView;
     this.txtTodaylist = txtTodaylist;
@@ -45,7 +49,7 @@ public final class FragmentMainBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public ConstraintLayout getRoot() {
+  public CoordinatorLayout getRoot() {
     return rootView;
   }
 
@@ -76,6 +80,13 @@ public final class FragmentMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.bottomSheetLayout;
+      View bottomSheetLayout = ViewBindings.findChildViewById(rootView, id);
+      if (bottomSheetLayout == null) {
+        break missingId;
+      }
+      BottomSheetBinding binding_bottomSheetLayout = BottomSheetBinding.bind(bottomSheetLayout);
+
       id = R.id.notice_button;
       TextView noticeButton = ViewBindings.findChildViewById(rootView, id);
       if (noticeButton == null) {
@@ -94,8 +105,8 @@ public final class FragmentMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentMainBinding((ConstraintLayout) rootView, addtodoButton, noticeButton,
-          todoRecyclerView, txtTodaylist);
+      return new FragmentMainBinding((CoordinatorLayout) rootView, addtodoButton,
+          binding_bottomSheetLayout, noticeButton, todoRecyclerView, txtTodaylist);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

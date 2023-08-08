@@ -42,28 +42,20 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.firebase:firebase-database-ktx:20.2.2'
-    implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     // Fragment
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
     // 네이버 지도 SDK
-    implementation 'com.naver.maps:map-sdk:3.16.0'
-    // FusedLocationSource 위치정보
-    implementation("com.google.android.gms:play-services-location:16.0.0")
-    // Retrofit 라이브러리
-    implementation 'com.squareup.retrofit2:retrofit:2.6.4'
-    // Gson 변환기 라이브러리
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
+    implementation 'com.naver.maps:map-sdk:3.17.0'
     // Scalars 변환기 라이브러리
     implementation 'com.squareup.retrofit2:converter-scalars:2.6.4'
     //location api
-    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
     //retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     //Calendar custom
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
     // Import the Firebase BoM
@@ -71,6 +63,11 @@ dependencies {
     // Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx:22.1.0'
+    implementation 'com.google.firebase:firebase-database-ktx:20.2.2'
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    //okhttp3
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
     //lottie 애니메이션이미지
     implementation 'com.airbnb.android:lottie:6.1.0'
 }
