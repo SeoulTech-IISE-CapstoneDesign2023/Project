@@ -3096,6 +3096,7 @@ id material_timepicker_view
 id material_value_index
 id mcv_pager
 id media_actions
+id memoEditTextView
 id message
 id messageTextView
 id middle
@@ -3395,7 +3396,6 @@ id test_radiobutton_app_button_tint
 id text
 id text2
 id textEnd
-id textInputEditText
 id textInputLayout
 id textNik
 id textSpacerNoButtons

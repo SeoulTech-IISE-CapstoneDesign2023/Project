@@ -23,24 +23,24 @@ public final class FragmentEditTodoBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
+  public final TextInputEditText memoEditTextView;
+
+  @NonNull
   public final EditText placeEditTextView;
 
   @NonNull
   public final TextView placeTextView;
 
   @NonNull
-  public final TextInputEditText textInputEditText;
-
-  @NonNull
   public final TextInputLayout textTextInputLayout;
 
   private FragmentEditTodoBinding(@NonNull ConstraintLayout rootView,
-      @NonNull EditText placeEditTextView, @NonNull TextView placeTextView,
-      @NonNull TextInputEditText textInputEditText, @NonNull TextInputLayout textTextInputLayout) {
+      @NonNull TextInputEditText memoEditTextView, @NonNull EditText placeEditTextView,
+      @NonNull TextView placeTextView, @NonNull TextInputLayout textTextInputLayout) {
     this.rootView = rootView;
+    this.memoEditTextView = memoEditTextView;
     this.placeEditTextView = placeEditTextView;
     this.placeTextView = placeTextView;
-    this.textInputEditText = textInputEditText;
     this.textTextInputLayout = textTextInputLayout;
   }
 
@@ -71,6 +71,12 @@ public final class FragmentEditTodoBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.memoEditTextView;
+      TextInputEditText memoEditTextView = ViewBindings.findChildViewById(rootView, id);
+      if (memoEditTextView == null) {
+        break missingId;
+      }
+
       id = R.id.placeEditTextView;
       EditText placeEditTextView = ViewBindings.findChildViewById(rootView, id);
       if (placeEditTextView == null) {
@@ -83,20 +89,14 @@ public final class FragmentEditTodoBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.textInputEditText;
-      TextInputEditText textInputEditText = ViewBindings.findChildViewById(rootView, id);
-      if (textInputEditText == null) {
-        break missingId;
-      }
-
       id = R.id.textTextInputLayout;
       TextInputLayout textTextInputLayout = ViewBindings.findChildViewById(rootView, id);
       if (textTextInputLayout == null) {
         break missingId;
       }
 
-      return new FragmentEditTodoBinding((ConstraintLayout) rootView, placeEditTextView,
-          placeTextView, textInputEditText, textTextInputLayout);
+      return new FragmentEditTodoBinding((ConstraintLayout) rootView, memoEditTextView,
+          placeEditTextView, placeTextView, textTextInputLayout);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

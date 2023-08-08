@@ -110,6 +110,7 @@ id locationRecyclerView
 id logo
 id main
 id mainFragment
+id memoEditTextView
 id messageTextView
 id monday
 id monday0000
@@ -210,7 +211,6 @@ id sunday2200
 id sunday2300
 id taxiFare
 id taxiFareTextView
-id textInputEditText
 id textInputLayout
 id textNik
 id textTextInputLayout
