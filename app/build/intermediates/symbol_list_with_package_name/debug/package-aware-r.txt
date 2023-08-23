@@ -2753,6 +2753,7 @@ id SignUpBtn
 id TOP_END
 id TOP_START
 id accelerate
+id acceptReqRecyclerView
 id accessibility_action_clickable_span
 id accessibility_custom_action_0
 id accessibility_custom_action_1
@@ -2865,7 +2866,11 @@ id browser_actions_menu_item_icon
 id browser_actions_menu_item_text
 id browser_actions_menu_items
 id browser_actions_menu_view
+id buttonAccept
+id buttonCancel
+id buttonFollow
 id buttonPanel
+id buttonRefuse
 id cache_measures
 id calendar
 id calendarView
@@ -3013,12 +3018,18 @@ id friday2000
 id friday2100
 id friday2200
 id friday2300
+id friendListToolbar
+id friendManageVP
+id friendName
+id friendReqChkTxt
 id friend_button
 id frost
 id fullAddressRoadTextView
 id ghost_view
 id ghost_view_holder
 id goMappingButton
+id goToAddFr
+id goToManageFr
 id goTodoButton
 id gone
 id graph
@@ -3043,6 +3054,8 @@ id ifRoom
 id ignore
 id ignoreRequest
 id image
+id imageCal
+id imageFriend
 id imageLoadingView
 id immediateStop
 id included
@@ -3052,6 +3065,7 @@ id inputPW
 id invisible
 id inward
 id italic
+id itemView
 id item_touch_helper_previous_elevation
 id jumpToEnd
 id jumpToStart
@@ -3239,6 +3253,7 @@ id publicTransportButton
 id radio
 id ratio
 id rectangles
+id recyclerviewFL
 id restart
 id reverse
 id reverseSawtooth
@@ -3285,6 +3300,8 @@ id scrollIndicatorUp
 id scrollView
 id scrollable
 id searchEditText
+id searchRcView
+id searchView
 id search_badge
 id search_bar
 id search_button
@@ -3300,6 +3317,7 @@ id sectionTimeTextView
 id select_dialog_listview
 id selected
 id selection_type
+id sendReqRecyclerView
 id setting_button
 id sharedValueSet
 id sharedValueUnset
@@ -3373,6 +3391,7 @@ id sunday2100
 id sunday2200
 id sunday2300
 id supportScrollUp
+id tabLayout
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -3664,9 +3683,12 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_add_friend
 layout activity_create
+layout activity_friend_list
 layout activity_login
 layout activity_main
+layout activity_manage_friend
 layout activity_search
 layout activity_search_web
 layout activity_sign_up
@@ -3689,10 +3711,12 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout fragment_accept_req
 layout fragment_calendar
 layout fragment_edit_mapping
 layout fragment_edit_todo
 layout fragment_main
+layout fragment_send_req
 layout fragment_time_table
 layout item_alarm
 layout item_car
@@ -3746,6 +3770,7 @@ layout mtrl_picker_header_title_text
 layout mtrl_picker_header_toggle
 layout mtrl_picker_text_input_date
 layout mtrl_picker_text_input_date_range
+layout myfriends_view
 layout navermap_compass_view
 layout navermap_indoor_level_item
 layout navermap_indoor_level_picker
@@ -3792,6 +3817,7 @@ layout text_view_with_line_height_from_style
 layout text_view_with_theme_line_height
 layout text_view_without_line_height
 menu create_menu
+menu friend_list_menus
 menu menu_item
 menu navigate_menu
 mipmap ic_launcher

@@ -50,6 +50,15 @@
         android:testOnly="true"
         android:theme="@style/Theme.Capston" >
         <activity
+            android:name="com.example.capston.Friend.ManageFriendActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.capston.Friend.FriendListActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.capston.Friend.AddFriendActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.capston.Login.SignUpActivity"
             android:exported="false" />
         <activity

@@ -4,7 +4,7 @@
             "outputFile": "com.example.capston.app-mergeDebugResources-47:/values-ldrtl-v17/values-ldrtl-v17.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\SAMSUNG\\.gradle\\caches\\transforms-3\\58dcf7e9703610dee11a55335c5dd16f\\transformed\\material-1.5.0\\res\\values-ldrtl-v17\\values-ldrtl-v17.xml",
+                    "source": "/Users/heogeonho/.gradle/caches/transforms-3/58dcf7e9703610dee11a55335c5dd16f/transformed/material-1.5.0/res/values-ldrtl-v17/values-ldrtl-v17.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",

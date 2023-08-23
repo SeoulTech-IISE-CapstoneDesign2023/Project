@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import com.example.capston.Friend.FriendListActivity
 import com.example.capston.Login.LoginActivity
 import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.ActivityMainBinding
@@ -57,6 +58,12 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         //익명으로 로그인
         //Anonymoulsy()
+
+
+        binding.friendButton.setOnClickListener{
+            val intent = Intent(this, FriendListActivity::class.java)
+            startActivity(intent)
+        }
 
         //fragment 이동
         binding.bottomNavigationView.setOnItemSelectedListener {

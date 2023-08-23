@@ -1,82 +1,98 @@
 [
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\activity_main.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\activity_main.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_edit_mapping.xml",
+        "source": "com.example.capston.app-main-51:/layout/fragment_edit_mapping.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\item_alarm.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\item_alarm.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/item_location.xml",
+        "source": "com.example.capston.app-main-51:/layout/item_location.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\activity_login.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\activity_login.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/item_alarm.xml",
+        "source": "com.example.capston.app-main-51:/layout/item_alarm.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\activity_search_web.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\activity_search_web.xml"
-    },
-    {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\item_route.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\item_route.xml"
-    },
-    {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\item_todo.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\item_todo.xml"
-    },
-    {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\fragment_calendar.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\fragment_calendar.xml"
-    },
-    {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\item_walk.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\item_walk.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_add_friend.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_add_friend.xml"
     },
     {
         "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_create.xml",
         "source": "com.example.capston.app-main-51:/layout/activity_create.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\fragment_time_table.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\fragment_time_table.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_friend_list.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_friend_list.xml"
     },
     {
         "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_edit_todo.xml",
         "source": "com.example.capston.app-main-51:/layout/fragment_edit_todo.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\item_location.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\item_location.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_login.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_login.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\fragment_edit_mapping.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\fragment_edit_mapping.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_main.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_main.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\item_car.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\item_car.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_time_table.xml",
+        "source": "com.example.capston.app-main-51:/layout/fragment_time_table.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\fragment_edit_todo.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\fragment_edit_todo.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/bottom_sheet.xml",
+        "source": "com.example.capston.app-main-51:/layout/bottom_sheet.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\fragment_main.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\fragment_main.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_search_web.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_search_web.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\activity_create.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\activity_create.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_calendar.xml",
+        "source": "com.example.capston.app-main-51:/layout/fragment_calendar.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\activity_search.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\activity_search.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/item_route.xml",
+        "source": "com.example.capston.app-main-51:/layout/item_route.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\activity_sign_up.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\activity_sign_up.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_accept_req.xml",
+        "source": "com.example.capston.app-main-51:/layout/fragment_accept_req.xml"
     },
     {
-        "merged": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-mergeDebugResources-48:\\layout\\bottom_sheet.xml",
-        "source": "C:\\Users\\SAMSUNG\\.gradle\\daemon\\8.0\\com.example.capston.app-main-51:\\layout\\bottom_sheet.xml"
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_sign_up.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_sign_up.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/item_car.xml",
+        "source": "com.example.capston.app-main-51:/layout/item_car.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_search.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_search.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/myfriends_view.xml",
+        "source": "com.example.capston.app-main-51:/layout/myfriends_view.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_send_req.xml",
+        "source": "com.example.capston.app-main-51:/layout/fragment_send_req.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/fragment_main.xml",
+        "source": "com.example.capston.app-main-51:/layout/fragment_main.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/activity_manage_friend.xml",
+        "source": "com.example.capston.app-main-51:/layout/activity_manage_friend.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/item_todo.xml",
+        "source": "com.example.capston.app-main-51:/layout/item_todo.xml"
+    },
+    {
+        "merged": "com.example.capston.app-mergeDebugResources-48:/layout/item_walk.xml",
+        "source": "com.example.capston.app-main-51:/layout/item_walk.xml"
     }
 ]
