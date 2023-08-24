@@ -28,6 +28,9 @@ import com.example.capston.Key
 import com.example.capston.Key.Companion.ALARMTIME
 import com.example.capston.Key.Companion.KEY_ALARMTIME
 import com.example.capston.Key.Companion.PLUS_TIME
+import com.example.capston.Key.Companion.START_DATE_FOR_SEARCHACTIVITY
+import com.example.capston.Key.Companion.START_TIME_FOR_SEARCHACTIVITY
+import com.example.capston.Key.Companion.TIME_TAKEN
 import com.example.capston.Key.Companion.TYPE
 import com.example.capston.Todo
 import com.example.capston.car.CarAdapter
@@ -74,7 +77,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var param2: String? = null
     private lateinit var binding: FragmentEditMappingBinding
     private var minTotalTime: Int? = null
-    private var plusTime  = ""
+    private var plusTime = ""
     private var info = mutableListOf<Info>()
     private val g by lazy { android.location.Geocoder(requireContext(), Locale.KOREAN) } //geocoder
     private var locationList = Array(4) { 0.0 }
@@ -99,13 +102,15 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var arrivalLat = 0.0
     var currentUserFcmToken: String = ""//fcmToken정보 fcm서비스로 보내는거임
     private val currentUserId = Firebase.auth.currentUser?.uid ?: ""
+    private var totalTimeForFirebase = ""
 
     // data를 전달하는 listener
     interface OnDataPassListener {
         fun onStartPass(startPlace: String?)
         fun onArrivePass(arrivePlace: String?)
     }
-    private lateinit var dataPassListener : OnDataPassListener
+
+    private lateinit var dataPassListener: OnDataPassListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -186,6 +191,15 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.searchButton.setOnClickListener {
             val startAdress = binding.startValueTextView.text.toString()
             val arrivalAdress = binding.arrivalValueTextView.text.toString()
+            //장소검색을 누른다는것은 알람을 사용한다고 판단 그래서 createActivity에서 이 정보를 활용하여 알람이 없을때에 todo도 생성하게만듬
+            with(
+                requireActivity().getSharedPreferences(Key.KEY_USING_ALARM, Context.MODE_PRIVATE)
+                    .edit()
+            ) {
+                putBoolean(Key.USING_ALARM, true)
+                apply()
+            }
+            binding.indeterminateBar.isVisible = true
             getDate()
             Log.d("getDate를통해 얻은 startTime과 startDate", "$startTime $startDate")
             when (transportation) {
@@ -204,6 +218,8 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     val inputDateTime = "$startDate $startTime"
                     val dateTime = LocalDateTime.parse(inputDateTime, inputFormat)
                     val isoDateTime = dateTime.format(outputFormat)
+                    //기기에 isodatetime저장
+                    saveIsoDateTime(isoDateTime)
                     Log.d("iso", isoDateTime)
                     if (isoDateTime == null) {
                         Toast.makeText(context, "날짜와 시간을 입력해주세요", Toast.LENGTH_SHORT).show()
@@ -297,8 +313,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                                     text = "총 소요시간 : ${minTotalTime}분"
                                                     val hours = minTotalTime!! / 60
                                                     val minutes = minTotalTime!! % 60
-                                                    val alarmTime = String.format("%02d:%02d", hours, minutes)
-                                                    saveAlarmTime(alarmTime,"subway")
+                                                    val alarmTime =
+                                                        String.format("%02d:%02d", hours, minutes)
+                                                    saveAlarmTime(alarmTime, "subway")
                                                     isVisible = true
                                                 }
                                             }
@@ -310,7 +327,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             }
                         }
                     }
-                    Toast.makeText(context, "길찾기 경로 로딩 중", Toast.LENGTH_SHORT).show()
                     isFailed = 0
                 }
 
@@ -367,11 +383,18 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         return binding.root
     }
 
+    private fun saveIsoDateTime(isoDateTime: String?) {
+        with(requireActivity().getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
+            putString("isoDateTime", isoDateTime)
+            apply()
+        }
+    }
+
     //시간데이터얻어오기
     private fun getDate() {
         requireActivity().getSharedPreferences("date", Context.MODE_PRIVATE).apply {
-            startDate = getString("startDate1", "").toString()
-            startTime = getString("startTime1", "").toString()
+            startDate = getString(START_DATE_FOR_SEARCHACTIVITY, "").toString()
+            startTime = getString(START_TIME_FOR_SEARCHACTIVITY, "").toString()
         }
 
         requireActivity().getSharedPreferences("location", Context.MODE_PRIVATE).apply {
@@ -393,6 +416,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 Log.e("MainActivity", "${response.body().toString()}")
                 binding.totalTimeTextView.isVisible = false
                 carAdapter.submitList(response.body()?.features?.map { it.properties })
+                totalTimeForFirebase =
+                    response.body()?.features?.map { it.properties.totalTime }.toString()
+                        .replace("[", "").replace("]", "")
                 //알람 시간을 저장
                 val rawAlarmTime =
                     response.body()?.features?.map { it.properties.departureTime }?.firstOrNull()
@@ -402,8 +428,8 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 val alarmTime =
                     zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"))
                 Log.e("alarmTime", alarmTime)
-                saveAlarmTime(alarmTime,"car")
-
+                saveAlarmTime(alarmTime, "car")
+                binding.indeterminateBar.isVisible = false
             }
 
             override fun onFailure(call: Call<Dto>, t: Throwable) {
@@ -414,12 +440,13 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     //길찾기를 통한 알람시간을 저장 자동차는 yyyy/MM/dd HH:mm으로 저장 대중교통,걷기는 HH:mm으로 저장 이거를 CreatActivity에 보내서 받아야함
-    private fun saveAlarmTime(time: String,type:String) {
+    private fun saveAlarmTime(time: String, type: String) {
         with(requireActivity().getSharedPreferences(KEY_ALARMTIME, Context.MODE_PRIVATE).edit()) {
             Log.e("saveAlarmTime", "alarmTime : $time type : $type")
             putString(ALARMTIME, time)
-            putString(PLUS_TIME,plusTime)
-            putString(TYPE,type)
+            putString(PLUS_TIME, plusTime)
+            putString(TYPE, type)
+            putString(TIME_TAKEN, totalTimeForFirebase)
             apply()
         }
     }
@@ -436,7 +463,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     call: Call<com.example.capston.walk.Dto>,
                     response: Response<com.example.capston.walk.Dto>
                 ) {
-                    Log.e("MainActivity", "${response.body().toString()}")
+                    Log.e("MainActivity", response.body().toString())
                     val good = response.body()?.features?.filter { it.properties.index == 0 }
                     binding.totalTimeTextView.isVisible = false
                     walkAdapter.submitList(good?.map { it.properties })
@@ -445,7 +472,8 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     val minutes = (time / 60) % 60
                     val alarmTime = String.format("%02d:%02d", hours, minutes)
                     Log.e("alarmTime", alarmTime) //저장되는 형태는 HH:mm
-                    saveAlarmTime(alarmTime,"walk")
+                    saveAlarmTime(alarmTime, "walk")
+                    binding.indeterminateBar.isVisible = false
                 }
 
                 override fun onFailure(call: Call<com.example.capston.walk.Dto>, t: Throwable) {
@@ -586,7 +614,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun initRecyclerView() {
         Log.d("실행", "실행7")
-        //todo 자동차는 생각을 해봐야함
         info.forEach {
             if (it.waitTime == null && (it.trafficType == 1 || it.trafficType == 2)) {
                 isFailed++
@@ -632,9 +659,11 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 val hours = minTotalTime!! / 60
                                 val minutes = minTotalTime!! % 60
                                 val alarmTime = String.format("%02d:%02d", hours, minutes)
-                                saveAlarmTime(alarmTime,"subway")
+                                saveAlarmTime(alarmTime, "subway")
                             }
                         }
+                        //todo 여기말고 다른곳에다가 해야함 이미 다불러와도 오류가 있음
+                        binding.indeterminateBar.isVisible = false
                     }
                 }, 1500)
             }.start()
@@ -831,8 +860,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         Log.d("실행", "실행6")
                     }
                 }.start()
-
-                //todo pathListSize만큼 반복문을 돌면서 만약 대기시간이 null이 아닌값이 나온다면 그 경로를 알려주고 다 null이라면 이용가능한 대중교통이 없다고 알려주기
             }
 
             override fun onFailure(call: Call<PublicTransitRoute>, t: Throwable) {
@@ -990,18 +1017,19 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
             }
     }
+
     //spiner item 골랏을 때 콜백
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, p2: Int, p3: Long) {
-        plusTime = parent?.getItemAtPosition(p2).toString().replace("분","")
-        Log.e("plusTime","$plusTime")
+        plusTime = parent?.getItemAtPosition(p2).toString().replace("분", "")
+        Log.e("plusTime", "$plusTime")
         with(requireActivity().getSharedPreferences(KEY_ALARMTIME, Context.MODE_PRIVATE).edit()) {
-            putString(PLUS_TIME,plusTime)
+            putString(PLUS_TIME, plusTime)
             apply()
         }
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
         plusTime = ""
-        Log.e("plusTime","$plusTime")
+        Log.e("plusTime", "$plusTime")
     }
 }

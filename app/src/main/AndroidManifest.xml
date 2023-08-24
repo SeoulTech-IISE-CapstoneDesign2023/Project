@@ -21,6 +21,10 @@
         android:theme="@style/Theme.Capston"
         tools:targetApi="31">
         <activity
+            android:name=".SettingActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".Friend.ManageFriendActivity"
             android:exported="false" />
         <activity
@@ -61,6 +65,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service android:name=".alarm.UpdateRouteService" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

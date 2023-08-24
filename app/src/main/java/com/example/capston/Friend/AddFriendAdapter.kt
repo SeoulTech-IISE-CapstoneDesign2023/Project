@@ -17,12 +17,14 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlin.coroutines.coroutineContext
 
-class AddFriendAdapter (val User:MutableList<User>): RecyclerView.Adapter<AddFriendAdapter
-.ViewHolder>(){
+class AddFriendAdapter(val User: MutableList<User>) : RecyclerView.Adapter<AddFriendAdapter
+.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
-        val binding = MyfriendsViewBinding.inflate(LayoutInflater.from(parent.context),parent,
-            false)
+        val binding = MyfriendsViewBinding.inflate(
+            LayoutInflater.from(parent.context), parent,
+            false
+        )
         return ViewHolder(context, binding)
     }
 
@@ -34,9 +36,10 @@ class AddFriendAdapter (val User:MutableList<User>): RecyclerView.Adapter<AddFri
         val user = User.get(position)
         holder.bind(user)
     }
-    class ViewHolder(val context: Context,val binding: MyfriendsViewBinding): RecyclerView
+
+    class ViewHolder(val context: Context, val binding: MyfriendsViewBinding) : RecyclerView
     .ViewHolder(binding.root) {
-        fun bind(user:User) {
+        fun bind(user: User) {
 
             // friendView 레이아웃 조작
             binding.friendName.text = user.nickname
@@ -45,7 +48,8 @@ class AddFriendAdapter (val User:MutableList<User>): RecyclerView.Adapter<AddFri
 
             val database = Firebase.database
             val auth = FirebaseAuth.getInstance()
-            val userRef = database.getReference("user").child(auth.uid.toString()).child("friend_info")
+            val userRef =
+                database.getReference("user").child(auth.uid.toString()).child("friend_info")
 
             userRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -88,7 +92,7 @@ class AddFriendAdapter (val User:MutableList<User>): RecyclerView.Adapter<AddFri
             })
 
             // 버튼 기능 부여 (데이터베이스 조작)
-            binding.buttonFollow.setOnClickListener{
+            binding.buttonFollow.setOnClickListener {
                 val database = Firebase.database
                 val auth = FirebaseAuth.getInstance()
                 val userRef = database.getReference("user")
@@ -105,7 +109,7 @@ class AddFriendAdapter (val User:MutableList<User>): RecyclerView.Adapter<AddFri
                     .child((auth.uid.toString()))
                     .setValue(true)
 
-                Toast.makeText(context, "친구 요청을 보냈습니다!", Toast.LENGTH_SHORT,).show()
+                Toast.makeText(context, "친구 요청을 보냈습니다!", Toast.LENGTH_SHORT).show()
             }
         }
     }

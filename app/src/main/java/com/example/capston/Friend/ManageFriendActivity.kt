@@ -29,8 +29,8 @@ class ManageFriendActivity : AppCompatActivity() {
         binding.friendManageVP.adapter = fragAdapter
 
         // 탭 레이아웃 설정
-        val tabs = listOf("받은 요청","보낸 요청")
-        TabLayoutMediator(binding.tabLayout,binding.friendManageVP){ tab, position ->
+        val tabs = listOf("받은 요청", "보낸 요청")
+        TabLayoutMediator(binding.tabLayout, binding.friendManageVP) { tab, position ->
             tab.text = tabs.get(position)
         }.attach()
     }

@@ -34,7 +34,7 @@ class AcceptReqFragment : Fragment() {
     private var param2: String? = null
 
     lateinit var binding: FragmentAcceptReqBinding
-    var acceptReqList= mutableListOf<User>()
+    var acceptReqList = mutableListOf<User>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -67,15 +67,16 @@ class AcceptReqFragment : Fragment() {
                     val nickname = snapshot.child(uid.toString()).child("user_info")
                         .child("nickname").value.toString()
 
-                    val userData = User(uid,nickname)
+                    val userData = User(uid, nickname)
                     acceptReqList.add(userData)
                 }
                 if (acceptReqList.size == reqSnapshot.childrenCount.toInt()) {
                     updateRecyclerView(acceptReqList)
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Log.w("geon","Failed to read friend data.", error.toException())
+                Log.w("geon", "Failed to read friend data.", error.toException())
             }
         })
 
@@ -102,6 +103,7 @@ class AcceptReqFragment : Fragment() {
                 }
             }
     }
+
     private fun updateRecyclerView(dataList: List<User>) {
         val adapter = AcceptReqAdapter(dataList as MutableList<User>)
         binding.acceptReqRecyclerView.adapter = adapter

@@ -8,6 +8,6 @@ interface BusRealTimeAPIService {
     @GET("realtimeStation")
     fun getBusRealTime(
         @Query("apiKey") apikey: String,
-        @Query("stationID") stationId :Int,
+        @Query("stationID") stationId: Int,
     ): Call<RealTimeArrivalBus>
 }

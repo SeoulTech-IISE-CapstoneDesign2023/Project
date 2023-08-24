@@ -20,18 +20,20 @@ class EditTodoFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentEditTodoBinding
-    private lateinit var previousPlace : String
-    private lateinit var changedPlace : String
-    private lateinit var previousMemo : String
-    private lateinit var changedMemo : String
+    private lateinit var previousPlace: String
+    private lateinit var changedPlace: String
+    private lateinit var previousMemo: String
+    private lateinit var changedMemo: String
 
     // data를 전달하는 listener
-    interface OnDataPassListener {//data를 전달하는 listener
-        fun onDataPass(data:Int?)
+    interface OnDataPassListener {
+        //data를 전달하는 listener
+        fun onDataPass(data: Int?)
         fun onMemoPass(memo: String?)
         fun onPlacePass(place: String?)
     }
-    private lateinit var dataPassListener : OnDataPassListener
+
+    private lateinit var dataPassListener: OnDataPassListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -97,7 +99,7 @@ class EditTodoFragment : Fragment() {
             }
         })
         // 메모장 텍스트 길이 받기
-        binding.memoEditTextView.addTextChangedListener {text->
+        binding.memoEditTextView.addTextChangedListener { text ->
             dataPassListener.onDataPass(text?.length)
         }
     }
@@ -119,7 +121,7 @@ class EditTodoFragment : Fragment() {
         val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
-            Log.d("DataPass","place is :${todo.place}")
+            Log.d("DataPass", "place is :${todo.place}")
             binding.placeEditTextView.setText(todo.place)
             binding.memoEditTextView.setText(todo.memo)
         } else {

@@ -32,12 +32,12 @@ class SearchWebActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.createActionToolbar)
 
-        locationAdapter = LocationAdapter{
+        locationAdapter = LocationAdapter {
             val intent = Intent()
-            intent.putExtra("data",it.name)
-            intent.putExtra("x",it.frontLat)
-            intent.putExtra("y",it.frontLon)
-            setResult(Activity.RESULT_OK,intent)
+            intent.putExtra("data", it.name)
+            intent.putExtra("x", it.frontLat)
+            intent.putExtra("y", it.frontLon)
+            setResult(Activity.RESULT_OK, intent)
             finish()
         }
         val linearLayoutManager = LinearLayoutManager(this@SearchWebActivity)
@@ -58,26 +58,27 @@ class SearchWebActivity : AppCompatActivity() {
         }
         //키보드에서 검색버튼 누르면 키보드 내리기
         binding.searchEditText.setOnEditorActionListener { textView, i, keyEvent ->
-            if(i == EditorInfo.IME_ACTION_SEARCH){
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
                 binding.searchEditText.clearFocus()
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(textView.windowToken,0)
+                imm.hideSoftInputFromWindow(textView.windowToken, 0)
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
         }
     }
 
-    private fun location(searchKeyword:String) {
+    private fun location(searchKeyword: String) {
         val locationService = ApiClient.retrofit.create(LocationService::class.java)
-        locationService.getLocation("1", searchKeyword, "WGS84GEO", "WGS84GEO",200)
+        locationService.getLocation("1", searchKeyword, "WGS84GEO", "WGS84GEO", 200)
             .enqueue(object : Callback<Dto> {
                 override fun onResponse(call: Call<Dto>, response: Response<Dto>) {
                     val name = response.body()?.searchPoiInfo?.pois?.poi?.map { it.name }
-                    val address = response.body()?.searchPoiInfo?.pois?.poi?.map { it.newAddressList.newAddress.map { it.fullAddressRoad } }
-                    Log.e("result","$name $address")
+                    val address =
+                        response.body()?.searchPoiInfo?.pois?.poi?.map { it.newAddressList.newAddress.map { it.fullAddressRoad } }
+                    Log.e("result", "$name $address")
                     //토탈 카운트를 사용
-                    locationAdapter.submitList( response.body()?.searchPoiInfo?.pois?.poi)
+                    locationAdapter.submitList(response.body()?.searchPoiInfo?.pois?.poi)
                 }
 
                 override fun onFailure(call: Call<Dto>, t: Throwable) {

@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.capston.databinding.ItemLocationBinding
 
-class LocationAdapter(private val onClick: (Poi) -> Unit) : ListAdapter<Poi, LocationAdapter.ViewHolder>(diffUtil) {
+class LocationAdapter(private val onClick: (Poi) -> Unit) :
+    ListAdapter<Poi, LocationAdapter.ViewHolder>(diffUtil) {
 
     inner class ViewHolder(private val viewBinding: ItemLocationBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {

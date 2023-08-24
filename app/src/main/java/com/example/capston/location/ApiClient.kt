@@ -9,8 +9,8 @@ object ApiClient {
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor {
             val request = it.request().newBuilder()
-                .addHeader("accept","application/json")
-                .addHeader("appKey","IZF9Qw0f7k2uAhARttjL76jEdYrQefbt5iJPZMZ8")
+                .addHeader("accept", "application/json")
+                .addHeader("appKey", "IZF9Qw0f7k2uAhARttjL76jEdYrQefbt5iJPZMZ8")
                 .build()
             it.proceed(request)
         }

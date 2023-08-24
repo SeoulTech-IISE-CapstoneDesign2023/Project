@@ -102,6 +102,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/totalTimeTextView" />
 
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/black"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/routeSearchResultRecyclerView"
+        app:layout_constraintEnd_toEndOf="@id/routeSearchResultRecyclerView"
+        app:layout_constraintStart_toStartOf="@id/routeSearchResultRecyclerView"
+        app:layout_constraintTop_toTopOf="@id/routeSearchResultRecyclerView" />
+
     <androidx.constraintlayout.helper.widget.Layer
         android:id="@+id/searchlayer"
         android:layout_width="wrap_content"
@@ -113,31 +125,31 @@
         android:id="@+id/carWayButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/search_button"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
-        android:src="@drawable/baseline_directions_car_24"/>
+        android:padding="8dp"
+        android:src="@drawable/baseline_directions_car_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_button" />
 
     <ImageView
         android:id="@+id/publicTransportButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/search_button"
-        app:layout_constraintStart_toEndOf="@id/carWayButton"
+        android:src="@drawable/baseline_directions_bus_24"
         app:layout_constraintEnd_toStartOf="@id/walkingButton"
-        android:src="@drawable/baseline_directions_bus_24"/>
+        app:layout_constraintStart_toEndOf="@id/carWayButton"
+        app:layout_constraintTop_toBottomOf="@id/search_button" />
 
     <ImageView
         android:id="@+id/walkingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/search_button"
-        app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/baseline_directions_walk_24"
-        android:layout_marginEnd="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_button" />
 
     <TextView
         android:id="@+id/totalTimeTextView"

@@ -10,9 +10,10 @@ import java.text.DecimalFormat
 class WalkAdapter :
     androidx.recyclerview.widget.ListAdapter<Properties, WalkAdapter.ViewHolder>(diffUtil) {
     val df = DecimalFormat("###,###")
+
     inner class ViewHolder(private val viewBinding: ItemWalkBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(item:Properties) {
+        fun bind(item: Properties) {
             val totalTime = formatTotalTime(item.totalTime)
             viewBinding.totalTimeTextView.text = totalTime
             viewBinding.totalDistanceTextView.text = df.format(item.totalDistance) + "m"

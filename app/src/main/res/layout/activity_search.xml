@@ -17,24 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/carWayButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:padding="8dp"
-        android:src="@drawable/baseline_directions_car_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/arrivalTextView" />
-
     <com.naver.maps.map.MapView
         android:id="@+id/navermap"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/carWayButton"
+        app:layout_constraintTop_toBottomOf="@+id/arrivalValueTextView"
         app:navermap_latitude="37.631668"
         app:navermap_longitude="127.077669"
         app:navermap_zoom="13" />
@@ -43,31 +34,12 @@
         android:id="@+id/myLocationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/baseline_my_location_24"
         android:padding="8dp"
+        android:src="@drawable/baseline_my_location_24"
         app:layout_constraintBottom_toBottomOf="@+id/startValueTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/startValueTextView" />
 
-    <ImageView
-        android:id="@+id/publicTransportButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:src="@drawable/baseline_directions_bus_24"
-        app:layout_constraintEnd_toStartOf="@+id/walkingButton"
-        app:layout_constraintStart_toEndOf="@+id/carWayButton"
-        app:layout_constraintTop_toBottomOf="@+id/arrivalValueTextView" />
-
-    <ImageView
-        android:id="@+id/walkingButton"
-        android:layout_width="wrap_content"
-        android:padding="8dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/baseline_directions_walk_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/arrivalValueTextView" />
 
     <TextView
         android:id="@+id/startTextView"

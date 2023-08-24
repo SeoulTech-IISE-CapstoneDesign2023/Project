@@ -26,5 +26,5 @@ data class RouteData(
     val endY: Double,
     val startName: String,
     val endName: String,
-    val searchOption : Int,
+    val searchOption: Int,
 )

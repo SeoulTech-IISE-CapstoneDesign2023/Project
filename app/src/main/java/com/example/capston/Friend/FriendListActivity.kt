@@ -27,10 +27,10 @@ import com.google.firebase.ktx.Firebase
 
 class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
 
-    var myFriends= mutableListOf<User>()
+    var myFriends = mutableListOf<User>()
 
 
-    val binding by lazy { ActivityFriendListBinding.inflate(layoutInflater)}
+    val binding by lazy { ActivityFriendListBinding.inflate(layoutInflater) }
     lateinit var auth: FirebaseAuth
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -45,11 +45,13 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
                 startActivity(intent)
                 true
             }
+
             R.id.goToManageFr -> {
                 val intent = Intent(this@FriendListActivity, ManageFriendActivity::class.java)
                 startActivity(intent)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -74,7 +76,8 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
                 if (dataSnapshot.child(currentUser.toString())
                         .child("friend_info")
                         .child("accept_fr_req")
-                        .childrenCount.toInt() != 0) {
+                        .childrenCount.toInt() != 0
+                ) {
                     binding.friendReqChkTxt.visibility = View.VISIBLE
                 } else binding.friendReqChkTxt.visibility = View.GONE
 
@@ -102,6 +105,7 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
 
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
@@ -127,7 +131,8 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
                 if (dataSnapshot.child(currentUser.toString())
                         .child("friend_info")
                         .child("accept_fr_req")
-                        .childrenCount.toInt() != 0) {
+                        .childrenCount.toInt() != 0
+                ) {
                     binding.friendReqChkTxt.visibility = View.VISIBLE
                 } else binding.friendReqChkTxt.visibility = View.GONE
 
@@ -155,6 +160,7 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
 
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
@@ -166,7 +172,8 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
         builder.setTitle("친구 삭제")
         builder.setMessage("정말 삭제하시겠습니까?")
         builder.setNegativeButton("NO", null)
-        builder.setPositiveButton("YES"
+        builder.setPositiveButton(
+            "YES"
         ) { _, _ -> deleteFriend(position) }
         builder.show()
     }
@@ -196,8 +203,10 @@ class FriendListActivity : AppCompatActivity(), OnItemLongClickListener {
     }
 
     private fun updateRecyclerView(dataList: List<User>) {
-        val friendAdapter = FriendListAdapter(this@FriendListActivity,
-            myFriends, this@FriendListActivity)
+        val friendAdapter = FriendListAdapter(
+            this@FriendListActivity,
+            myFriends, this@FriendListActivity
+        )
         binding.recyclerviewFL.adapter = friendAdapter
         binding.recyclerviewFL.layoutManager = LinearLayoutManager(this@FriendListActivity)
 

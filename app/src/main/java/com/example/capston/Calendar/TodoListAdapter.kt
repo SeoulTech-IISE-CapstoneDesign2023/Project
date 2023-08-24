@@ -7,11 +7,11 @@ import com.example.capston.Todo
 import com.example.capston.databinding.ItemTodoBinding
 import kotlin.collections.ArrayList
 
-class TodoListAdapter(private val todoList: ArrayList<Todo>,
-                      private val itemLongClicklistener: OnItemLongClickListener,
-                      private val itemShortClickListener: OnItemShortClickListener
-)
-    : RecyclerView.Adapter<TodoListAdapter.ViewHolder>(){
+class TodoListAdapter(
+    private val todoList: ArrayList<Todo>,
+    private val itemLongClicklistener: OnItemLongClickListener,
+    private val itemShortClickListener: OnItemShortClickListener
+) : RecyclerView.Adapter<TodoListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context))
@@ -20,7 +20,7 @@ class TodoListAdapter(private val todoList: ArrayList<Todo>,
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val todoEntity = todoList[position]
-        holder.setTodoListUI(todoEntity,position)
+        holder.setTodoListUI(todoEntity, position)
 
 
         // 일정이 클릭되었을 때 리스너 함수 실행
@@ -40,9 +40,10 @@ class TodoListAdapter(private val todoList: ArrayList<Todo>,
         return todoList.size
     }
 
-    inner class ViewHolder(private val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root){
+    inner class ViewHolder(private val binding: ItemTodoBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         val root = binding.root
-        fun setTodoListUI(todo: Todo, position: Int){
+        fun setTodoListUI(todo: Todo, position: Int) {
             binding.todotitle.text = todo.title
             binding.todoTime.text = todo.st_time
         }
