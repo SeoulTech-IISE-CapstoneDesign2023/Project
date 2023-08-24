@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/main"
-        android:title="홈"
+        android:id="@+id/mainFragment"
         android:icon="@drawable/baseline_home_24"
-        />
+        android:title="홈" />
 
     <item
-        android:id="@+id/calendar"
-        android:title="달력"
+        android:id="@+id/calendarFragment"
         android:icon="@drawable/baseline_calendar_month_24"
-        />
+        android:title="달력" />
 
     <item
-        android:id="@+id/timeTable"
-        android:title="시간표"
+        android:id="@+id/timeTableFragment"
         android:icon="@drawable/baseline_table_chart_24"
-        />
-
-
+        android:title="시간표" />
 
 </menu>

@@ -34,7 +34,7 @@ class SendReqFragment : Fragment() {
 
 
     lateinit var binding: FragmentSendReqBinding
-    var sendReqList= mutableListOf<User>()
+    var sendReqList = mutableListOf<User>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,15 +68,16 @@ class SendReqFragment : Fragment() {
                     val nickname = snapshot.child(uid.toString()).child("user_info")
                         .child("nickname").value.toString()
 
-                    val userData = User(uid,nickname)
+                    val userData = User(uid, nickname)
                     sendReqList.add(userData)
                 }
                 if (sendReqList.size == sendSnapshot.childrenCount.toInt()) {
                     updateRecyclerView(sendReqList)
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Log.w("geon","Failed to read friend data.", error.toException())
+                Log.w("geon", "Failed to read friend data.", error.toException())
             }
 
         })

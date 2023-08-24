@@ -7,15 +7,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import com.example.capston.Friend.FriendListActivity
-import com.example.capston.Login.LoginActivity
 import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -42,9 +38,10 @@ class MainActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 // 로그인이 완료된 경우 메인화면의 뒤로가기 -> 앱 종료
                 if (auth.currentUser != null && auth.currentUser?.isEmailVerified == true) {
-                    if(System.currentTimeMillis() - waitTime >=1500 ) {
+                    if (System.currentTimeMillis() - waitTime >= 1500) {
                         waitTime = System.currentTimeMillis()
-                        Toast.makeText(baseContext,"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(baseContext, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
                         finishAffinity()
                     }
@@ -59,42 +56,19 @@ class MainActivity : AppCompatActivity() {
         //익명으로 로그인
         //Anonymoulsy()
 
+        setSettingButton()
+        setSupportActionBar(binding.toolbar2)
+        replaceFragment(mainFragment)
+        navFragment()
+    }
 
-        binding.friendButton.setOnClickListener{
-            val intent = Intent(this, FriendListActivity::class.java)
+    private fun setSettingButton() {
+        binding.settingButton.setOnClickListener {
+            val intent = Intent(this, SettingActivity::class.java)
             startActivity(intent)
         }
-
-        //fragment 이동
-        binding.bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId){
-                R.id.main ->{
-                    replaceFragment(mainFragment)
-                    return@setOnItemSelectedListener true
-                }
-                R.id.calendar ->{
-                    replaceFragment(calendarFragment)
-                    return@setOnItemSelectedListener true
-                }
-                R.id.timeTable ->{
-                    replaceFragment(timeTableFragment)
-                    return@setOnItemSelectedListener true
-                }
-                else ->{
-                    return@setOnItemSelectedListener false
-                }
-            }
-        }
-        //임시로 그냥 로그아웃버튼 만듬
-        binding.signOutButton.setOnClickListener {
-            Firebase.auth.signOut()
-            startActivity(Intent(this,LoginActivity::class.java))
-            finish()
-        }
-        replaceFragment(mainFragment)
-        setSupportActionBar(binding.toolbar2)
-
     }
+
     // Firebase Authentication 익명으로 로그인
     fun Anonymoulsy() {
         auth.signInAnonymously()
@@ -116,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
+
     private fun updateUI(user: FirebaseUser?) { //update ui code here
         if (user != null) {
             myUid = FirebaseAuth.getInstance().currentUser?.uid.toString()
@@ -125,10 +100,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment : Fragment){
+    private fun navFragment() {
+        //fragment 이동
+        binding.bottomNavigationView.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.mainFragment -> {
+                    replaceFragment(mainFragment)
+                    return@setOnItemSelectedListener true
+                }
+
+                R.id.calendarFragment -> {
+                    replaceFragment(calendarFragment)
+                    return@setOnItemSelectedListener true
+                }
+
+                R.id.timeTableFragment -> {
+                    replaceFragment(timeTableFragment)
+                    return@setOnItemSelectedListener true
+                }
+
+                else -> {
+                    return@setOnItemSelectedListener false
+                }
+            }
+        }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .apply {
-                replace(R.id.mainFragment,fragment)
+                replace(R.id.nav_fragment, fragment)
                 commit()
             }
     }

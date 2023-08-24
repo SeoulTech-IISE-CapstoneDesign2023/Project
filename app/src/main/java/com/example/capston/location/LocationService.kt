@@ -11,6 +11,6 @@ interface LocationService {
         @Query("searchKeyword") searchKeyword: String,
         @Query("reqCoordType") reqCoordType: String = "WGS84GEO",
         @Query("resCoordType") resCoordType: String = "WGS84GEO",
-        @Query("count") count:Int,
+        @Query("count") count: Int,
     ): Call<Dto>
 }

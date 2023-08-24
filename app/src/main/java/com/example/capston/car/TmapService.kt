@@ -17,8 +17,8 @@ interface TmapService {
         @Query("version") version: Int = 1,
         @Query("resCoordType") resCoordType: String = "WGS84GEO",
         @Query("reqCoordType") reqCoordType: String = "WGS84GEO",
-        @Query("sort") sort : String = "index",
-        @Query("callback") callback : String = "function",
+        @Query("sort") sort: String = "index",
+        @Query("callback") callback: String = "function",
         @Query("totalValue") totalValue: Int = 2,
         @Body request: CarRouteRequest
     ): Call<Dto>

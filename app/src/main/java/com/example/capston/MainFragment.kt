@@ -25,7 +25,6 @@ import com.example.capston.Key.Companion.DB_URL
 import com.example.capston.alarm.AlarmItem
 import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.FragmentMainBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -47,7 +46,7 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
     private var todayStr: String = ""
     val todoList = arrayListOf<Todo>()
     var todoKeys: java.util.ArrayList<String> = arrayListOf()   //메시지 키 목록
-    val adapter = TodoListAdapter(todoList, this,this)
+    val adapter = TodoListAdapter(todoList, this, this)
     lateinit var yearToday: String
     lateinit var monthToday: String
     lateinit var dayToday: String
@@ -73,7 +72,7 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         binding.todoRecyclerView.adapter = adapter
         binding.todoRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         //bottomSheet 알람
-        alarmAdapter = AlarmAdapter{
+        alarmAdapter = AlarmAdapter {
             //데이터 삭제
             alertDialog(it)
             //todo todo도 삭제해야함
@@ -86,9 +85,9 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         // 오늘 날짜 받아오기
         val today = Calendar.getInstance()
         val todayYear = today[Calendar.YEAR]
-        val todayMonth = today[Calendar.MONTH]+1
+        val todayMonth = today[Calendar.MONTH] + 1
         val todayDay = today[Calendar.DAY_OF_MONTH]
-        val todayStr = String.format("%04d/%02d/%02d", todayYear,todayMonth,todayDay)
+        val todayStr = String.format("%04d/%02d/%02d", todayYear, todayMonth, todayDay)
 
         // 오늘 todolist 불러오기
         todayDate(todayStr)
@@ -108,12 +107,11 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
     private fun alertDialog(alarmItem: AlarmItem) {
         AlertDialog.Builder(requireContext())
             .setTitle("알림을 취소하시겠습니까?")
-            .setPositiveButton("네"){_,_ ->
+            .setPositiveButton("네") { _, _ ->
                 val notificationId = alarmItem.notificationId?.toInt() ?: 0
-                Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user).child(notificationId.toString()).removeValue()
-                deleteAlarm(notificationId,requireContext())
+                deleteAlarm(notificationId, requireContext())
             }
-            .setNegativeButton("아니오"){dialogInterface,_ ->
+            .setNegativeButton("아니오") { dialogInterface, _ ->
                 dialogInterface.cancel()
             }
             .show()
@@ -121,7 +119,9 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
     }
 
     private fun deleteAlarm(notificationId: Int, context: Context) {
-        val notificationIntent = Intent(context,NotificationReceiver::class.java)
+        Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user)
+            .child(notificationId.toString()).removeValue()
+        val notificationIntent = Intent(context, NotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             notificationId,
@@ -135,12 +135,12 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
     }
 
     //bottomSheet recyclerView 업데이트
-    private fun updateBottomSheetRecyclerView(){
+    private fun updateBottomSheetRecyclerView() {
         val currentUserAlarmDB = Firebase.database.reference.child(DB_ALARMS).child(user)
-        currentUserAlarmDB.addChildEventListener(object : ChildEventListener{
+        currentUserAlarmDB.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val data = snapshot.value as Map<*, *>
-                Log.e("onChildAdded",data.toString())
+                Log.e("onChildAdded", data.toString())
                 val notificationId = data["notificationId"] as String?
                 val alarmItem = AlarmItem(
                     todo = data["todo"] as String?,
@@ -148,30 +148,40 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                     time = data["time"] as String?,
                     userId = data["userId"] as String?,
                     timeFormat = data["timeFormat"] as String?,
+                    startLat = data["startLat"] as Double?,
+                    startLng = data["startLng"] as Double?,
+                    arrivalLat = data["arrivalLat"] as Double?,
+                    arrivalLng = data["arrivalLng"] as Double?,
+                    isoDateTime = data["isoDateTime"] as String?,
+                    timeTaken = data["timeTaken"] as String?,
+                    appointment_time = data["appointment_time"] as String?,
+                    trackingTime = data["trackingTime"] as String?,
+                    type = data["type"] as String?,
                 )
-                Log.e("onChildAdded","$alarmItem")
+                Log.e("onChildAdded", "$alarmItem")
 
-                if(notificationId != null && !listContatinNotificationId(notificationId)){
+                if (notificationId != null && !listContainNotificationId(notificationId)) {
                     list.add(alarmItem)
                     list.sortBy { alarmItem ->
                         alarmItem.notificationId
                     }
                 }
                 alarmAdapter.submitList(list)
+                alarmAdapter.notifyDataSetChanged()
                 //데이터가 없을 경우 아이템이 없다고 보여줌
                 binding.bottomSheetLayout.noItemTextView.isVisible = alarmAdapter.itemCount == 0
 
-                Log.e("MainFragment","$list")
+                Log.e("MainFragment", "$list")
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val data = snapshot.value as Map<*, *>
-                Log.e("onChildChanged",data.toString())
+                Log.e("onChildChanged", data.toString())
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 val data = snapshot.value as Map<*, *>
-                Log.e("onChildRemoved",data.toString())
+                Log.e("onChildRemoved", data.toString())
                 val notificationId = data["notificationId"] as String?
                 val alarmItem = AlarmItem(
                     todo = data["todo"] as String?,
@@ -179,6 +189,15 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                     time = data["time"] as String?,
                     userId = data["userId"] as String?,
                     timeFormat = data["timeFormat"] as String?,
+                    startLat = data["startLat"] as Double?,
+                    startLng = data["startLng"] as Double?,
+                    arrivalLat = data["arrivalLat"] as Double?,
+                    arrivalLng = data["arrivalLng"] as Double?,
+                    isoDateTime = data["isoDateTime"] as String?,
+                    timeTaken = data["timeTaken"] as String?,
+                    appointment_time = data["appointment_time"] as String?,
+                    trackingTime = data["trackingTime"] as String?,
+                    type = data["type"] as String?,
                 )
                 list.remove(alarmItem)
                 alarmAdapter.notifyDataSetChanged()
@@ -188,18 +207,18 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
                 val data = snapshot.value as Map<*, *>
-                Log.e("onChildMoved",data.toString())
+                Log.e("onChildMoved", data.toString())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("onCancelled",error.message)
+                Log.e("onCancelled", error.message)
             }
 
         })
     }
 
-    private fun listContatinNotificationId(notificationId :String) : Boolean {
-        return list.any{alarmItem ->
+    private fun listContainNotificationId(notificationId: String): Boolean {
+        return list.any { alarmItem ->
             alarmItem.notificationId == notificationId
         }
     }
@@ -211,16 +230,19 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         monthToday = todayInfo[1].trim()
         dayToday = todayInfo[2].trim()
         FirebaseDatabase.getInstance().getReference("calendar").child(user)
-            .child("$yearToday"+"년").child("$monthToday"+"월").child("$dayToday"+"일")
+            .child("$yearToday" + "년").child("$monthToday" + "월").child("$dayToday" + "일")
             .orderByChild("st_time")
             .addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    Log.d("MainFragment", "DataSnapshot: $dataSnapshot")
                     todoList.clear()
+                    todoKeys.clear()
                     for (data in dataSnapshot.children) {
+                        todoKeys.add(data.key!!)
                         todoList.add(data.getValue<Todo>()!!)
                     }
-                    todoList.sortBy{ it.st_time }
+                    todoList.sortBy { it.st_time }
                     adapter.notifyDataSetChanged()          //화면 업데이트
                 }
             })
@@ -234,6 +256,7 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         resultDate[2] = splitText[2]  //day
         return resultDate
     }
+
     override fun onShortClick(position: Int) {
         val todo = todoList[position] // 선택한 위치의 todo객체를 가져옴
         val todoKey = todoKeys[position]
@@ -244,9 +267,10 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         //Activity로 데이터 전송
         val intent = Intent(requireContext(), CreateActivity::class.java)
         intent.putExtra("todo", todo)
-        intent.putExtra("todoKey",todoKey)
+        intent.putExtra("todoKey", todoKey)
         startActivity(intent)
     }
+
     override fun onLongClick(position: Int) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         builder.setTitle("일정 삭제")
@@ -275,9 +299,14 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                     data.ref.removeValue()
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT)
+                                    .show()
                             } else {
-                                Toast.makeText(requireContext(), "일정 삭제에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "일정 삭제에 실패했습니다.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                 }

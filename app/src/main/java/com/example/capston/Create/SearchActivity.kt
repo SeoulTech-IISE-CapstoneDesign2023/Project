@@ -176,7 +176,6 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-
     private fun updateStartMap(lat: Double, lng: Double) {
         Log.e("출발", "$lat $lng")
         geocoder(binding.startValueTextView.text.toString()) { _, _ ->

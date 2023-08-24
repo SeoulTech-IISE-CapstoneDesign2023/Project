@@ -13,6 +13,7 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.example.capston.Key
 import com.example.capston.MainActivity
 import com.example.capston.R
 import com.example.capston.User
@@ -23,7 +24,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -64,6 +67,7 @@ class SignUpActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 authUserBtn.isEnabled = false
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // 텍스트가 변경될 때마다 호출됩니다.
                 val inputText = s.toString()
@@ -71,6 +75,7 @@ class SignUpActivity : AppCompatActivity() {
                 val isButtonEnabled = isValidEmail(inputText)
                 authUserBtn.isEnabled = isButtonEnabled
             }
+
             override fun afterTextChanged(s: Editable?) {
             }
         })
@@ -79,13 +84,18 @@ class SignUpActivity : AppCompatActivity() {
         editPW.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 checkStatusPW = 0
                 editCheckPW.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
-                editCheckPW.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext,
-                    R.color.black
-                ))
+                editCheckPW.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        applicationContext,
+                        R.color.black
+                    )
+                )
             }
+
             override fun afterTextChanged(s: Editable?) {
             }
         })
@@ -94,14 +104,19 @@ class SignUpActivity : AppCompatActivity() {
         editCheckPW.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 checkStatusPW = 0
                 editCheckPW.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
-                editCheckPW.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext,
-                    R.color.black
-                ))
+                editCheckPW.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        applicationContext,
+                        R.color.black
+                    )
+                )
 
             }
+
             override fun afterTextChanged(s: Editable?) {
             }
         })
@@ -110,7 +125,7 @@ class SignUpActivity : AppCompatActivity() {
         checkPW.setOnClickListener {
             // 비밀번호 입력 체크 버튼 (일치 여부확인)
             if (editPW.text.length < 6) {
-                Toast.makeText(baseContext, "비밀번호는 6자 이상이어야 합니다. 다시 입력해주세요", Toast.LENGTH_SHORT,)
+                Toast.makeText(baseContext, "비밀번호는 6자 이상이어야 합니다. 다시 입력해주세요", Toast.LENGTH_SHORT)
                     .show()
             } else {
                 if (editPW.text.toString() == editCheckPW.text.toString()) {
@@ -127,7 +142,7 @@ class SignUpActivity : AppCompatActivity() {
                             R.color.green
                         )
                     )
-                    Toast.makeText(baseContext, "비밀번호가 일치합니다", Toast.LENGTH_SHORT,)
+                    Toast.makeText(baseContext, "비밀번호가 일치합니다", Toast.LENGTH_SHORT)
                         .show()
                 } else {
                     checkStatusPW = 1
@@ -143,7 +158,7 @@ class SignUpActivity : AppCompatActivity() {
                             R.color.red
                         )
                     )
-                    Toast.makeText(baseContext, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT,)
+                    Toast.makeText(baseContext, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -175,21 +190,21 @@ class SignUpActivity : AppCompatActivity() {
 
                             // Sign in success
                             val user = auth.currentUser
-                            Toast.makeText(baseContext, "사용자가 생성되었습니다.", Toast.LENGTH_SHORT,)
+                            Toast.makeText(baseContext, "사용자가 생성되었습니다.", Toast.LENGTH_SHORT)
                                 .show()
-                            Log.d("geon_test_user","create user -> email: $email")
+                            Log.d("geon_test_user", "create user -> email: $email")
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(baseContext, "이미 가입된 사용자입니다.", Toast.LENGTH_SHORT,)
+                            Toast.makeText(baseContext, "이미 가입된 사용자입니다.", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
 
             } else if (checkStatusPW == 1) {
-                Toast.makeText(baseContext, "비밀번호 일치 여부를 확인해주세요", Toast.LENGTH_SHORT,)
+                Toast.makeText(baseContext, "비밀번호 일치 여부를 확인해주세요", Toast.LENGTH_SHORT)
                     .show()
             } else {
-                Toast.makeText(baseContext, "비밀번호 일치 확인을 진행해주세요", Toast.LENGTH_SHORT,)
+                Toast.makeText(baseContext, "비밀번호 일치 확인을 진행해주세요", Toast.LENGTH_SHORT)
                     .show()
             }
         }
@@ -198,10 +213,9 @@ class SignUpActivity : AppCompatActivity() {
 
         authEmailBtn.setOnClickListener {
             sendEmailVerification()
-            Toast.makeText(baseContext, "이메일을 전송하였습니다 이메일을 확인후 가입절차를 따라주세요", Toast.LENGTH_SHORT,)
+            Toast.makeText(baseContext, "이메일을 전송하였습니다 이메일을 확인후 가입절차를 따라주세요", Toast.LENGTH_SHORT)
                 .show()
         }
-
 
 
         val MAX_RETRY_COUNT = 3 // 최대 반복 횟수
@@ -250,7 +264,7 @@ class SignUpActivity : AppCompatActivity() {
 
         // 버튼 클릭 이벤트에서 작업 시작
         authCheckBtn.setOnClickListener {
-            Log.d("geon_test_func","handler.postDelayed(runnable, INTERVAL_TIME)...")
+            Log.d("geon_test_func", "handler.postDelayed(runnable, INTERVAL_TIME)...")
             retryCount = 0
             handler.postDelayed(runnable, INTERVAL_TIME)
 
@@ -262,6 +276,7 @@ class SignUpActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 createBtn.isEnabled = false
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // 텍스트가 변경될 때마다 호출됩니다.
                 val inputText = s.toString()
@@ -270,6 +285,7 @@ class SignUpActivity : AppCompatActivity() {
                     createBtn.isEnabled = true
                 }
             }
+
             override fun afterTextChanged(s: Editable?) {
             }
         })
@@ -278,8 +294,18 @@ class SignUpActivity : AppCompatActivity() {
         // 이후 흐름은 닉네임 값 가지고 메인화면
         createBtn.setOnClickListener {
             val user = Firebase.auth.currentUser
-            val myUid = user?.uid
+            val myUid = user?.uid ?: ""
             val nickname = editNickname.text.toString()
+            //token 추가
+            Firebase.messaging.token.addOnCompleteListener {
+                val token = it.result
+                val user = mutableMapOf<String, Any>()
+                user["userId"] = myUid
+                user["fcmToken"] = token
+
+                Firebase.database(Key.DB_URL).reference.child(Key.DB_USERS).child(myUid)
+                    .child(Key.DB_USER_INFO).updateChildren(user)
+            }
 
             val userData = FirebaseDatabase.getInstance().getReference("user")
 
@@ -308,18 +334,19 @@ class SignUpActivity : AppCompatActivity() {
                         val intent =
                             Intent(this@SignUpActivity, MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     } else {
                         Log.d("geon_test_nick", "가입 불가!!!!")
-                        Toast.makeText(baseContext, "이미 존재하는 닉네임입니다", Toast.LENGTH_SHORT,)
+                        Toast.makeText(baseContext, "이미 존재하는 닉네임입니다", Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
+
                 override fun onCancelled(databaseError: DatabaseError) {
                     // 에러 처리
                 }
             })
         }
-
 
 
     }
@@ -359,7 +386,7 @@ class SignUpActivity : AppCompatActivity() {
         user!!.sendEmailVerification()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(baseContext, "이메일 인증을 진행해주세요", Toast.LENGTH_SHORT,)
+                    Toast.makeText(baseContext, "이메일 인증을 진행해주세요", Toast.LENGTH_SHORT)
                         .show()
                 }
             }

@@ -17,9 +17,9 @@ import com.google.firebase.ktx.Firebase
 
 class AddFriendActivity : AppCompatActivity() {
 
-    val binding by lazy { ActivityAddFriendBinding.inflate(layoutInflater)}
+    val binding by lazy { ActivityAddFriendBinding.inflate(layoutInflater) }
 
-    var originalList= mutableListOf<User>()
+    var originalList = mutableListOf<User>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +39,20 @@ class AddFriendActivity : AppCompatActivity() {
                 for (userSnapshot in snapshot.children) {
 
                     val uid = userSnapshot.key
-                    val nickname = userSnapshot.child("user_info").child("nickname").value.toString()
+                    val nickname =
+                        userSnapshot.child("user_info").child("nickname").value.toString()
 
                     if (uid == auth.uid) {
                         continue
                     }
                     // userData 객체를 생성하여 정보를 저장
-                    val userData = User(uid,nickname)
+                    val userData = User(uid, nickname)
                     originalList.add(userData)
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Log.w("geon","Failed to read friend data.", error.toException())
+                Log.w("geon", "Failed to read friend data.", error.toException())
             }
         })
 
@@ -65,11 +67,11 @@ class AddFriendActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isEmpty() ) {
+                if (newText.isEmpty()) {
 
                     // 검색창 빈칸될 경우 처리 (x) 버튼 구현?
-                    Log.d("geon","Empty Query")
-                    var emptyList= mutableListOf<User>()
+                    Log.d("geon", "Empty Query")
+                    var emptyList = mutableListOf<User>()
                     updateRecyclerView(emptyList)
                 }
                 return true
@@ -78,6 +80,7 @@ class AddFriendActivity : AppCompatActivity() {
 
 
     }
+
     private fun updateRecyclerView(dataList: List<User>) {
 
         // 어댑터에 새로운 데이터 설정하여 업데이트

@@ -11,7 +11,7 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 public class MySelectorDecorator implements DayViewDecorator {
     private final Drawable drawable;
 
-    public MySelectorDecorator(Activity context){
+    public MySelectorDecorator(Activity context) {
         drawable = context.getResources().getDrawable(R.drawable.my_selector);
     }
 
@@ -19,8 +19,9 @@ public class MySelectorDecorator implements DayViewDecorator {
     public boolean shouldDecorate(CalendarDay day) {
         return true;
     }
+
     @Override
-    public void decorate(DayViewFacade view){
+    public void decorate(DayViewFacade view) {
         view.setSelectionDrawable(drawable);
     }
 }

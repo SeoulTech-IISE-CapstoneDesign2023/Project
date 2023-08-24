@@ -35,6 +35,7 @@ class TimeTableFragment : Fragment() {
         super.onAttach(context)
         this.context = context
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -53,7 +54,7 @@ class TimeTableFragment : Fragment() {
         // 오늘 날짜, 년, 월 받아오기
         val today = Calendar.getInstance()
         val todayYear = String.format("%04d", today[Calendar.YEAR])
-        val todayMonth = String.format("%02d", today[Calendar.MONTH]+1)
+        val todayMonth = String.format("%02d", today[Calendar.MONTH] + 1)
         Log.d("TimeTableFragment", "Today: $todayYear + $todayMonth")
 
         // 오늘 날짜 기준 해당 주차의 시작 날짜와 끝 날짜를 계산
@@ -288,7 +289,7 @@ class TimeTableFragment : Fragment() {
     private fun getDayOfWeek(date: String): String {
         val splitText = date.split("/")
         val year = splitText[0].toInt()
-        val month = splitText[1].toInt()-1
+        val month = splitText[1].toInt() - 1
         val day = splitText[2].toInt()
 
         val cal: Calendar = Calendar.getInstance()
@@ -306,6 +307,7 @@ class TimeTableFragment : Fragment() {
             else -> ""
         }
     }
+
     // 받아온 데이터 todo의 존재여부 확인 함수
     private fun checkScheduleForTime(todoList: List<Todo>, day: String, hour: Int): Boolean {
         for (todo in todoList) {
@@ -320,6 +322,7 @@ class TimeTableFragment : Fragment() {
         }
         return false // 일정이 없는 경우 false 반환
     }
+
     // 색 랜덤 함수
     private fun getRandomColor(): Int {
         val random = Random()

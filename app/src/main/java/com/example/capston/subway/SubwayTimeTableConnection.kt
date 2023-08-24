@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SubwayTimeTableConnection {
-    companion object{
+    companion object {
         private const val BASE_URL = "https://api.odsay.com/v1/api/"
         private var INSTANCE: Retrofit? = null
         fun getInstance(): Retrofit {

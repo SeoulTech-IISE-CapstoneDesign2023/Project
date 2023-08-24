@@ -14,7 +14,7 @@ interface PublicTransitRouteSearchAPIService {
         @Query("EX") endX: String,
         @Query("EY") endY: String,
         @Query("OPT") opt: Int = 0,
-        @Query("SearchType") searchType :Int = 0,
-        @Query("SearchPathType") searchPathType : Int = 0,
-        ): Call<PublicTransitRoute>
+        @Query("SearchType") searchType: Int = 0,
+        @Query("SearchPathType") searchPathType: Int = 0,
+    ): Call<PublicTransitRoute>
 }
