@@ -311,9 +311,9 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                     Toast.makeText(this, "주소를 입력해주세요", Toast.LENGTH_SHORT).show()
                 } else {
                     saveData()
-                    val intent = Intent(this, CreateActivity::class.java)
-                    intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
-                    startActivity(intent)
+                    intent.putExtra("startAddress", binding.startValueTextView.text.toString())
+                    intent.putExtra("arrivalAddress", binding.arrivalValueTextView.text.toString())
+                    setResult(RESULT_OK, intent)
                     finish()
                 }
 

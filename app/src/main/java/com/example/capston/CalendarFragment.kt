@@ -175,50 +175,42 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
     }
 
     override fun onLongClick(position: Int) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("일정 삭제")
-        builder.setMessage("정말 삭제하시겠습니까?")
-        builder.setPositiveButton("YES",
-            object : DialogInterface.OnClickListener {
-                override fun onClick(p0: DialogInterface?, p1: Int) {
-                    deleteTodo(position)
-                }
-            })
-        builder.setNegativeButton("NO", null)
-        builder.show()
+        AlertDialog.Builder(requireContext())
+            .setTitle("일정 삭제")
+            .setMessage("일정을 삭제하시겠습니까?")
+            .setPositiveButton("Yes",
+                object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        deleteTodo(position)
+                    }
+                })
+            .setNegativeButton("No", null)
+            .show()
     }
 
     private fun deleteTodo(position: Int) {
-        val value = todoList[position].title
+        val todoKey = todoList[position].todoId
         todoList.removeAt(position) // todoList에서 삭제
-        val databaseReference = FirebaseDatabase.getInstance().getReference("calendar").child(user)
-            .child(clickedYear + "년").child(clickedMonth + "월").child(clickedDay + "일")
-        val query = databaseReference.orderByChild("title").equalTo(value)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
+        // 삭제할 일정 경로 참조
+        val deleteReference = FirebaseDatabase.getInstance().getReference("calendar")
+            .child(user)
+            .child(clickedYear + "년")
+            .child(clickedMonth + "월")
+            .child(clickedDay + "일")
+            .child(todoKey)
+        // 일정 삭제
+        deleteReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {}
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (data in dataSnapshot.children) {
-                    var notificationId = ""
-                    databaseReference.child(data.key.toString()).get()
-                        .addOnSuccessListener {
-                            val todo = it.getValue(Todo::class.java)
-                            notificationId = todo?.notificationId ?: ""
-                            if (notificationId != "") {
-                                deleteAlarm(notificationId.toInt(), requireContext())
-                                Log.e("deleteTodoInCalendarFragment", "알림 삭제")
-                            }
-                        }
                     data.ref.removeValue()
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT)
                                     .show()
                             } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "일정 삭제에 실패했습니다.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(requireContext(), "일정 삭제에 실패했습니다.", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         }
                 }

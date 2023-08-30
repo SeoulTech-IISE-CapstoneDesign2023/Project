@@ -1131,7 +1131,7 @@
                     android:text="00:00" />
 
                 <TextView
-                    android:id="@+id/monday0000"
+                    android:id="@+id/tuesday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1139,7 +1139,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0000"
+                    android:id="@+id/wednesday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1147,7 +1147,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0000"
+                    android:id="@+id/thursday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1155,7 +1155,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0000"
+                    android:id="@+id/friday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1163,7 +1163,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0000"
+                    android:id="@+id/saturday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1171,7 +1171,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0000"
+                    android:id="@+id/sunday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1179,7 +1179,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0000"
+                    android:id="@+id/monday0000"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1195,7 +1195,7 @@
                     android:text="01:00" />
 
                 <TextView
-                    android:id="@+id/monday0100"
+                    android:id="@+id/tuesday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1203,7 +1203,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0100"
+                    android:id="@+id/wednesday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1211,7 +1211,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0100"
+                    android:id="@+id/thursday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1219,7 +1219,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0100"
+                    android:id="@+id/friday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1227,7 +1227,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0100"
+                    android:id="@+id/saturday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1235,7 +1235,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0100"
+                    android:id="@+id/sunday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1243,7 +1243,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0100"
+                    android:id="@+id/monday0100"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1259,7 +1259,7 @@
                     android:text="02:00" />
 
                 <TextView
-                    android:id="@+id/monday0200"
+                    android:id="@+id/tuesday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1267,7 +1267,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0200"
+                    android:id="@+id/wednesday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1275,7 +1275,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0200"
+                    android:id="@+id/thursday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1283,7 +1283,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0200"
+                    android:id="@+id/friday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1291,7 +1291,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0200"
+                    android:id="@+id/saturday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1299,7 +1299,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0200"
+                    android:id="@+id/sunday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1307,7 +1307,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0200"
+                    android:id="@+id/monday0200"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1323,7 +1323,7 @@
                     android:text="03:00" />
 
                 <TextView
-                    android:id="@+id/monday0300"
+                    android:id="@+id/tuesday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1331,7 +1331,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0300"
+                    android:id="@+id/wednesday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1339,7 +1339,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0300"
+                    android:id="@+id/thursday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1347,7 +1347,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0300"
+                    android:id="@+id/friday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1355,7 +1355,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0300"
+                    android:id="@+id/saturday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1363,7 +1363,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0300"
+                    android:id="@+id/sunday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1371,7 +1371,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0300"
+                    android:id="@+id/monday0300"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1387,7 +1387,7 @@
                     android:text="04:00" />
 
                 <TextView
-                    android:id="@+id/monday0400"
+                    android:id="@+id/tuesday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1395,7 +1395,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0400"
+                    android:id="@+id/wednesday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1403,7 +1403,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0400"
+                    android:id="@+id/thursday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1411,7 +1411,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0400"
+                    android:id="@+id/friday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1419,7 +1419,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0400"
+                    android:id="@+id/saturday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1427,7 +1427,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0400"
+                    android:id="@+id/sunday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1435,7 +1435,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0400"
+                    android:id="@+id/monday0400"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1451,7 +1451,7 @@
                     android:text="05:00" />
 
                 <TextView
-                    android:id="@+id/monday0500"
+                    android:id="@+id/tuesday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1459,7 +1459,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0500"
+                    android:id="@+id/wednesday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1467,7 +1467,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0500"
+                    android:id="@+id/thursday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1475,7 +1475,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0500"
+                    android:id="@+id/friday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1483,7 +1483,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0500"
+                    android:id="@+id/saturday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1491,7 +1491,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0500"
+                    android:id="@+id/sunday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1499,7 +1499,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0500"
+                    android:id="@+id/monday0500"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1515,7 +1515,7 @@
                     android:text="06:00" />
 
                 <TextView
-                    android:id="@+id/monday0600"
+                    android:id="@+id/tuesday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1523,7 +1523,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0600"
+                    android:id="@+id/wednesday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1531,7 +1531,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0600"
+                    android:id="@+id/thursday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1539,7 +1539,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0600"
+                    android:id="@+id/friday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1547,7 +1547,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0600"
+                    android:id="@+id/saturday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1555,7 +1555,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0600"
+                    android:id="@+id/sunday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1563,7 +1563,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0600"
+                    android:id="@+id/monday0600"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1579,7 +1579,7 @@
                     android:text="07:00" />
 
                 <TextView
-                    android:id="@+id/monday0700"
+                    android:id="@+id/tuesday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1587,7 +1587,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/tuesday0700"
+                    android:id="@+id/wednesday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1595,7 +1595,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/wednesday0700"
+                    android:id="@+id/thursday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1603,7 +1603,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/thursday0700"
+                    android:id="@+id/friday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1611,7 +1611,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/friday0700"
+                    android:id="@+id/saturday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1619,7 +1619,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/saturday0700"
+                    android:id="@+id/sunday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
@@ -1627,7 +1627,7 @@
                     android:text="" />
 
                 <TextView
-                    android:id="@+id/sunday0700"
+                    android:id="@+id/monday0700"
                     android:layout_gravity="fill"
                     android:background="@drawable/cell"
                     android:gravity="center"
