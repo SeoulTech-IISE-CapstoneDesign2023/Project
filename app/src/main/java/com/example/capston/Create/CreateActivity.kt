@@ -298,6 +298,7 @@ class CreateActivity : AppCompatActivity(),
         val todoKey = intent.getStringExtra("todoKey")
         val todo = intent.getParcelableExtra<Todo>("todo")
         var usingAlarm: Boolean
+        //알람을 할지말지 받아오는 곳
         with(getSharedPreferences(KEY_USING_ALARM, Context.MODE_PRIVATE)) {
             usingAlarm = getBoolean(USING_ALARM, false)
         }

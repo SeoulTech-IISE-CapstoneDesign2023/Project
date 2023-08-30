@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import com.example.capston.Friend.FriendListActivity
 import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -57,9 +58,16 @@ class MainActivity : AppCompatActivity() {
         //Anonymoulsy()
 
         setSettingButton()
+        setFriendButton()
         setSupportActionBar(binding.toolbar2)
         replaceFragment(mainFragment)
         navFragment()
+    }
+
+    private fun setFriendButton() {
+        binding.friendButton.setOnClickListener {
+            startActivity(Intent(this, FriendListActivity::class.java))
+        }
     }
 
     private fun setSettingButton() {

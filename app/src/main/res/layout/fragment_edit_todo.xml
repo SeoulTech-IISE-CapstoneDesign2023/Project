@@ -48,8 +48,10 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/memoEditTextView"
+            android:textStyle="normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/main_text"
             android:hint="메모" />
 
     </com.google.android.material.textfield.TextInputLayout>

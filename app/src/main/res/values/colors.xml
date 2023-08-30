@@ -10,4 +10,7 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+    <color name="beige">#F5F5DC </color>
+    <color name="tan">#D2B48C</color>
+    <color name="dark_beige">#E4E4CB</color>
 </resources>
