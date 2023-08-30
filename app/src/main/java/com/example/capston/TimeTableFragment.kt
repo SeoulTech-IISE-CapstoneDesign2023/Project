@@ -27,7 +27,7 @@ class TimeTableFragment : Fragment() {
     private lateinit var context: Context
     lateinit var user: String
     val todoList = arrayListOf<Todo>()
-    var todoKeys: java.util.ArrayList<String> = arrayListOf()   //할일 키 목록
+    var todoKeys: java.util.ArrayList<String> = arrayListOf()
     val timeBlocks = HashMap<String, View>()
     val titleColorMap = HashMap<String, Int>()
 
@@ -35,7 +35,6 @@ class TimeTableFragment : Fragment() {
         super.onAttach(context)
         this.context = context
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -54,7 +53,7 @@ class TimeTableFragment : Fragment() {
         // 오늘 날짜, 년, 월 받아오기
         val today = Calendar.getInstance()
         val todayYear = String.format("%04d", today[Calendar.YEAR])
-        val todayMonth = String.format("%02d", today[Calendar.MONTH] + 1)
+        val todayMonth = String.format("%02d", today[Calendar.MONTH]+1)
         Log.d("TimeTableFragment", "Today: $todayYear + $todayMonth")
 
         // 오늘 날짜 기준 해당 주차의 시작 날짜와 끝 날짜를 계산
@@ -74,6 +73,7 @@ class TimeTableFragment : Fragment() {
         val endOfWeekDay = String.format("%02d", endOfWeek.get(Calendar.DAY_OF_MONTH))
 
         // 월이 바뀌지 않는 경우
+
         if (startOfWeekMonth == endOfWeekMonth) {
             FirebaseDatabase.getInstance().getReference("calendar")
                 .child(user)
@@ -88,18 +88,25 @@ class TimeTableFragment : Fragment() {
                         // 데이터 처리
                         // 데이터가 존재하는 경우
                         for (data in dataSnapshot.children) {
-                            Log.d("TimeTableFragment", "${data}")
                             for (childData in data.children) {
-                                Log.i("TimeTableFragment", "${childData}")
+                                todoList.clear()
+                                todoKeys.clear()
                                 todoKeys.add(childData.key!!)                    //키를 todoKeys 목록에 추가
                                 todoList.add(childData.getValue<Todo>()!!)
                                 val todo = childData.getValue(Todo::class.java)
                                 // 가져온 데이터를 활용하여 처리
                                 if (todo != null) {
                                     val day = todo.st_date  // 일정이 있는 날짜
-                                    val title = todo.title  // 일정의 제목
-                                    Log.d("TimeTableFragment", "Todo: $todo")
+                                    val todoKey = childData.key
                                     val dayOfWeek = getDayOfWeek(day) // 일정 요일 구하기
+                                    // 일정의 key값으로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
+                                    val color = if (titleColorMap.containsKey(todoKey)) {
+                                        titleColorMap[todoKey]!!
+                                    } else {
+                                        val randomColor = getRandomColor()
+                                        titleColorMap[todoKey!!] = randomColor
+                                        randomColor
+                                    }
                                     // 요일과 시간에 맞는 Block 찾아 데이터 설정
                                     val timeRanges = 0..23 // 0부터 23까지의 범위
                                     for (hour in timeRanges) {
@@ -112,14 +119,6 @@ class TimeTableFragment : Fragment() {
                                         )
                                         val view = binding.root.findViewById<TextView>(viewId)
                                         timeBlocks[key] = view
-                                        // 일정의 title로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
-                                        val color = if (titleColorMap.containsKey(title)) {
-                                            titleColorMap[title]!!
-                                        } else {
-                                            val randomColor = getRandomColor()
-                                            titleColorMap[title] = randomColor
-                                            randomColor
-                                        }
                                         // 일정이 있다면 배경색 : 랜덤 / 글씨색 : 하얀색
                                         val hasSchedule =
                                             checkScheduleForTime(todoList, dayOfWeek, hour)
@@ -161,21 +160,18 @@ class TimeTableFragment : Fragment() {
                 .endAt("$endOfWeekDay" + "일")
 
             // 두 개의 데이터를 가져와서 합칩니다.
+            // 첫 번째 데이터 처리
             ref1.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(databaseError: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for (data in dataSnapshot.children) {
-                        Log.d("TimeTableFragment", "${data}")
                         for (childData in data.children) {
-                            Log.i("TimeTableFragment", "${childData}")
                             todoKeys.add(childData.key!!)                    //키를 todoKeys 목록에 추가
                             todoList.add(childData.getValue<Todo>()!!)
                             val todo = childData.getValue(Todo::class.java)
-                            // 가져온 데이터를 활용하여 처리
                             if (todo != null) {
                                 val day = todo.st_date  // 일정이 있는 날짜
                                 val title = todo.title  // 일정의 제목
-                                Log.d("TimeTableFragment", "Todo: $todo")
                                 val dayOfWeek = getDayOfWeek(day) // 일정 요일 구하기
                                 // 요일과 시간에 맞는 Block 찾아 데이터 설정
                                 val timeRanges = 0..23 // 0부터 23까지의 범위
@@ -189,11 +185,12 @@ class TimeTableFragment : Fragment() {
                                     val view = binding.root.findViewById<TextView>(viewId)
                                     timeBlocks[key] = view
                                     // 일정의 title로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
-                                    val color = if (titleColorMap.containsKey(title)) {
-                                        titleColorMap[title]!!
+                                    val todoKey = childData.key
+                                    val color = if (titleColorMap.containsKey(todoKey)) {
+                                        titleColorMap[todoKey]!!
                                     } else {
                                         val randomColor = getRandomColor()
-                                        titleColorMap[title] = randomColor
+                                        titleColorMap[todoKey!!] = randomColor
                                         randomColor
                                     }
                                     // 일정이 있다면 배경색 : 랜덤 / 글씨색 : 하얀색
@@ -219,24 +216,18 @@ class TimeTableFragment : Fragment() {
                     }
                 }
             })
-            // 첫 번째 데이터 처리
+            // 두 번째 데이터 처리
             ref2.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(databaseError: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    // 두 번째 데이터 처리
-                    // 두 개의 데이터를 합쳐서 원하는 결과를 얻을 수 있습니다.
                     for (data in dataSnapshot.children) {
-                        Log.d("TimeTableFragment", "${data}")
                         for (childData in data.children) {
-                            Log.i("TimeTableFragment", "${childData}")
                             todoKeys.add(childData.key!!)                    //키를 todoKeys 목록에 추가
                             todoList.add(childData.getValue<Todo>()!!)
                             val todo = childData.getValue(Todo::class.java)
-                            // 가져온 데이터를 활용하여 처리
                             if (todo != null) {
                                 val day = todo.st_date  // 일정이 있는 날짜
                                 val title = todo.title  // 일정의 제목
-                                Log.d("TimeTableFragment", "Todo: $todo")
                                 val dayOfWeek = getDayOfWeek(day) // 일정 요일 구하기
                                 // 요일과 시간에 맞는 Block 찾아 데이터 설정
                                 val timeRanges = 0..23 // 0부터 23까지의 범위
@@ -250,11 +241,12 @@ class TimeTableFragment : Fragment() {
                                     val view = binding.root.findViewById<TextView>(viewId)
                                     timeBlocks[key] = view
                                     // 일정의 title로 구분해 같은 일정은 같은 색, 다른 일정은 다른 색
-                                    val color = if (titleColorMap.containsKey(title)) {
-                                        titleColorMap[title]!!
+                                    val todoKey = childData.key
+                                    val color = if (titleColorMap.containsKey(todoKey)) {
+                                        titleColorMap[todoKey]!!
                                     } else {
                                         val randomColor = getRandomColor()
-                                        titleColorMap[title] = randomColor
+                                        titleColorMap[todoKey!!] = randomColor
                                         randomColor
                                     }
                                     // 일정이 있다면 배경색 : 랜덤 / 글씨색 : 하얀색
@@ -285,11 +277,11 @@ class TimeTableFragment : Fragment() {
         return binding.root
     }
 
-    //    // 날짜로 요일 구하는 함수
+    // 날짜로 요일 구하는 함수
     private fun getDayOfWeek(date: String): String {
         val splitText = date.split("/")
         val year = splitText[0].toInt()
-        val month = splitText[1].toInt() - 1
+        val month = splitText[1].toInt()-1
         val day = splitText[2].toInt()
 
         val cal: Calendar = Calendar.getInstance()
@@ -307,7 +299,6 @@ class TimeTableFragment : Fragment() {
             else -> ""
         }
     }
-
     // 받아온 데이터 todo의 존재여부 확인 함수
     private fun checkScheduleForTime(todoList: List<Todo>, day: String, hour: Int): Boolean {
         for (todo in todoList) {
@@ -322,7 +313,6 @@ class TimeTableFragment : Fragment() {
         }
         return false // 일정이 없는 경우 false 반환
     }
-
     // 색 랜덤 함수
     private fun getRandomColor(): Int {
         val random = Random()

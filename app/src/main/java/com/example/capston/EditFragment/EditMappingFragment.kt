@@ -1,9 +1,12 @@
 package com.example.capston.EditFragment
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -100,23 +103,87 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var startLat = 0.0
     private var arrivalLng = 0.0
     private var arrivalLat = 0.0
+    private lateinit var startPlace : String
+    private lateinit var arrivePlace : String
+    private lateinit var previousStartPlace : String
+    private lateinit var changedStartPlace : String
+    private lateinit var previousArrivePlace : String
+    private lateinit var changedArrivePlace : String
     var currentUserFcmToken: String = ""//fcmToken정보 fcm서비스로 보내는거임
     private val currentUserId = Firebase.auth.currentUser?.uid ?: ""
     private var totalTimeForFirebase = ""
 
     // data를 전달하는 listener
-    interface OnDataPassListener {
+    interface EditMappingListener {
         fun onStartPass(startPlace: String?)
         fun onArrivePass(arrivePlace: String?)
     }
 
-    private lateinit var dataPassListener: OnDataPassListener
+    private lateinit var dataPassListener: EditMappingListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        dataPassListener = context as OnDataPassListener
+        dataPassListener = context as EditMappingListener
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)//data를 전달
+        val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
+        // 기존 일정의 출발지와 도착지
+        if (todo != null) {
+            previousStartPlace = todo.startPlace.toString()
+            previousArrivePlace = todo.arrivePlace.toString()
+            // 출발지와 도착지가 변경 없이 그대로 일 경우 기존 데이터 유지
+            dataPassListener.onStartPass(previousStartPlace)
+            dataPassListener.onArrivePass(previousArrivePlace)
+            Log.i("DataPass", "이전 출발지 안 바뀜: $previousStartPlace")
+            Log.i("DataPass", "이전 도착지 안 바뀜: $previousArrivePlace")
+        }
+        previousStartPlace = null.toString()
+        previousArrivePlace = null.toString()
+        // 출발지 변경을 시도할 경우
+        binding.startValueTextView.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                changedStartPlace = s.toString()
+                if (changedStartPlace != previousStartPlace) {
+                    // 텍스트가 변경되었을 때
+                    dataPassListener.onStartPass(changedStartPlace)
+                    Log.d("DataPass", "출발지가 변경되었습니다: $previousStartPlace -> $changedStartPlace")
+                }
+                if (changedStartPlace.isEmpty()) {
+                    // 텍스트가 입력창에 아무 것도 입력되지 않았을 때
+                    Log.i("DataPass", "출발지에 입력된 내용이 없습니다")
+                }
+            }
+        })
+
+        // 도착지 변경을 시도할 경우
+        binding.arrivalValueTextView.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                changedArrivePlace = s.toString()
+                if (changedArrivePlace != previousArrivePlace) {
+                    // 텍스트가 변경되었을 때
+                    dataPassListener.onArrivePass(changedArrivePlace)
+                    Log.d("DataPass", "도착지가 변경되었습니다: $previousArrivePlace -> $changedArrivePlace")
+                }
+                if (changedArrivePlace.isEmpty()) {
+                    // 텍스트가 입력창에 아무 것도 입력되지 않았을 때
+                    Log.i("DataPass", "도착지에 입력된 내용이 없습니다")
+                }
+            }
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,7 +209,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
             currentUserFcmToken = currentUserItem?.fcmToken ?: ""
         }
 
-        //list에서 일정 하나 선택했을 때 내용 수정 !! 여기를 수정해야할듯
+        //list에서 일정 하나 선택했을 때 내용 수정
         val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
         if (todo != null) {
             // 기존의 Todo를 수정하는 경우, Todo객체를 사용하여 화면을 초기화
@@ -165,13 +232,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
             val intent = Intent(requireContext(), SearchActivity::class.java)
             intent.putExtra("startAddress", binding.startValueTextView.text.toString())
             intent.putExtra("arrivalAddress", binding.arrivalValueTextView.text.toString())
-            startActivity(intent)
-            requireActivity().finish()
-        }
+            startActivityForResult(intent, 1000)
 
-        // searchActivity에서 출발도착장소 업데이트
-        binding.startValueTextView.text = param1
-        binding.arrivalValueTextView.text = param2
+        }
 
         //교통수단 선택 버튼
         var transportation = 0 //자동차 1 대중교통 2 도보 3
@@ -382,7 +445,23 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         return binding.root
     }
+    // 출발지와 도착지 데이터 받아오기
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1000 && resultCode == Activity.RESULT_OK) {
+            val param1 = data?.getStringExtra("startAddress")
+            val param2 = data?.getStringExtra("arrivalAddress")
 
+            if (param1 != null && param2 != null) {
+                binding.startValueTextView.text = param1
+                binding.arrivalValueTextView.text = param2
+                Log.i("activityResult", "${param1}에서 $param2")
+                // createActivity로 data 전달
+                dataPassListener.onStartPass(param1)
+                dataPassListener.onArrivePass(param2)
+            }
+        }
+    }
     private fun saveIsoDateTime(isoDateTime: String?) {
         with(requireActivity().getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
             putString("isoDateTime", isoDateTime)

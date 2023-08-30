@@ -74,9 +74,9 @@ import java.util.Locale
 
 class CreateActivity : AppCompatActivity(),
     EditTodoFragment.OnDataPassListener,
-    EditMappingFragment.OnDataPassListener {
+    EditMappingFragment.EditMappingListener {
     private lateinit var binding: ActivityCreateBinding
-    private var todoKeys: java.util.ArrayList<String> = arrayListOf()   //일정 키 목록
+    private var todoKeys: java.util.ArrayList<String> = arrayListOf()
     private lateinit var user: String
     private var startAddress = ""
     private var arrivalAddress = ""
@@ -86,6 +86,8 @@ class CreateActivity : AppCompatActivity(),
     private var startTime = ""
     private var arrivalDate = ""
     private var arrivalTime = ""
+    private var totalTime = ""
+    private var todoId = ""
     private var editTextLength = 0
     private var editTextPlace = ""
     private var editTextMemo = ""
@@ -163,7 +165,7 @@ class CreateActivity : AppCompatActivity(),
             // 새로운 Todo를 생성하는 경우, 화면을 초기화
             initializeCreateMode(startDate!!)
         }
-        getData() //todo 임시로 저장해놓으거임 firebase로 넣어줘야함
+        getData()
         val fManager = supportFragmentManager
         val mappingFragment = EditMappingFragment.newInstance(startAddress, arrivalAddress)
         fManager.commit {
@@ -278,10 +280,8 @@ class CreateActivity : AppCompatActivity(),
     private fun checkDate(): Boolean {
         val changeStartTime =
             binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
-
         val changeArrivalTime =
             binding.arriveTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
-
         val startTimeText =
             binding.startDateValueTextView.text.toString() + changeStartTime
         val arrivalTimeText =
@@ -306,12 +306,16 @@ class CreateActivity : AppCompatActivity(),
 
         return when (item.itemId) {
             R.id.okMenu -> {
+                // 일정 제목을 입력하지 않으면 일정 생성 불가 토스트
+                if (binding.editTodoText.text.toString().isEmpty()) {
+                    Toast.makeText(this, "일정 제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                }
                 // 일정 시작시간이 종료시간보다 늦을 경우 일정 생성 불가 토스트
-                if (!checkDate()) {
+                else if (!checkDate()) {
                     Toast.makeText(this, "시작시간은 종료시간보다 늦을 수 없습니다", Toast.LENGTH_SHORT).show()
-                } else {
-                    // 메모장 텍스트 100자 넘어가면 일정 생성 불가 토스트
-                    if (editTextLength > 100) {
+                }
+                // 메모장 텍스트 100자 넘어가면 일정 생성 불가 토스트
+                else if (editTextLength > 100) {
                         Toast.makeText(this, "메모 글자수가 100을 넘었습니다.", Toast.LENGTH_SHORT).show()
                     } else {
                         if (isEditMode) {
@@ -356,7 +360,6 @@ class CreateActivity : AppCompatActivity(),
                             }
                         }
                     }
-                }
                 true
             }
 
@@ -425,7 +428,7 @@ class CreateActivity : AppCompatActivity(),
         }
     }
 
-    //도보 알람만들기
+    //도보 알람 만들기
     private fun makeWalkAlarm(
         alarmTime: String,
         alarm: MutableMap<String, Any>,
@@ -517,7 +520,7 @@ class CreateActivity : AppCompatActivity(),
         }
     }
 
-    //자동차 알람만들기
+    //자동차 알람 만들기
     private fun makeCarAlarm(
         alarmTime: String,
         alarm: MutableMap<String, Any>,
@@ -623,18 +626,13 @@ class CreateActivity : AppCompatActivity(),
         val memo = editTextMemo
         val startPlace = editStartPlace
         val arrivePlace = editArrivePlace
+        val totalTime = totalTime
+        val todoId = todoId
 
         val check = splitDate(st_date)
         val clickedYear = check[0].trim()
         val clickedMonth = check[1].trim()
         val clickedDay = check[2].trim()
-
-        val TodoRef = FirebaseDatabase.getInstance().getReference("calendar")
-            .child(user)
-            .child(clickedYear + "년")
-            .child(clickedMonth + "월")
-            .child(clickedDay + "일")
-            .push()
 
         val todo =
             Todo(
@@ -647,10 +645,20 @@ class CreateActivity : AppCompatActivity(),
                 memo = memo,
                 startPlace = startPlace,
                 arrivePlace = arrivePlace,
+                totalTime = totalTime,
+                todoId = todoId,
                 notificationId = notificationId,
             ) // notificationId를 통해서 알람정보 획득
+        val TodoRef = FirebaseDatabase.getInstance().getReference("calendar")
+            .child(user)
+            .child(clickedYear + "년")
+            .child(clickedMonth + "월")
+            .child(clickedDay + "일")
+            .push()
 
-        todoKeys.add(TodoRef.key!!)
+        val todoKey = TodoRef.key   // 자동 생성된 키 값을 가져옴
+        todoKeys.add(todoKey!!)     // 가져온 키 값을 todoKeys 목록에 추가
+        todo.todoId = todoKey       // 생성된 키 값을 객체에 할당
 
         TodoRef.setValue(todo).addOnSuccessListener {
             Toast.makeText(applicationContext, "일정 생성 완료", Toast.LENGTH_SHORT).show()
@@ -677,6 +685,8 @@ class CreateActivity : AppCompatActivity(),
         val memo = editTextMemo
         val startPlace = editStartPlace
         val arrivePlace = editArrivePlace
+        val todoId = todo?.todoId
+
 
         val todoUpdates: MutableMap<String, Any> = HashMap()
         todoUpdates["title"] = title
@@ -688,6 +698,8 @@ class CreateActivity : AppCompatActivity(),
         todoUpdates["memo"] = memo
         todoUpdates["startPlace"] = startPlace
         todoUpdates["arrivePlace"] = arrivePlace
+        todoUpdates["todoId"] = todoId!!
+
 
         // 변경된 일정 시작 날짜
         val newStartDate = todoUpdates["st_date"].toString()
@@ -705,9 +717,10 @@ class CreateActivity : AppCompatActivity(),
                 .child(oldYear + "년")
                 .child(oldMonth + "월")
                 .child(oldDay + "일")
+                .child(todoKey!!)
+
             // 이전 날짜의 일정 삭제
-            val query = oldTodoReference.orderByChild("title").equalTo(oldTitle)
-            query.addListenerForSingleValueEvent(object : ValueEventListener {
+            oldTodoReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for (data in dataSnapshot.children) {

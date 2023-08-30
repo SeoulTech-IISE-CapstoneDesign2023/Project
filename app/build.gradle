@@ -71,3 +71,4 @@ dependencies {
     //lottie 애니메이션이미지
     implementation 'com.airbnb.android:lottie:6.1.0'
 }
+tasks.register("prepareKotlinBuildScriptModel"){}

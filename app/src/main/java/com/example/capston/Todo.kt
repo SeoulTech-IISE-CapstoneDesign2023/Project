@@ -14,6 +14,7 @@ data class Todo(
     val startPlace: String ?= null,   //일정 출발지
     val arrivePlace: String ?= null,   //일정 도착지
     val totalTime: String ?= null,     //걸리는 총 시간
+    var todoId: String ="",             // 일정 구별 아이디
     val trackTime: String ?= null,   //알림 추적 시간
     val notificationId : String ?= null, //알람 구별 아이디
 ) : Parcelable {
@@ -30,7 +31,8 @@ data class Todo(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-    )
+        parcel.readString() ?: "",
+        )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
@@ -43,6 +45,7 @@ data class Todo(
         parcel.writeString(startPlace)
         parcel.writeString(arrivePlace)
         parcel.writeString(totalTime)
+        parcel.writeString(todoId)
         parcel.writeString(trackTime)
         parcel.writeString(notificationId)
     }
