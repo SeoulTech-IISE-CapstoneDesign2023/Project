@@ -18,17 +18,20 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.capston.Address
 import com.example.capston.Bus.realLocation.BusRealLocationAPIService
 import com.example.capston.Bus.realLocation.BusRealLocationConnection
 import com.example.capston.Bus.realLocation.BusRealTimeLocationDTO
 import com.example.capston.Bus.realtime.BusRealTimeAPIService
 import com.example.capston.Bus.realtime.BusRealTimeConnection
 import com.example.capston.Bus.realtime.RealTimeArrivalBus
+import com.example.capston.Create.CreateActivity
 import com.example.capston.R
 import com.example.capston.Create.SearchActivity
 import com.example.capston.Create.UserInfo
 import com.example.capston.Key
 import com.example.capston.Key.Companion.ALARMTIME
+import com.example.capston.Key.Companion.DB_ADDRESS
 import com.example.capston.Key.Companion.KEY_ALARMTIME
 import com.example.capston.Key.Companion.PLUS_TIME
 import com.example.capston.Key.Companion.START_DATE_FOR_SEARCHACTIVITY
@@ -103,12 +106,13 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var startLat = 0.0
     private var arrivalLng = 0.0
     private var arrivalLat = 0.0
-    private lateinit var startPlace : String
-    private lateinit var arrivePlace : String
-    private lateinit var previousStartPlace : String
-    private lateinit var changedStartPlace : String
-    private lateinit var previousArrivePlace : String
-    private lateinit var changedArrivePlace : String
+    private lateinit var startPlace: String
+    private lateinit var arrivePlace: String
+    private lateinit var previousStartPlace: String
+    private lateinit var changedStartPlace: String
+    private lateinit var previousArrivePlace: String
+    private lateinit var changedArrivePlace: String
+
     var currentUserFcmToken: String = ""//fcmToken정보 fcm서비스로 보내는거임
     private val currentUserId = Firebase.auth.currentUser?.uid ?: ""
     private var totalTimeForFirebase = ""
@@ -117,6 +121,11 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
     interface EditMappingListener {
         fun onStartPass(startPlace: String?)
         fun onArrivePass(arrivePlace: String?)
+
+        fun onTimePass(alarmTime :String , plusTime : String, type : String, timeTaken : String)
+
+        fun onLocationPass(startLat: Double?, startLng: Double?, arrivalLat: Double?, arrivalLng: Double?)
+
     }
 
     private lateinit var dataPassListener: EditMappingListener
@@ -125,6 +134,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         super.onAttach(context)
         dataPassListener = context as EditMappingListener
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)//data를 전달
         val todo = requireActivity().intent.getParcelableExtra<Todo>("todo")
@@ -132,6 +142,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         if (todo != null) {
             previousStartPlace = todo.startPlace.toString()
             previousArrivePlace = todo.arrivePlace.toString()
+
             // 출발지와 도착지가 변경 없이 그대로 일 경우 기존 데이터 유지
             dataPassListener.onStartPass(previousStartPlace)
             dataPassListener.onArrivePass(previousArrivePlace)
@@ -190,6 +201,10 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+            startLat = it.getDouble("startLat")
+            startLng = it.getDouble("startLng")
+            arrivalLat = it.getDouble("arrivalLat")
+            arrivalLng = it.getDouble("arrivalLng")
         }
     }
 
@@ -255,14 +270,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
             val startAdress = binding.startValueTextView.text.toString()
             val arrivalAdress = binding.arrivalValueTextView.text.toString()
             //장소검색을 누른다는것은 알람을 사용한다고 판단 그래서 createActivity에서 이 정보를 활용하여 알람이 없을때에 todo도 생성하게만듬
-            with(
-                requireActivity().getSharedPreferences(Key.KEY_USING_ALARM, Context.MODE_PRIVATE)
-                    .edit()
-            ) {
-                putBoolean(Key.USING_ALARM, true)
-                apply()
-            }
-            binding.indeterminateBar.isVisible = true
             getDate()
             Log.d("getDate를통해 얻은 startTime과 startDate", "$startTime $startDate")
             when (transportation) {
@@ -298,6 +305,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                         .show()
                                 }
                             } else {
+                                requireActivity().runOnUiThread {
+                                    binding.indeterminateBar.isVisible = true
+                                }
                                 locationList[0] = startLng
                                 locationList[1] = startLat
                                 geocoder(arrivalAdress) { _, _ ->
@@ -352,6 +362,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                     .show()
                             }
                         } else {
+                            requireActivity().runOnUiThread {
+                                binding.indeterminateBar.isVisible = true
+                            }
                             locationList[0] = startLng
                             locationList[1] = startLat
                             geocoder(arrivalAdress) { _, _ ->
@@ -383,7 +396,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                                 }
                                             }
                                         }
-
                                     }, 1500)
                                     Log.d("실행", "실행2")
                                 }
@@ -406,6 +418,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                     .show()
                             }
                         } else {
+                            requireActivity().runOnUiThread {
+                                binding.indeterminateBar.isVisible = true
+                            }
                             locationList[0] = startLng
                             locationList[1] = startLat
                             geocoder(arrivalAdress) { _, _ ->
@@ -445,12 +460,30 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         return binding.root
     }
+
     // 출발지와 도착지 데이터 받아오기
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1000 && resultCode == Activity.RESULT_OK) {
             val param1 = data?.getStringExtra("startAddress")
             val param2 = data?.getStringExtra("arrivalAddress")
+            //이정보를 가져와야함
+            val param3 = data?.getDoubleExtra("startLat",0.0)
+            val param4 = data?.getDoubleExtra("startLng",0.0)
+            val param5 = data?.getDoubleExtra("arrivalLat",0.0)
+            val param6 = data?.getDoubleExtra("arrivalLng",0.0)
+            startLat = param3!!
+            startLng = param4!!
+            arrivalLat = param5!!
+            arrivalLng = param6!!
+            //정보를 가져오면은 파이어베이스에다가 address정보 업데이트
+            val locationData = mutableMapOf<String,Any>()
+            locationData["startLat"] = startLat
+            locationData["startLng"] = startLng
+            locationData["arrivalLat"] = arrivalLat
+            locationData["arrivalLng"] = arrivalLng
+            Firebase.database.reference.child(DB_ADDRESS).child(currentUserId).updateChildren(locationData)
+
 
             if (param1 != null && param2 != null) {
                 binding.startValueTextView.text = param1
@@ -459,9 +492,11 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 // createActivity로 data 전달
                 dataPassListener.onStartPass(param1)
                 dataPassListener.onArrivePass(param2)
+                dataPassListener.onLocationPass(param3,param4,param5,param6)
             }
         }
     }
+
     private fun saveIsoDateTime(isoDateTime: String?) {
         with(requireActivity().getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
             putString("isoDateTime", isoDateTime)
@@ -476,12 +511,18 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
             startTime = getString(START_TIME_FOR_SEARCHACTIVITY, "").toString()
         }
 
-        requireActivity().getSharedPreferences("location", Context.MODE_PRIVATE).apply {
-            startLat = getString("startLat", "0.0")!!.toDouble()
-            startLng = getString("startLng", "0.0")!!.toDouble()
-            arrivalLat = getString("arrivalLat", "0.0")!!.toDouble()
-            arrivalLng = getString("arrivalLng", "0.0")!!.toDouble()
-        }
+        Firebase.database.reference.child(DB_ADDRESS).child(currentUserId).get()
+            .addOnSuccessListener {
+                val data = it.getValue(Address::class.java)
+                Log.e("getDate", "$data")
+                data?.let {
+                    startLat = data.startLat ?: 0.0
+                    startLng = data.startLng ?: 0.0
+                    arrivalLat = data.arrivalLat ?: 0.0
+                    arrivalLng = data.arrivalLng ?: 0.0
+                    Log.e("getDate", "$startLat $startLng $arrivalLat $arrivalLng")
+                }
+            }
     }
 
     //자동차 경로 함수
@@ -489,7 +530,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         //바디를 생성할때 필요한것은 출발지와 도착지와 출발 시간을 알려준다
         Log.d("body", body.toString())
         val service = carRetrofit.create(TmapService::class.java)
-        Toast.makeText(context, "실시간 경로를 불러오고있습니다.", Toast.LENGTH_SHORT).show()
         service.getCarRoute(request = body).enqueue(object : Callback<Dto> {
             override fun onResponse(call: Call<Dto>, response: Response<Dto>) {
                 Log.e("MainActivity", "${response.body().toString()}")
@@ -520,6 +560,9 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     //길찾기를 통한 알람시간을 저장 자동차는 yyyy/MM/dd HH:mm으로 저장 대중교통,걷기는 HH:mm으로 저장 이거를 CreatActivity에 보내서 받아야함
     private fun saveAlarmTime(time: String, type: String) {
+        //createActivity에 정보넘김
+        dataPassListener.onTimePass(time,plusTime,type,totalTimeForFirebase)
+        //서비스에 필요
         with(requireActivity().getSharedPreferences(KEY_ALARMTIME, Context.MODE_PRIVATE).edit()) {
             Log.e("saveAlarmTime", "alarmTime : $time type : $type")
             putString(ALARMTIME, time)
@@ -535,7 +578,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         //바디를 생성할때 필요한것은 출발지와 도착지와 출발 시간을 알려준다
         Log.d("body", body.toString())
         val service = carRetrofit.create(WalkService::class.java)
-        Toast.makeText(context, "실시간 경로를 불러오고있습니다.", Toast.LENGTH_SHORT).show()
         service.getWalkingTime(request = body)
             .enqueue(object : Callback<com.example.capston.walk.Dto> {
                 override fun onResponse(
@@ -710,7 +752,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 addItemDecoration(dividerItemDecoration)
             }
             Log.d("실행", "실행9")
-            Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
+            binding.indeterminateBar.isVisible = false
         } else {
             Thread {
                 getPublicTransitRouteSearchData(startX, startY, endX, endY)
@@ -728,8 +770,7 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 )
                             addItemDecoration(dividerItemDecoration)
                         }
-
-                        Toast.makeText(requireContext(), "리사이클러뷰 생성", Toast.LENGTH_SHORT).show()
+                        binding.indeterminateBar.isVisible = false
                         binding.totalTimeTextView.apply {
                             if (minTotalTime != null) {
                                 text = "총 소요시간 : ${minTotalTime}분"
@@ -741,8 +782,6 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 saveAlarmTime(alarmTime, "subway")
                             }
                         }
-                        //todo 여기말고 다른곳에다가 해야함 이미 다불러와도 오류가 있음
-                        binding.indeterminateBar.isVisible = false
                     }
                 }, 1500)
             }.start()
@@ -1111,4 +1150,5 @@ class EditMappingFragment : Fragment(), AdapterView.OnItemSelectedListener {
         plusTime = ""
         Log.e("plusTime", "$plusTime")
     }
+    
 }

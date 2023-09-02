@@ -8,6 +8,7 @@ class Key {
         const val DB_USER_INFO = "user_info"
         const val DB_CALENDAR = "calendar"
         const val DB_ALARMS = "alarms"
+        const val DB_ADDRESS = "address"
         const val DB_CARS = "cars"
         const val NOTIFICATION_ID = "notificiationId"
         const val MESSAGE = "message"

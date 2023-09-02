@@ -2,6 +2,7 @@ package com.example.capston.Create
 
 import android.Manifest
 import android.app.AlarmManager
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.app.TimePickerDialog
@@ -10,7 +11,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -19,19 +19,19 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.commit
+import com.example.capston.Address
 import com.example.capston.EditFragment.EditMappingFragment
 import com.example.capston.EditFragment.EditTodoFragment
-import com.example.capston.Key
 import com.example.capston.Key.Companion.ALARMTIME
 import com.example.capston.Key.Companion.ARRIVAL_DATE_FOR_SEARCHACTIVITY
 import com.example.capston.Key.Companion.ARRIVAL_TIME_FOR_SEARCHACTIVITY
 import com.example.capston.Key.Companion.DATETIME
+import com.example.capston.Key.Companion.DB_ADDRESS
 import com.example.capston.Key.Companion.DB_ALARMS
-import com.example.capston.Key.Companion.DB_CALENDAR
 import com.example.capston.Key.Companion.DB_URL
 import com.example.capston.Key.Companion.DB_USERS
 import com.example.capston.Key.Companion.DB_USER_INFO
@@ -50,7 +50,6 @@ import com.example.capston.Todo
 import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.ActivityCreateBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -107,8 +106,10 @@ class CreateActivity : AppCompatActivity(),
     private var timeTaken = ""
     private var startTimeToLong: Long = 0 //약속시간을 저장하는 변수
     private var type = "" //이동수단을 저장하는 변수
-    private var alarmCheck = true
+    private var alarmCheck = false
     private var touchedTodoButton = true
+    private var usingAlarm = false
+    private var alarmTime = ""
 
     //권한요청 할 때 필요함
     private val requestPermissionLauncher = registerForActivityResult(
@@ -165,7 +166,6 @@ class CreateActivity : AppCompatActivity(),
             // 새로운 Todo를 생성하는 경우, 화면을 초기화
             initializeCreateMode(startDate!!)
         }
-        getData()
         val fManager = supportFragmentManager
         val mappingFragment = EditMappingFragment.newInstance(startAddress, arrivalAddress)
         fManager.commit {
@@ -210,9 +210,19 @@ class CreateActivity : AppCompatActivity(),
         binding.arriveTimeValueTextView.setOnClickListener {
             setTime(1)
         }
+        binding.alarmImageView.setOnClickListener {
+           if (!usingAlarm) {
+               it.setBackgroundResource(R.drawable.baseline_alarm_on_24)
+               usingAlarm = true
+               Toast.makeText(this,"알람설정 on",Toast.LENGTH_SHORT).show()
+           }else {
+               it.setBackgroundResource(R.drawable.baseline_alarm_off_24)
+               usingAlarm = false
+               Toast.makeText(this,"알람설정 off",Toast.LENGTH_SHORT).show()
+           }
+        }
 
         whenDateTimeValueChangedSaveDateData()
-
         saveNotificationIdWhenEditModeForEditAlarm()
         saveDateData()
     }
@@ -258,7 +268,37 @@ class CreateActivity : AppCompatActivity(),
         // 도착 날짜 및 시간
         binding.arriveDateValueTextView.text = todo.end_date
         binding.arriveTimeValueTextView.text = todo.end_time
+        startLat = todo.startLat ?: 0.0
+        startLng = todo.startLng ?: 0.0
+        arrivalLat = todo.arrivalLat ?: 0.0
+        arrivalLng = todo.arrivalLng ?: 0.0
+        if(todo.usingAlarm == true) {
+            usingAlarm = true
+            binding.alarmImageView.setBackgroundResource(R.drawable.baseline_alarm_on_24)
+        }else {
+            usingAlarm = false
+            binding.alarmImageView.setBackgroundResource(R.drawable.baseline_alarm_off_24)
+        }
+        //address더미만들기 만든것을 가지고 editMappingFragment에 넘겨줘야함
+        val addressData = mutableMapOf<String, Any>()
+        addressData["startLat"] = todo.startLat ?: 0.0
+        addressData["startLng"] = todo.startLng ?: 0.0
+        addressData["arrivalLat"] = todo.arrivalLat ?: 0.0
+        addressData["arrivalLng"] = todo.arrivalLng ?: 0.0
+        addressData["startAddress"] = todo.startPlace ?: ""
+        addressData["arrivalAddress"] = todo.arrivePlace ?: ""
+        Firebase.database.reference.child(DB_ADDRESS).child(user).updateChildren(addressData)
+        //여기서 위경도를 넘겨줘야한다 mappingFragment에게
+        val bundle = Bundle()
+        bundle.putDouble("startLat",startLat)
+        bundle.putDouble("startLng",startLng)
+        bundle.putDouble("arrivalLat",arrivalLat)
+        bundle.putDouble("arrivalLng",arrivalLng)
+        EditMappingFragment().arguments = bundle
+
     }
+
+
 
     private fun initializeCreateMode(startDate: String?) {
         // 새로운 일정을 생성하는 경우, 화면을 초기화하는 작업 수행
@@ -297,14 +337,8 @@ class CreateActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val todoKey = intent.getStringExtra("todoKey")
         val todo = intent.getParcelableExtra<Todo>("todo")
-        var usingAlarm: Boolean
-        //알람을 할지말지 받아오는 곳
-        with(getSharedPreferences(KEY_USING_ALARM, Context.MODE_PRIVATE)) {
-            usingAlarm = getBoolean(USING_ALARM, false)
-        }
-        Log.e("usingAlarm", "$usingAlarm")
+        //알람을 할지말지 받아오는 곳 이부분이 수정되어야함
         getLocationData()
-
         return when (item.itemId) {
             R.id.okMenu -> {
                 // 일정 제목을 입력하지 않으면 일정 생성 불가 토스트
@@ -317,50 +351,63 @@ class CreateActivity : AppCompatActivity(),
                 }
                 // 메모장 텍스트 100자 넘어가면 일정 생성 불가 토스트
                 else if (editTextLength > 100) {
-                        Toast.makeText(this, "메모 글자수가 100을 넘었습니다.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        if (isEditMode) {
-                            //기존의 todo를 수정하고 알림은 사용하지 않는 경우
-                            if (!usingAlarm) {
+                    Toast.makeText(this, "메모 글자수가 100을 넘었습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    if (isEditMode) {
+                        //기존의 todo를 수정하고 알림은 사용하지 않는 경우
+                        if (!usingAlarm) {
+                            updateTodo(todoKey!!, todo!!)
+                            finish()
+                        } else {
+                            //기존의 todo를 수정하면서 알람도 사용하는 경우
+                            if(alarmTime.isEmpty() || type.isEmpty() || plusTime.isEmpty()){
+                                Toast.makeText(this,"길찾기를 해주세요.",Toast.LENGTH_SHORT).show()
+                                return false
+                            }
+                            createAlarm()
+                            if (alarmCheck) {
+                                Firebase.database.reference.child(DB_ADDRESS).child(user)
+                                    .removeValue()
                                 updateTodo(todoKey!!, todo!!)
+                                deleteAlarmWhenEdit()
                                 finish()
                             } else {
-                                //기존의 todo를 수정하면서 알람도 사용하는 경우
-                                createAlarm()
-                                if (alarmCheck) {
-                                    updateTodo(todoKey!!, todo!!)
-                                    deleteAlarmWhenEdit()
-                                    finish()
-                                } else {
-                                    Toast.makeText(
-                                        this,
-                                        "지금 출발하기에는 이미 늦었습니다. 일정을 다시 생성해주세요.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                Toast.makeText(
+                                    this,
+                                    "지금 출발하기에는 이미 늦었습니다. 일정을 다시 생성해주세요.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
+                        }
+                    } else {
+                        // 새로운 Todo를 생성하는 경우
+                        //새로운 todo를 생성하면서 알림은 없는 경우
+                        if (!usingAlarm) {
+                            Firebase.database.reference.child(DB_ADDRESS).child(user).removeValue()
+                            createTodo()
+                            finish()
                         } else {
-                            // 새로운 Todo를 생성하는 경우
-                            //새로운 todo를 생성하면서 알림은 없는 경우
-                            if (!usingAlarm) {
+                            if(alarmTime.isEmpty() || type.isEmpty() || plusTime.isEmpty()){
+                                Toast.makeText(this,"길찾기를 해주세요.",Toast.LENGTH_SHORT).show()
+                                return false
+                            }
+                            //새로운 todo를 생성하면서 알림도 있는 경우
+                            createAlarm()
+                            if (alarmCheck) {
+                                Firebase.database.reference.child(DB_ADDRESS).child(user)
+                                    .removeValue()
                                 createTodo()
                                 finish()
                             } else {
-                                //새로운 todo를 생성하면서 알림도 있는 경우
-                                createAlarm()
-                                if (alarmCheck) {
-                                    createTodo()
-                                    finish()
-                                } else {
-                                    Toast.makeText(
-                                        this,
-                                        "지금 출발하기에는 이미 늦었습니다. 일정을 다시 생성해주세요.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                Toast.makeText(
+                                    this,
+                                    "지금 출발하기에는 이미 늦었습니다. 일정을 다시 생성해주세요.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
+                }
                 true
             }
 
@@ -376,12 +423,23 @@ class CreateActivity : AppCompatActivity(),
     private fun getLocationData() {
         //위경도와 iso시간 가져옴
         getSharedPreferences("location", MODE_PRIVATE).apply {
-            startLat = getString("startLat", "0.0")!!.toDouble()
-            startLng = getString("startLng", "0.0")!!.toDouble()
-            arrivalLat = getString("arrivalLat", "0.0")!!.toDouble()
-            arrivalLng = getString("arrivalLng", "0.0")!!.toDouble()
             isoDateTime = getString("isoDateTime", "").toString()
         }
+        Firebase.database.reference.child(DB_ADDRESS).child(user).get()
+            .addOnSuccessListener {
+                val data = it.getValue(Address::class.java)
+                data?.let {
+                    startLat = data.startLat ?: 0.0
+                    startLng = data.startLng ?: 0.0
+                    arrivalLat = data.arrivalLat ?: 0.0
+                    arrivalLng = data.arrivalLng ?: 0.0
+                    Log.e("getLocationData", "$startLat $startLng $arrivalLat $arrivalLng")
+                }
+            }
+            .addOnFailureListener {
+                Log.e("getLocationData","실패")
+                it.printStackTrace()
+            }
     }
 
     private fun deleteAlarmWhenEdit() {
@@ -401,14 +459,6 @@ class CreateActivity : AppCompatActivity(),
 
     private fun createAlarm() {
         //mapping에서 시간가져오기
-        var alarmTime = ""
-
-        with(getSharedPreferences(KEY_ALARMTIME, Context.MODE_PRIVATE)) {
-            alarmTime = getString(ALARMTIME, "").toString()
-            type = getString(TYPE, "").toString()
-            plusTime = getString(PLUS_TIME, "").toString()
-            timeTaken = getString(TIME_TAKEN, "").toString()
-        }
         Log.e("alarmTimeinCreateAlarm", "$alarmTime $type $plusTime $timeTaken")
         //잘 가져온것을 파악
         val todo = binding.editTodoText.text.toString()
@@ -480,41 +530,58 @@ class CreateActivity : AppCompatActivity(),
                 return
             }
             alarmCheck = true
-            alarm["todo"] = todo
-            alarm["time"] = outputDate //알람이 울리는 시간
-            alarm["timeFormat"] = "${outputDate.substring(0, 4)}년 ${
-                outputDate.substring(
-                    4,
-                    6
-                )
-            }월 ${outputDate.substring(6, 8)}일 ${outputDate.substring(8, 10)}:${
-                outputDate.substring(
-                    10,
-                    12
-                )
-            }"//2023년 08월 15일 15:49
-            alarm["userId"] = user
-            alarm["startLat"] = startLat
-            alarm["startLng"] = startLng
-            alarm["arrivalLat"] = arrivalLat
-            alarm["arrivalLng"] = arrivalLng
-            alarm["type"] = type
-            alarm["appointment_time"] = startTimeToLong.toString() //startTime을 가져오면됨
-            notificationId = outputDate.substring(3)
-            alarm["notificationId"] = notificationId
-            alarm["timeTaken"] = alarmTime
-            alarm["trackingTime"] = plusTime
-            //알람 데이터 업데이트 기기에 저장을 하고 서비스에서 받음
-            with(getSharedPreferences(KEY_DATETIME, MODE_PRIVATE).edit()) {
-                putString(DATETIME, outputDate)
-                apply()
-            }
-            Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user).child(notificationId)
-                .updateChildren(alarm)
-            //알람 생성
-            val body = "${nickname}님 이제 ${todo}할 시간이에요~!"
-            Toast.makeText(this, "알람을 생성하였습니다", Toast.LENGTH_SHORT).show()
-            sendFcm(body)
+            Firebase.database.reference.child(DB_ADDRESS).child(user).get()
+                .addOnSuccessListener {
+                    val data = it.getValue(Address::class.java)
+                    data?.let {
+                        startLat = data.startLat?.toDouble() ?: 0.0
+                        startLng = data.startLng?.toDouble() ?: 0.0
+                        arrivalLat = data.arrivalLat?.toDouble() ?: 0.0
+                        arrivalLng = data.arrivalLng?.toDouble() ?: 0.0
+                        Log.e("getLocationData", "$startLat $startLng $arrivalLat $arrivalLng")
+                        alarm["todo"] = todo
+                        alarm["time"] = outputDate //알람이 울리는 시간
+                        alarm["timeFormat"] = "${outputDate.substring(0, 4)}년 ${
+                            outputDate.substring(
+                                4,
+                                6
+                            )
+                        }월 ${outputDate.substring(6, 8)}일 ${outputDate.substring(8, 10)}:${
+                            outputDate.substring(
+                                10,
+                                12
+                            )
+                        }"//2023년 08월 15일 15:49
+                        alarm["userId"] = user
+                        alarm["startLat"] = startLat
+                        alarm["startLng"] = startLng
+                        alarm["arrivalLat"] = arrivalLat
+                        alarm["arrivalLng"] = arrivalLng
+                        alarm["type"] = type
+                        alarm["appointment_time"] = startTimeToLong.toString() //startTime을 가져오면됨
+                        notificationId = outputDate.substring(3)
+                        alarm["notificationId"] = notificationId
+                        alarm["timeTaken"] = alarmTime
+                        alarm["trackingTime"] = plusTime
+                        //알람 데이터 업데이트 기기에 저장을 하고 서비스에서 받음
+                        with(getSharedPreferences(KEY_DATETIME, MODE_PRIVATE).edit()) {
+                            putString(DATETIME, outputDate)
+                            apply()
+                        }
+                        Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user).child(notificationId)
+                            .updateChildren(alarm)
+                        Firebase.database.reference.child(DB_ADDRESS).child(user).removeValue()
+                        //알람 생성
+                        val body = "${nickname}님 이제 ${todo}할 시간이에요~!"
+                        Toast.makeText(this, "알람을 생성하였습니다", Toast.LENGTH_SHORT).show()
+                        sendFcm(body)
+                    }
+                }
+                .addOnFailureListener {
+                    Log.e("getLocationData","실패")
+                    it.printStackTrace()
+                }
+
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e("걷기시간 변형", "시간변형에 실패")
@@ -649,6 +716,11 @@ class CreateActivity : AppCompatActivity(),
                 totalTime = totalTime,
                 todoId = todoId,
                 notificationId = notificationId,
+                startLat = startLat,
+                startLng = startLng,
+                arrivalLat = arrivalLat,
+                arrivalLng = arrivalLng,
+                usingAlarm = usingAlarm,
             ) // notificationId를 통해서 알람정보 획득
         val TodoRef = FirebaseDatabase.getInstance().getReference("calendar")
             .child(user)
@@ -700,7 +772,11 @@ class CreateActivity : AppCompatActivity(),
         todoUpdates["startPlace"] = startPlace
         todoUpdates["arrivePlace"] = arrivePlace
         todoUpdates["todoId"] = todoId!!
-
+        todoUpdates["startLng"] = startLng
+        todoUpdates["startLat"] = startLat
+        todoUpdates["arrivalLng"] = arrivalLng
+        todoUpdates["arrivalLat"] = arrivalLat
+        todoUpdates["usingAlarm"] = usingAlarm
 
         // 변경된 일정 시작 날짜
         val newStartDate = todoUpdates["st_date"].toString()
@@ -836,6 +912,7 @@ class CreateActivity : AppCompatActivity(),
                         binding.arriveDateValueTextView.text = "0000/00/00"
                         binding.arriveTimeValueTextView.text = "오전 00:00"
                         arrivalTime = ""
+                        return@OnTimeSetListener
                     }
                 }
             } catch (e: ParseException) {
@@ -871,13 +948,6 @@ class CreateActivity : AppCompatActivity(),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
-    }
-
-    private fun getData() {
-        with(getSharedPreferences("addressInformation", Context.MODE_PRIVATE)) {
-            startAddress = getString("startAddress", "").toString()
-            arrivalAddress = getString("arrivalAddress", "").toString()
-        }
     }
 
     // searchActivity에서 돌아올때 화면 깨짐 방지로 데이터 저장
@@ -976,8 +1046,33 @@ class CreateActivity : AppCompatActivity(),
     override fun onArrivePass(arrivePlace: String?) {
         Log.d("DataPass", "arrivePlace is :$arrivePlace")
         if (arrivePlace != null) {
-            editStartPlace = arrivePlace
+            editArrivePlace = arrivePlace
         } else editStartPlace = ""
+    }
+
+    override fun onTimePass(
+        alarmTime: String,
+        plusTime: String,
+        type: String,
+        timeTaken: String
+    ) {
+        Log.e("onTimePass", "$alarmTime, $plusTime $type $timeTaken")
+        this.alarmTime = alarmTime
+        this.type = type
+        this.plusTime = plusTime
+        this.timeTaken = timeTaken
+    }
+
+    override fun onLocationPass(
+        startLat: Double?,
+        startLng: Double?,
+        arrivalLat: Double?,
+        arrivalLng: Double?
+    ) {
+        this.startLat = startLat ?: 0.0
+        this.startLng = startLng ?: 0.0
+        this.arrivalLat = arrivalLat ?: 0.0
+        this.arrivalLng = arrivalLng ?: 0.0
     }
 
     override fun onDestroy() {

@@ -70,5 +70,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     //lottie 애니메이션이미지
     implementation 'com.airbnb.android:lottie:6.1.0'
+
 }
 tasks.register("prepareKotlinBuildScriptModel"){}
