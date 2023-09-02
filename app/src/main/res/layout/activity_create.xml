@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/beige"
     tools:context=".Create.CreateActivity">
 
 
     <androidx.appcompat.widget.Toolbar
-        app:popupTheme="@font/main_text"
         android:id="@+id/createActionToolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -16,10 +16,11 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
-        app:theme = "@style/toolbar_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="MapMyDay"/>
+        app:popupTheme="@font/main_text"
+        app:theme="@style/toolbar_title"
+        app:title="MapMyDay" />
 
     <TextView
         android:id="@+id/todoTextView"
@@ -33,10 +34,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/createActionToolbar" />
 
+    <ImageView
+        android:id="@+id/alarmImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toStartOf="@id/goTodoButton"
+        android:background="@drawable/baseline_alarm_off_24"
+        app:layout_constraintBottom_toBottomOf="@id/goTodoButton"
+        app:layout_constraintStart_toStartOf="@id/arriveDateTextView"
+        app:layout_constraintTop_toTopOf="@id/goTodoButton" />
+
     <EditText
         android:id="@+id/editTodoText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:ellipsize="end"
         android:ems="10"
         android:gravity="center"
@@ -44,13 +59,10 @@
         android:inputType="text"
         android:textSize="25sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/todoTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/todoTextView"
         tools:layout_editor_absoluteY="96dp" />
-
 
 
     <TextView
@@ -84,10 +96,9 @@
         android:gravity="end"
         android:text="오전 00:00"
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/startDateValueTextView"
         app:layout_constraintBaseline_toBaselineOf="@+id/startDateValueTextView"
         app:layout_constraintEnd_toEndOf="@+id/editTodoText"
-        />
+        app:layout_constraintStart_toEndOf="@+id/startDateValueTextView" />
 
     <TextView
         android:id="@+id/arriveDateTextView"
@@ -120,10 +131,9 @@
         android:gravity="end"
         android:text="오전 00:00"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="@+id/startTimeValueTextView"
         app:layout_constraintBaseline_toBaselineOf="@+id/arriveDateValueTextView"
-        app:layout_constraintStart_toEndOf="@+id/arriveDateValueTextView"
-         />
+        app:layout_constraintEnd_toEndOf="@+id/startTimeValueTextView"
+        app:layout_constraintStart_toEndOf="@+id/arriveDateValueTextView" />
 
     <Button
         android:id="@+id/goTodoButton"
@@ -155,11 +165,11 @@
         android:id="@+id/frameLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_margin="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/goTodoButton"
-        android:layout_margin="0dp">
+        app:layout_constraintTop_toBottomOf="@+id/goTodoButton">
 
     </FrameLayout>
 

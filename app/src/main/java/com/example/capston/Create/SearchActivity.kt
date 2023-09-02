@@ -20,8 +20,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.capston.Key.Companion.DB_ADDRESS
 import com.example.capston.R
 import com.example.capston.databinding.ActivitySearchBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -50,6 +54,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
     private var startLat = 0.0
     private var arrivalLng = 0.0
     private var arrivalLat = 0.0
+    private val uid = Firebase.auth.currentUser?.uid ?: ""
 
     //장소검색 도로명 주소 받아오기
     private val getSearchResult =
@@ -58,6 +63,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 val data = result.data
                 if (data != null) {
                     val searchData = data.getStringExtra("data")
+                    Log.e("위경도넘어온거", "$data")
                     val lat = data.getStringExtra("x")
                     val lng = data.getStringExtra("y")
                     Log.e("위경도넘어온거", "$lat $lng")
@@ -67,13 +73,13 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                         updateArrivalMap(lat!!.toDouble(), lng!!.toDouble())
                         arrivalLat = lat.toDouble()
                         arrivalLng = lng.toDouble()
-                        saveLocation()
+//                        saveLocation()
                     } else {
                         binding.startValueTextView.text = searchData
                         updateStartMap(lat!!.toDouble(), lng!!.toDouble())
                         startLat = lat.toDouble()
                         startLng = lng.toDouble()
-                        saveLocation()
+//                        saveLocation()
                     }
                 }
             }
@@ -84,11 +90,9 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.createActionToolbar)
-
         val startAddress = intent.getStringExtra("startAddress")
         val arrivalAddress = intent.getStringExtra("arrivalAddress")
 
-        loadLocation()
         binding.startValueTextView.apply {
             text = startAddress
             setOnClickListener {
@@ -135,9 +139,8 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             updateStartMap(startLat, startLng)
             updateArrivalMap(arrivalLat, arrivalLng)
             isChanged = true
-            saveLocation()
+//            saveLocation()
         }
-
     }
 
     override fun onStart() {
@@ -286,21 +289,8 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
-    private fun saveData() {
-        with(getSharedPreferences("addressInformation", Context.MODE_PRIVATE).edit()) {
-            putString("startAddress", binding.startValueTextView.text.toString())
-            putString("arrivalAddress", binding.arrivalValueTextView.text.toString())
-            apply()
-        }
-        Toast.makeText(this, "데이터가 저장됨", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun deletData() {
-        with(getSharedPreferences("addressInformation", Context.MODE_PRIVATE).edit()) {
-            putString("startAddress", "")
-            putString("arrivalAddress", "")
-            apply()
-        }
+    private fun deleteData() {
+        Firebase.database.reference.child(DB_ADDRESS).child(uid).removeValue()
         Toast.makeText(this, "데이터가 삭제됨", Toast.LENGTH_SHORT).show()
     }
 
@@ -310,15 +300,16 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (binding.arrivalValueTextView.text == "" || binding.startValueTextView.text == "") {
                     Toast.makeText(this, "주소를 입력해주세요", Toast.LENGTH_SHORT).show()
                 } else {
-                    saveData()
                     intent.putExtra("startAddress", binding.startValueTextView.text.toString())
                     intent.putExtra("arrivalAddress", binding.arrivalValueTextView.text.toString())
+                    intent.putExtra("startLat", startLat)
+                    intent.putExtra("startLng", startLng)
+                    intent.putExtra("arrivalLat", arrivalLat)
+                    intent.putExtra("arrivalLng", arrivalLng)
                     setResult(RESULT_OK, intent)
                     finish()
                 }
-
                 Log.d("okMenu", binding.startValueTextView.text.toString())
-
                 true
             }
 
@@ -336,8 +327,7 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             setMessage("주소를 정말 삭제하시겠습니까?")
             setNegativeButton("아니오", null)
             setPositiveButton("네") { _, _ ->
-                deletData()
-                initLocation()
+                deleteData()
                 val intent = Intent(context, CreateActivity::class.java)
                 intent.putExtra("fragmentToShow", "mappingFragment") // 원하는 프래그먼트 식별자 전달
                 startActivity(intent)
@@ -367,14 +357,28 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
             myLocationlng = location.longitude
         }
 
-        if (arrivalLat != 0.0) {
-            updateArrivalMap(arrivalLat, arrivalLng)
-            updateStartMap(startLat, startLng)
-        } else {
-            val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
-                .animate(CameraAnimation.Easing)
-            naverMap.moveCamera(cameraUpdate)
-        }
+        Firebase.database.reference.child(DB_ADDRESS).child(uid).get()
+            .addOnSuccessListener {
+                val data = it.getValue(com.example.capston.Address::class.java)
+                startLat = data?.startLat ?: 0.0
+                startLng = data?.startLng ?: 0.0
+                arrivalLat = data?.arrivalLat ?: 0.0
+                arrivalLng = data?.arrivalLng ?: 0.0
+                if (arrivalLat != 0.0) {
+                    updateArrivalMap(arrivalLat, arrivalLng)
+                    updateStartMap(startLat, startLng)
+                } else {
+                    val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
+                        .animate(CameraAnimation.Easing)
+                    naverMap.moveCamera(cameraUpdate)
+                }
+            }
+            .addOnFailureListener {
+                Log.e("loadLocation", "실패")
+                it.printStackTrace()
+            }
+
+
 
 
     }
@@ -443,34 +447,4 @@ class SearchActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    //출발 도착 위경도 저장
-    private fun saveLocation() {
-        with(getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
-            putString("startLat", startLat.toString())
-            putString("startLng", startLng.toString())
-            putString("arrivalLat", arrivalLat.toString())
-            putString("arrivalLng", arrivalLng.toString())
-            apply()
-        }
-    }
-
-    //맵 저장취소버튼을 눌렀을때 데이터 초기화해주기
-    private fun initLocation() {
-        with(getSharedPreferences("location", Context.MODE_PRIVATE).edit()) {
-            putString("startLat", "0.0")
-            putString("startLng", "0.0")
-            putString("arrivalLat", "0.0")
-            putString("arrivalLng", "0.0")
-            apply()
-        }
-    }
-
-    private fun loadLocation() {
-        with(getSharedPreferences("location", Context.MODE_PRIVATE)) {
-            startLat = getString("startLat", "0.0")!!.toDouble()
-            startLng = getString("startLng", "0.0")!!.toDouble()
-            arrivalLat = getString("arrivalLat", "0.0")!!.toDouble()
-            arrivalLng = getString("arrivalLng", "0.0")!!.toDouble()
-        }
-    }
 }
