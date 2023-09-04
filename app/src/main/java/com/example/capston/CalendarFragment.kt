@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.capston.Calendar.*
 import com.example.capston.Create.CreateActivity
+import com.example.capston.Friend.FriendListActivity
 import com.example.capston.alarm.NotificationReceiver
 import com.example.capston.databinding.FragmentCalendarBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -75,6 +76,14 @@ class CalendarFragment : Fragment(), OnItemLongClickListener, OnItemShortClickLi
                 Collections.singleton(CalendarDay.today())
             )
         )
+
+        binding.friendButton.setOnClickListener {
+            requireActivity().startActivity(Intent(context, FriendListActivity::class.java))
+        }
+
+        binding.settingButton.setOnClickListener {
+            requireActivity().startActivity(Intent(context, SettingActivity::class.java))
+        }
 
         user = FirebaseAuth.getInstance().currentUser?.uid.toString()
 

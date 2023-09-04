@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
@@ -16,10 +17,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.example.capston.Calendar.OnItemLongClickListener
 import com.example.capston.Calendar.OnItemShortClickListener
 import com.example.capston.Calendar.TodoListAdapter
 import com.example.capston.Create.CreateActivity
+import com.example.capston.Friend.FriendListActivity
 import com.example.capston.Key.Companion.DB_ALARMS
 import com.example.capston.Key.Companion.DB_URL
 import com.example.capston.alarm.AlarmItem
@@ -34,6 +37,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import retrofit2.Call
+import retrofit2.Response
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -70,6 +75,8 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
         binding = FragmentMainBinding.inflate(inflater, container, false)
         user = Firebase.auth.currentUser?.uid ?: ""
 
+        updateAppbarImage()
+
         //RecyclerView 설정
         binding.todoRecyclerView.adapter = adapter
         binding.todoRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -101,21 +108,57 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
             requireActivity().startActivity(intent)
         }
 
+        binding.friendButton.setOnClickListener {
+            requireActivity().startActivity(Intent(context, FriendListActivity::class.java))
+        }
+
+        binding.settingButton.setOnClickListener {
+            requireActivity().startActivity(Intent(context, SettingActivity::class.java))
+        }
+
         updateBottomSheetRecyclerView()
         binding.bottomSheetLayout.noItemTextView.isVisible = alarmAdapter.itemCount == 0
         return binding.root
+    }
+
+    private fun updateAppbarImage() {
+        RetrofitManager.imageService.getRandomImage()
+            .enqueue(object : retrofit2.Callback<ImageResponse> {
+                override fun onResponse(
+                    call: Call<ImageResponse>,
+                    response: Response<ImageResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            requireActivity().runOnUiThread {
+                                binding.appBarImageView.run {
+                                    setBackgroundColor(Color.parseColor(it.color))
+                                    load(it.urls.regular)
+                                    alpha = 0.5F
+                                }
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+
+                }
+
+            })
     }
 
     private fun alertDialog(alarmItem: AlarmItem) {
         AlertDialog.Builder(requireContext())
             .setTitle("알람 삭제")
             .setMessage("알람을 취소하시겠습니까?")
-            .setPositiveButton("Yes"){_,_ ->
+            .setPositiveButton("Yes") { _, _ ->
                 val notificationId = alarmItem.notificationId?.toInt() ?: 0
                 val todoTitle = alarmItem.todo
                 val todoDate = alarmItem.time.toString()
-                Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user).child(notificationId.toString()).removeValue()
-                deleteAlarm(notificationId,requireContext())
+                Firebase.database(DB_URL).reference.child(DB_ALARMS).child(user)
+                    .child(notificationId.toString()).removeValue()
+                deleteAlarm(notificationId, requireContext())
                 // 알람을 삭제하고 일정도 삭제하실건가요???
                 AlertDialog.Builder(requireContext())
                     .setTitle("일정 삭제")
@@ -124,11 +167,12 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                         todoYear = todoDate.substring(0, 4)
                         todoMonth = todoDate.substring(4, 6)
                         todoDay = todoDate.substring(6, 8)
-                        val deleteReference = Firebase.database(DB_URL).reference.child(Key.DB_CALENDAR).child(user)
-                            .child(todoYear+"년")
-                            .child(todoMonth+"월")
-                            .child(todoDay+"일")
-                            .orderByChild("title").equalTo(todoTitle)
+                        val deleteReference =
+                            Firebase.database(DB_URL).reference.child(Key.DB_CALENDAR).child(user)
+                                .child(todoYear + "년")
+                                .child(todoMonth + "월")
+                                .child(todoDay + "일")
+                                .orderByChild("title").equalTo(todoTitle)
                         deleteReference.addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onCancelled(error: DatabaseError) {}
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -136,10 +180,18 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                                     data.ref.removeValue()
                                         .addOnCompleteListener { task ->
                                             if (task.isSuccessful) {
-                                                Toast.makeText(requireContext(), "일정도 삭제했습니다.", Toast.LENGTH_SHORT)
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "일정도 삭제했습니다.",
+                                                    Toast.LENGTH_SHORT
+                                                )
                                                     .show()
                                             } else {
-                                                Toast.makeText(requireContext(), "일정 삭제에 실패했습니다.", Toast.LENGTH_SHORT)
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    "일정 삭제에 실패했습니다.",
+                                                    Toast.LENGTH_SHORT
+                                                )
                                                     .show()
                                             }
                                         }
@@ -152,7 +204,7 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                     }
                     .show()
             }
-            .setNegativeButton("No"){ dialogInterface,_ ->
+            .setNegativeButton("No") { dialogInterface, _ ->
                 dialogInterface.cancel()
             }
             .show()
@@ -346,7 +398,11 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
                                 Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT)
                                     .show()
                             } else {
-                                Toast.makeText(requireContext(), "일정 삭제에 실패했습니다.", Toast.LENGTH_SHORT)
+                                Toast.makeText(
+                                    requireContext(),
+                                    "일정 삭제에 실패했습니다.",
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                             }
                         }

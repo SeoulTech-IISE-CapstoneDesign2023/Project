@@ -7,21 +7,6 @@
     android:background="@color/beige"
     tools:context=".MainActivity">
 
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:theme="@style/toolbar_title"
-        app:title="MapMyDay" />
-
     <FrameLayout
         android:id="@+id/nav_fragment"
         android:layout_width="0dp"
@@ -29,7 +14,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -41,24 +26,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/navigate_menu" />
 
-
-    <ImageView
-        android:id="@+id/friend_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:src="@drawable/baseline_emoji_people_24"
-        app:layout_constraintEnd_toEndOf="@+id/toolbar2"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/setting_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:src="@drawable/baseline_settings_24"
-        app:layout_constraintEnd_toStartOf="@+id/friend_button"
-        app:layout_constraintTop_toTopOf="@+id/toolbar2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
