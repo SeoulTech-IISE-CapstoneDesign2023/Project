@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.capston.Create.CreateActivity
+import com.example.capston.Friend.FriendListActivity
 import com.example.capston.databinding.FragmentTimeTableBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -49,6 +50,14 @@ class TimeTableFragment : Fragment() {
     ): View? {
         binding = FragmentTimeTableBinding.inflate(inflater, container, false)
         user = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+        binding.friendButton.setOnClickListener {
+            requireActivity().startActivity(Intent(context, FriendListActivity::class.java))
+        }
+
+        binding.settingButton.setOnClickListener {
+            requireActivity().startActivity(Intent(context, SettingActivity::class.java))
+        }
 
         // 오늘 날짜, 년, 월 받아오기
         val today = Calendar.getInstance()

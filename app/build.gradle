@@ -56,6 +56,10 @@ dependencies {
     //retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    //okhttp3
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    //coil 이미지처리
+    implementation("io.coil-kt:coil:2.2.2")
     //Calendar custom
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
     // Import the Firebase BoM

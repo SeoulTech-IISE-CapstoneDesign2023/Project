@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.capston.Friend.FriendListActivity
 import com.example.capston.alarm.NotificationReceiver
@@ -57,25 +58,25 @@ class MainActivity : AppCompatActivity() {
         //익명으로 로그인
         //Anonymoulsy()
 
-        setSettingButton()
-        setFriendButton()
-        setSupportActionBar(binding.toolbar2)
+//        setSettingButton()
+//        setFriendButton()
+//        setSupportActionBar(binding.toolbar2)
         replaceFragment(mainFragment)
         navFragment()
     }
 
-    private fun setFriendButton() {
-        binding.friendButton.setOnClickListener {
-            startActivity(Intent(this, FriendListActivity::class.java))
-        }
-    }
-
-    private fun setSettingButton() {
-        binding.settingButton.setOnClickListener {
-            val intent = Intent(this, SettingActivity::class.java)
-            startActivity(intent)
-        }
-    }
+//    private fun setFriendButton() {
+//        binding.friendButton.setOnClickListener {
+//            startActivity(Intent(this, FriendListActivity::class.java))
+//        }
+//    }
+//
+//    private fun setSettingButton() {
+//        binding.settingButton.setOnClickListener {
+//            val intent = Intent(this, SettingActivity::class.java)
+//            startActivity(intent)
+//        }
+//    }
 
     // Firebase Authentication 익명으로 로그인
     fun Anonymoulsy() {
@@ -137,6 +138,7 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .apply {
+                setCustomAnimations(R.anim.fragment_fade_in, R.anim.fragment_fade_out)
                 replace(R.id.nav_fragment, fragment)
                 commit()
             }
