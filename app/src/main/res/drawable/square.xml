@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#EDD36D" /> <!--채우는 색상-->
-    <stroke android:color="#D5A927" android:width="3dp" /> <!--테두리 색상과 너비-->
-    <corners android:radius="8dp" /> <!--모서리 둥글기-->
+    <!--테두리 색상과 너비-->
+    <stroke android:color="#D2B48C" android:width="4dp" />
+    <!--내부 색상 -->
+    <solid android:color="@color/cream_lemon"/>
+    <!--모서리 둥글기-->
+    <corners android:radius="10dp" />
+
 </shape>

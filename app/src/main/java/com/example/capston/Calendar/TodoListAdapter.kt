@@ -44,7 +44,7 @@ class TodoListAdapter(
         RecyclerView.ViewHolder(binding.root) {
         val root = binding.root
         fun setTodoListUI(todo: Todo, position: Int) {
-            binding.todotitle.text = todo.title
+            binding.todoTitle.text = todo.title
             binding.todoTime.text = todo.st_time
         }
     }
