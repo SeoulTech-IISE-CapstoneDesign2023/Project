@@ -4,7 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#00A300</color>
     <color name="red">#FF0000</color>
-    <color name="grey">#EBEBEB</color>
+    <color name="grey">#92000000</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -13,4 +13,7 @@
     <color name="beige">#F5F5DC </color>
     <color name="tan">#D2B48C</color>
     <color name="dark_beige">#E4E4CB</color>
+    <color name="orange">#D2691E</color>
+    <color name="light_purple">#949DD3</color>
+    <color name="cream_lemon">#F4EA8F</color>
 </resources>

@@ -327,7 +327,6 @@ class MainFragment : Fragment(), OnItemLongClickListener, OnItemShortClickListen
             .addValueEventListener(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {}
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    Log.d("MainFragment", "DataSnapshot: $dataSnapshot")
                     todoList.clear()
                     todoKeys.clear()
                     for (data in dataSnapshot.children) {

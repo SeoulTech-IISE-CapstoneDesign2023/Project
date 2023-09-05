@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/beige"
     tools:context=".CalendarFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -59,7 +60,7 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +96,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/txt_todaylist"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/txt_todaylist"
-
             app:layout_constraintTop_toTopOf="@+id/txt_todaylist" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -110,7 +110,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_todaylist"
-            tools:listitem="@layout/item_todo" />
+            tools:listitem="@layout/item_todo"
+            app:layout_constraintWidth_default="spread"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
