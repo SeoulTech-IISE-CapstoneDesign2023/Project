@@ -223,7 +223,7 @@ class CreateActivity : AppCompatActivity(),
         }
 
         whenDateTimeValueChangedSaveDateData()
-        saveNotificationIdWhenEditModeForEditAlarm()
+//        saveNotificationIdWhenEditModeForEditAlarm()
         saveDateData()
     }
 
@@ -244,18 +244,19 @@ class CreateActivity : AppCompatActivity(),
         }
     }
 
-    private fun saveNotificationIdWhenEditModeForEditAlarm() {
-        //notifiactionId 저장 -> editMode일때 알람을 수정하기 위해서
-        val changeStartTime =
-            binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
-                .replace(":", "").replace(" ", "")
-        val split = splitDate(binding.startDateValueTextView.text.toString())
-        val year = split[0].trim().toInt()
-        val month = split[1].trim().toInt()
-        val day = split[2].trim().toInt()
-        val date = String.format("%04d%02d%02d", year, month, day)
-        notificationId = "$date$changeStartTime".substring(3)
-    }
+//    private fun saveNotificationIdWhenEditModeForEditAlarm() {
+//        //notifiactionId 저장 -> editMode일때 알람을 수정하기 위해서
+//        val changeStartTime =
+//            binding.startTimeValueTextView.text.toString().replace("오후", "").replace("오전", "")
+//                .replace(":", "").replace(" ", "")
+//        val split = splitDate(binding.startDateValueTextView.text.toString())
+//        val year = split[0].trim().toInt()
+//        val month = split[1].trim().toInt()
+//        val day = split[2].trim().toInt()
+//        val date = String.format("%04d%02d%02d", year, month, day)
+//        notificationId = "$date$changeStartTime".substring(3)
+//        Log.d("saveNotification","$notificationId")
+//    }
 
     private fun initializeEditMode(todo: Todo) {
         // 기존의 Todo를 수정하는 경우, 해당 Todo의 정보를 사용하여 화면을 초기화
@@ -272,6 +273,7 @@ class CreateActivity : AppCompatActivity(),
         startLng = todo.startLng ?: 0.0
         arrivalLat = todo.arrivalLat ?: 0.0
         arrivalLng = todo.arrivalLng ?: 0.0
+        notificationId = todo.notificationId ?: ""
         if(todo.usingAlarm == true) {
             usingAlarm = true
             binding.alarmImageView.setBackgroundResource(R.drawable.baseline_alarm_on_24)
@@ -356,6 +358,8 @@ class CreateActivity : AppCompatActivity(),
                     if (isEditMode) {
                         //기존의 todo를 수정하고 알림은 사용하지 않는 경우
                         if (!usingAlarm) {
+                            //기존에 알람이 있을 수 있으니 삭제
+                            deleteAlarmWhenEdit()
                             updateTodo(todoKey!!, todo!!)
                             finish()
                         } else {
@@ -365,6 +369,7 @@ class CreateActivity : AppCompatActivity(),
                                 return false
                             }
                             createAlarm()
+                            //여기에서는 notificationId를 저장하는데 서버를 통한거기때문에 todo에는 notificationId가 저장이 안됨
                             if (alarmCheck) {
                                 Firebase.database.reference.child(DB_ADDRESS).child(user)
                                     .removeValue()
@@ -391,8 +396,8 @@ class CreateActivity : AppCompatActivity(),
                                 Toast.makeText(this,"길찾기를 해주세요.",Toast.LENGTH_SHORT).show()
                                 return false
                             }
-                            //새로운 todo를 생성하면서 알림도 있는 경우
                             createAlarm()
+                            //새로운 todo를 생성하면서 알림도 있는 경우
                             if (alarmCheck) {
                                 Firebase.database.reference.child(DB_ADDRESS).child(user)
                                     .removeValue()
@@ -519,12 +524,13 @@ class CreateActivity : AppCompatActivity(),
             Log.e("modifiedDate", "$modifiedDate")
             val outputDate = dateFormat.format(modifiedDate)
             Log.e("modifiedDate", "$outputDate")
+            notificationId = outputDate.substring(3)
             //현재 시간과 알람 시간을 비교해서 알람 시간이 과거면은 알람 설정
             Log.e(
                 "시간 체크",
                 "알람시간 : ${calendarForAlarm.timeInMillis} 현재시간 : ${System.currentTimeMillis()}"
             )
-            if (calendarForAlarm.timeInMillis <= System.currentTimeMillis()) {
+            if (calendarForAlarm.timeInMillis < System.currentTimeMillis()) {
                 alarmCheck = false
                 Log.e("createActivity에서 알람 체크 확인", "현재시간보다 늦게 알람 설정은 안됨")
                 return
@@ -534,10 +540,10 @@ class CreateActivity : AppCompatActivity(),
                 .addOnSuccessListener {
                     val data = it.getValue(Address::class.java)
                     data?.let {
-                        startLat = data.startLat?.toDouble() ?: 0.0
-                        startLng = data.startLng?.toDouble() ?: 0.0
-                        arrivalLat = data.arrivalLat?.toDouble() ?: 0.0
-                        arrivalLng = data.arrivalLng?.toDouble() ?: 0.0
+                        startLat = data.startLat ?: 0.0
+                        startLng = data.startLng ?: 0.0
+                        arrivalLat = data.arrivalLat ?: 0.0
+                        arrivalLng = data.arrivalLng ?: 0.0
                         Log.e("getLocationData", "$startLat $startLng $arrivalLat $arrivalLng")
                         alarm["todo"] = todo
                         alarm["time"] = outputDate //알람이 울리는 시간
@@ -559,7 +565,7 @@ class CreateActivity : AppCompatActivity(),
                         alarm["arrivalLng"] = arrivalLng
                         alarm["type"] = type
                         alarm["appointment_time"] = startTimeToLong.toString() //startTime을 가져오면됨
-                        notificationId = outputDate.substring(3)
+                        //여기서 바뀌게 됨
                         alarm["notificationId"] = notificationId
                         alarm["timeTaken"] = alarmTime
                         alarm["trackingTime"] = plusTime
@@ -607,13 +613,14 @@ class CreateActivity : AppCompatActivity(),
         )
         val modifiedDate = calendarForAlarm.time
         val resultTime = dateFormat.format(modifiedDate)
+        notificationId = resultTime.substring(3)
 
         //현재 시간과 알람 시간을 비교해서 알람 시간이 과거면은 알람 설정
         Log.e(
             "시간 체크",
             "알람시간 : ${calendarForAlarm.timeInMillis} 현재시간 : ${System.currentTimeMillis()}"
         )
-        if (calendarForAlarm.timeInMillis <= System.currentTimeMillis()) {
+        if (calendarForAlarm.timeInMillis < System.currentTimeMillis()) {
             alarmCheck = false
             Log.e("createActivity에서 알람 체크 확인", "현재시간보다 늦게 알람 설정은 안됨")
             return
@@ -635,7 +642,6 @@ class CreateActivity : AppCompatActivity(),
         alarm["appointment_time"] = startTimeToLong.toString()//약속시간
         alarm["arrivalLng"] = arrivalLng
         alarm["isoDateTime"] = isoDateTime
-        notificationId = resultTime.substring(3)
         alarm["notificationId"] = notificationId
         alarm["timeTaken"] = timeTaken
         alarm["trackingTime"] = plusTime
@@ -905,16 +911,16 @@ class CreateActivity : AppCompatActivity(),
                 val arrivalDate =
                     dateTimeFormat.parse(arrivalTime.replace("오전", "").replace("오후", ""))
                 Log.d("time", "$startDate $arrivalDate")
-                if (startDate != null) {
-                    if (startDate >= arrivalDate) {
-                        Log.e("setTime", "$startDate $arrivalDate")
-                        Toast.makeText(this, "시작시간은 도착시간보다 늦을 수 없습니다", Toast.LENGTH_SHORT).show()
-                        binding.arriveDateValueTextView.text = "0000/00/00"
-                        binding.arriveTimeValueTextView.text = "오전 00:00"
-                        arrivalTime = ""
-                        return@OnTimeSetListener
-                    }
-                }
+//                if (startDate != null) {
+//                    if (startDate >= arrivalDate) {
+//                        Log.e("setTime", "$startDate $arrivalDate")
+//                        Toast.makeText(this, "시작시간은 도착시간보다 늦을 수 없습니다", Toast.LENGTH_SHORT).show()
+//                        binding.arriveDateValueTextView.text = "0000/00/00"
+//                        binding.arriveTimeValueTextView.text = "오전 00:00"
+//                        arrivalTime = ""
+//                        return@OnTimeSetListener
+//                    }
+//                }
             } catch (e: ParseException) {
                 e.printStackTrace()
             }
